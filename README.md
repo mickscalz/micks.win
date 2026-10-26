@@ -48,11 +48,15 @@ provider:
 | `AAAA` | `@` | `2606:50c0:8003::153` |
 | `CNAME` | `www` | `mickscalz.github.io` |
 
-Then add a `CNAME` file containing `micks.win` at the repository root (or set
-the custom domain in **Settings → Pages**) and switch **Enforce HTTPS** on once
-the certificate has provisioned. Do it in that order — setting the custom domain
-before the DNS exists makes the `github.io` address redirect to a host that does
-not resolve yet.
+Then add a `CNAME` file containing just `micks.win` at the repository root and
+push it — the deploy workflow publishes it automatically, so the next merge
+starts answering for the domain. Alternatively set the custom domain in
+**Settings → Pages**. Switch **Enforce HTTPS** on once the certificate has
+provisioned.
+
+Do it in **that order** — setting the custom domain before the DNS exists makes
+the `github.io` address redirect to a host that does not resolve yet, taking the
+working site down with it.
 
 ## Controls
 

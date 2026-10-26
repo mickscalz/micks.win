@@ -46,7 +46,16 @@
     <div class="orb" aria-hidden="true"></div>
     <h1>this room is not here</h1>
     <p>The cabinet holds twenty-four. This would have been a twenty-fifth.</p>
-    <a href="./">back to the cabinet</a>
+    <a id="home" href="./">back to the cabinet</a>
   </div>
+<script>
+  // A 404 keeps the requested URL, so "./" only works for shallow paths.
+  // Work out the site root for both project pages and a custom domain.
+  (function () {
+    var p = location.pathname, i = p.indexOf('/micks.win/');
+    document.getElementById('home').href =
+      i >= 0 ? p.slice(0, i) + '/micks.win/' : '/';
+  })();
+</script>
 </body>
 </html>
