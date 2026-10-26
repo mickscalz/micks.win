@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>micks.win — A Cabinet of Infinite Rooms</title>
+<meta name="description" content="micks.win — twenty-four living, breathing worlds rendered in real time. An endless gallery of light." />
+<meta name="theme-color" content="#04040a" />
+<meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
+<meta property="og:description" content="Twenty-four living worlds rendered in real time." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" />
+<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ─────────────────────────────  THE STAGE  ───────────────────────────── -->
+  <div class="stage" id="stage">
+    <canvas id="gl"></canvas>
+    <canvas id="c2d"></canvas>
+    <canvas id="fade"></canvas>
+    <div class="fx-grain" aria-hidden="true"></div>
+    <div class="fx-vignette" aria-hidden="true"></div>
+    <div class="fx-bloom" aria-hidden="true"></div>
+  </div>
+
+  <!-- ─────────────────────────────  MASTHEAD  ────────────────────────────── -->
+  <header class="brand" id="brand">
+    <a class="brand__mark" href="#" aria-label="micks.win home">
+      <span class="brand__orb" aria-hidden="true"></span>
+      <span class="brand__word">micks<span class="dim">.</span>win</span>
+    </a>
+    <div class="brand__meta">
+      <span class="brand__stat" id="statFps">—</span>
+      <span class="brand__sep"></span>
+      <span class="brand__stat" id="statRes">—</span>
+    </div>
+  </header>
+
+  <!-- ───────────────────────  DWELL / CYCLE PROGRESS  ────────────────────── -->
+  <div class="cycle" aria-hidden="true"><i id="cycleBar"></i></div>
+
+  <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
+  <section class="card" id="card" aria-live="polite">
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 24</em></div>
+    <h1 class="card__name" id="cardName"></h1>
+    <p class="card__tag" id="cardTag"></p>
+    <p class="card__blurb" id="cardBlurb"></p>
+    <div class="card__meter" title="Captivation index">
+      <span class="card__meter-label">captivation</span>
+      <span class="card__meter-track"><i id="cardMeter"></i></span>
+      <span class="card__meter-val" id="cardMeterVal"></span>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────  THE RAIL  ───────────────────────────── -->
+  <nav class="rail" id="rail" aria-label="Choose a world"></nav>
+
+  <!-- ──────────────────────────────  CONTROLS  ───────────────────────────── -->
+  <div class="ctl" id="ctl">
+    <button class="ctl__btn" data-act="prev" title="Previous world (←)" aria-label="Previous world">
+      <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg>
+    </button>
+    <button class="ctl__btn ctl__btn--play" data-act="play" title="Pause / resume the cycle (Space)" aria-label="Pause or resume">
+      <svg class="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
+      <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+    </button>
+    <button class="ctl__btn" data-act="next" title="Next world (→)" aria-label="Next world">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <span class="ctl__div"></span>
+    <button class="ctl__btn ctl__btn--txt" data-act="shuffle" title="Shuffle (S)">shuffle</button>
+    <button class="ctl__btn ctl__btn--txt" data-act="gallery" title="Gallery (G)">gallery</button>
+    <button class="ctl__btn ctl__btn--txt" data-act="full" title="Fullscreen (F)">full</button>
+  </div>
+
+  <div class="hint" id="hint">
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; move the cursor to touch the world
+  </div>
+
+  <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
+  <div class="gal" id="gal" aria-hidden="true">
+    <div class="gal__head">
+      <div>
+        <h2>The Cabinet</h2>
+        <p>Twenty-four rooms, ranked by how hard they hold the eye.</p>
+      </div>
+      <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="gal__grid" id="galGrid"></div>
+  </div>
+
+  <!-- ─────────────────────────────  CURTAIN  ─────────────────────────────── -->
+  <div class="curtain" id="curtain">
+    <div class="curtain__inner">
+      <div class="curtain__orb"></div>
+      <div class="curtain__title">micks<span>.</span>win</div>
+      <div class="curtain__sub">twenty-four worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
+      <button class="curtain__enter" id="enter">enter</button>
+      <div class="curtain__note">headphones optional · a fast GPU recommended</div>
+    </div>
+  </div>
+
+  <noscript><div class="noscript">This cabinet is built from live mathematics — please enable JavaScript.</div></noscript>
+  <div class="fatal" id="fatal" hidden></div>
+</div>
+
+<script src="assets/js/glsl-prelude.js"></script>
+<script src="assets/js/gl.js"></script>
+<script src="assets/js/designs/shaders-a.js"></script>
+<script src="assets/js/designs/shaders-b.js"></script>
+<script src="assets/js/designs/shaders-c.js"></script>
+<script src="assets/js/designs/canvas.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
