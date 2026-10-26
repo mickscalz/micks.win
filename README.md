@@ -218,6 +218,8 @@ every room, checks GL errors, exercises filters, two-digit jumps, numeric entry,
 automatic wraparound, collection boundaries, paper theme reset, stateful hold, immersion focus/exit and mobile resize. It serves the page under `/micks.win/`
 to catch GitHub project-Pages path regressions. To use a custom Chromium binary,
 set `CHROMIUM_PATH`. CI runs both suites for pull requests and pushes to main.
+It uses the runner’s installed Google Chrome when available, falling back to
+Playwright’s Chromium installation when needed; both paths run the same real-WebGL suite.
 
 ### Refresh gallery stills
 
