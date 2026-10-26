@@ -26,7 +26,7 @@ itself needs no npm installation; npm is only used for development tests.
 
 ## Collection III — material, atmosphere and impossible places
 
-Twenty new worlds explore refractive black crystal, orbital intersections and
+Twenty new worlds explore reflective black crystal, orbital intersections and
 shadows, bioluminescent anatomy, repeated architectural vaults, microfacet waves,
 gilded ceramic fractures, complex Newton basins, aperiodic lattices, woven
 threads, storm relief, luminous paper and optical lacquer.
