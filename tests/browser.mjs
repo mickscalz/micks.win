@@ -27,7 +27,7 @@ try {
  const errors=[];
  page.on('pageerror',e=>errors.push(String(e)));
  page.on('response',r=>{if(r.url().startsWith('http://127.0.0.1:') && r.status()>=400)errors.push('Asset HTTP '+r.status()+': '+r.url());});
- page.on('console',m=>{if(m.type()==='error' && /\[gl\]|\[cabinet\]/.test(m.text()))errors.push(m.text());});
+ page.on('console',m=>{if(m.type()==='error' && /\[gl\]|\[cabinet\]/.test(m.text())){errors.push(m.text());console.error(m.text());}});
  await page.route('**/fonts.googleapis.com/**',r=>r.fulfill({body:''}));
  await page.route('**/fonts.gstatic.com/**',r=>r.fulfill({body:''}));
  // Drive the real animation callback deterministically: no wall-clock races.
@@ -41,10 +41,10 @@ try {
  await waitUntil(()=>window.Cabinet && Cabinet.playing);
  assert.equal(await page.locator('#enter, #curtain').count(),0);
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 06.*latest.*rank 01/);
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,192);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 07.*latest.*rank 01/);
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,256);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'vertebrae-of-light');
+ assert.equal(ordering[0].id,'living-elsewhere');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  // The interface fades on real inactivity, never covers a gallery, and wakes
  // before keyboard focus or a touch can land on invisible controls.
@@ -57,19 +57,21 @@ try {
  assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('is-idle')),false);
  await page.evaluate(()=>{Cabinet.idleDelay=60000;Cabinet.wakeUI();});
  const results=[];
- const dynamicCanvas=['gravity-ballet','chromatic-dominion','elastic-constellation','lorenz-silk','chromatic-sandpile','magnetic-pendulum','flame-manuscript','lichen-observatory','afterlight-archive'];
+ const dynamicCanvas=['gravity-ballet','chromatic-dominion','elastic-constellation','lorenz-silk','chromatic-sandpile','magnetic-pendulum','flame-manuscript','lichen-observatory','afterlight-archive','coral-computation','stigmergy-river','pelagic-constellations','differential-reef','dust-of-other-physics','ocean-of-memory'];
+ const only=process.env.WORLD_IDS?process.env.WORLD_IDS.split(','):null;
  for(let i=0;i<count;i++){
+  if(only&&!ordering.some((d,j)=>j===i&&only.includes(d.id)))continue;
   const result=await page.evaluate(({i,dynamicCanvas})=>{
-   Cabinet.show(i);Cabinet.t=8;testFrames(3);
+   Cabinet.show(i);Cabinet.t=8;Cabinet.artT=8;testFrames(3);
    const d=Cabinet.designs[i];
    const gl=document.querySelector('#gl').getContext('webgl2');
    gl.finish();
    let pixels=null;
    if(d.edition>=5){const thumb=document.createElement('canvas');thumb.width=40;thumb.height=25;const ctx=thumb.getContext('2d');ctx.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,40,25);const raw=ctx.getImageData(0,0,40,25).data;let lo=255,hi=0;for(let k=0;k<raw.length;k++)if(k%4!==3){lo=Math.min(lo,raw[k]);hi=Math.max(hi,raw[k]);}pixels={lo,hi};}
    let motion=null,frozen=true;
-   if(d.edition===6){
+   if(d.edition>=6){
      const sample=()=>{const cv=document.createElement('canvas');cv.width=48;cv.height=30;const c=cv.getContext('2d');c.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,48,30);return c.getImageData(0,0,48,30).data;};
-     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
+     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;Cabinet.artT=38;testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
      let sum=0,moved=0;for(let k=0;k<before.length;k+=4){const delta=Math.abs(before[k]-after[k])+Math.abs(before[k+1]-after[k+1])+Math.abs(before[k+2]-after[k+2]);sum+=delta;if(delta>25)moved++;}motion={mean:sum/(48*30*3),moved};
      if(d.kind==='2d'){Cabinet.paused=true;const state=JSON.stringify(d);Cabinet.needsDraw=true;testFrames(1);frozen=state===JSON.stringify(d);Cabinet.paused=false;}
      Cabinet.lingering=pin;
@@ -85,20 +87,20 @@ try {
  }
  await page.evaluate(()=>Cabinet.wakeUI());
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),192);
- for(const [family,count] of [['latest',64],['gl',118],['glx',4],['2d',70],['all',192]]){
+ assert.equal(await page.locator('.tile').count(),256);
+ for(const [family,count] of [['latest',64],['gl',150],['glx',4],['2d',102],['all',256]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['6']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['7']);
  }
- await page.locator('#galJump').fill('192');
+ await page.locator('#galJump').fill('256');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),191);
+ assert.equal(await page.evaluate(()=>Cabinet.index),255);
  await page.keyboard.press('Escape');
  await page.keyboard.press('Escape');
- await typeRank('192');
- assert.equal(await page.evaluate(()=>Cabinet.index),191);
+ await typeRank('256');
+ assert.equal(await page.evaluate(()=>Cabinet.index),255);
  await page.keyboard.press('Escape');
  await typeRank('12');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -106,19 +108,19 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),true);
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
- await page.evaluate(()=>{Cabinet.show(63);Cabinet.t=20.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),5);
+ await page.evaluate(()=>{Cabinet.show(63);Cabinet.t=20.99;Cabinet.artT=20.99;testFrames(2);});
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),6);
  // Linger is NOT pause: geometry keeps evolving past the dwell, manual travel
  // remains available, and leaving it starts a full dwell without a time reset.
  await page.evaluate(()=>Cabinet.show(0));
  await page.keyboard.press('l');
  assert.equal(await page.locator('[data-act="linger"]').getAttribute('aria-pressed'),'true');
- await page.evaluate(()=>{Cabinet.t=37;testFrames(3);});
+ await page.evaluate(()=>{Cabinet.t=37;Cabinet.artT=37;testFrames(3);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  assert.ok(await page.evaluate(()=>Cabinet.t)>37);
  await page.keyboard.press('ArrowRight');assert.equal(await page.evaluate(()=>Cabinet.index),1);
  assert.equal(await page.evaluate(()=>Cabinet.lingering),true);
- await page.evaluate(()=>{Cabinet.t=37;testFrames(1);});
+ await page.evaluate(()=>{Cabinet.t=37;Cabinet.artT=37;testFrames(1);});
  const age=await page.evaluate(()=>Cabinet.t);
  await page.keyboard.press('l');
  assert.equal(await page.evaluate(()=>Cabinet.t),age,'leaving Linger must not rewind the artwork');
@@ -157,7 +159,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
  await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(191);Cabinet.t=20.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(255);Cabinet.t=20.99;Cabinet.artT=20.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
@@ -187,16 +189,16 @@ try {
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  // Bottom rail must contain actual decoded pictures, at both ends of the
  // horizontally scrolling list, not blank CSS ticks or broken relative paths.
- assert.equal(await page.locator('#rail img').count(),192);
+ assert.equal(await page.locator('#rail img').count(),256);
  await page.evaluate(()=>{Cabinet.show(0);Cabinet.wakeUI();});
  await waitUntil(()=>{const im=document.querySelector('#rail img');return im.complete&&im.naturalWidth>0;});
- await page.evaluate(()=>Cabinet.show(191));
+ await page.evaluate(()=>Cabinet.show(255));
  await waitUntil(()=>{const im=document.querySelector('#rail button:last-child img');return im.complete&&im.naturalWidth>0;});
  await page.evaluate(()=>{document.querySelector('#rail img').src='data:image/webp;base64,broken';});
  await page.locator('.rail__item--fallback .rail__fallback').waitFor({state:'attached'});
- assert.match(await page.locator('.rail__fallback').first().textContent(),/Vertebrae of Light/);
+ assert.match(await page.locator('.rail__fallback').first().textContent(),/The Living Elsewhere/);
  assert.deepEqual(errors,[]);
- console.log('\n192 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n256 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));

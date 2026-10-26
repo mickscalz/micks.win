@@ -2,8 +2,8 @@
   "name": "micks-win",
   "private": true,
   "scripts": {
-    "test": "node --test tests/catalogue.test.cjs",
-    "test:browser": "node tests/browser.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "node tests/browser.mjs && node tests/experience-browser.mjs",
     "previews": "node tests/render-previews.mjs"
   },
   "devDependencies": {

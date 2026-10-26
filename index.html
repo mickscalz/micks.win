@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>micks.win — A Cabinet of Infinite Rooms</title>
-<meta name="description" content="micks.win — 192 living, breathing worlds rendered in real time. An endless gallery of light." />
+<meta name="description" content="micks.win — 256 living, breathing worlds rendered in real time. An endless gallery of light." />
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
-<meta property="og:description" content="192 living worlds rendered in real time." />
-<link rel="stylesheet" href="assets/css/style.css" />
+<meta property="og:description" content="256 living worlds rendered in real time." />
+<link rel="stylesheet" href="assets/css/style.css?v=7" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -34,7 +34,7 @@
     <div class="brand__meta">
       <span class="brand__stat" id="statFps">—</span>
       <span class="brand__sep"></span>
-      <span class="brand__stat" id="statRes">—</span>
+      <span class="brand__stat" id="statRes">—</span><span class="brand__stat" id="conductorLive">guided · internal</span>
     </div>
   </header>
 
@@ -43,7 +43,7 @@
 
   <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
   <section class="card" id="card" aria-live="polite">
-    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 192</em></div>
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 256</em></div>
     <div class="card__collection" id="cardCollection"></div>
     <h1 class="card__name" id="cardName"></h1>
     <p class="card__tag" id="cardTag"></p>
@@ -83,7 +83,7 @@
   <button class="immerse-return" id="immerseReturn" data-act="immerse" aria-label="Show interface (H)" hidden>return · H</button>
 
   <div class="hint" id="hint">
-    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>L</kbd> linger &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>192</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>L</kbd> linger &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>256</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
   </div>
 
   <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
@@ -91,10 +91,10 @@
     <div class="gal__head">
       <div>
         <h2 id="galTitle">The Cabinet</h2>
-        <p><b id="galCount">192</b> rooms. Newest collection first, ranked within each collection.</p>
+        <p><b id="galCount">256</b> rooms. Newest collection first, ranked within each collection.</p>
       </div>
       <div class="gal__tools">
-        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="192" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
+        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="256" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
         <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
@@ -110,30 +110,77 @@
     <div class="gal__grid" id="galGrid"></div>
   </div>
 
+
+  <div class="experience-dock" id="experienceDock">
+    <button id="calmNow" type="button" title="Immediate calm: lower motion, light and density">calm now</button>
+    <button id="experienceToggle" type="button" aria-expanded="false" aria-controls="experiencePanel">tune · audio</button>
+  </div>
+  <div id="experienceBackdrop" class="experience-backdrop" hidden></div>
+  <section id="experiencePanel" class="experience-panel" role="dialog" aria-modal="true" aria-labelledby="experienceTitle" hidden inert>
+    <header><div><p>THE LIVING CONDUCTOR</p><h2 id="experienceTitle">Shape the experience</h2></div><button id="experienceClose" aria-label="Close experience controls">close ×</button></header>
+    <p id="experienceStatus" class="tune-status" role="status">Guided · newest first</p>
+    <p id="compositionReadout" class="tune-help"></p>
+    <div class="tune-selects"><label>Automation<select data-setting="mode"><option value="manual">Manual · stay in this world</option><option value="guided" selected>Guided · ranked travel</option><option value="adaptive">Adaptive · signals + preferences</option><option value="autonomous">Autonomous · evolving visual arc</option></select></label>
+    <label>Quality<select data-setting="quality"><option value="auto">Automatic</option><option value="high">High</option><option value="balanced">Balanced</option><option value="economy">Economy</option></select></label></div>
+    <p class="tune-help">Manual keeps the world moving without automatic travel. Guided follows the catalogue. Adaptive chooses fresh families using available signals and your explicit feedback. Autonomous also develops density and intensity through an internal arc. Every override is immediate.</p>
+    <div class="tune-ranges"><label class="tune-range">Novelty<output data-value="novelty"></output><input aria-label="Novelty" data-setting="novelty" type="range" min="0" max="1" step="0.01" value="0.7" /></label>
+<label class="tune-range">Visual intensity<output data-value="intensity"></output><input aria-label="Visual intensity" data-setting="intensity" type="range" min="0" max="1" step="0.01" value="0.65" /></label>
+<label class="tune-range">Motion<output data-value="motion"></output><input aria-label="Motion" data-setting="motion" type="range" min="0" max="1.5" step="0.01" value="1" /></label>
+<label class="tune-range">Detail<output data-value="detail"></output><input aria-label="Detail" data-setting="detail" type="range" min="0" max="1" step="0.01" value="0.85" /></label>
+<label class="tune-range">Brightness<output data-value="brightness"></output><input aria-label="Brightness" data-setting="brightness" type="range" min="0.15" max="1.35" step="0.01" value="1" /></label>
+<label class="tune-range">Color range<output data-value="color"></output><input aria-label="Color range" data-setting="color" type="range" min="0" max="1" step="0.01" value="1" /></label>
+<label class="tune-range">Visual density<output data-value="density"></output><input aria-label="Visual density" data-setting="density" type="range" min="0" max="1" step="0.01" value="0.75" /></label>
+<label class="tune-range">Audio reactivity<output data-value="reactivity"></output><input aria-label="Audio reactivity" data-setting="reactivity" type="range" min="0" max="1" step="0.01" value="0.65" /></label>
+</div>
+    <fieldset><legend>Accessibility · always in your control</legend>
+      <label><input type="checkbox" data-setting="reducedMotion" /> Reduced motion</label>
+      <label><input type="checkbox" data-setting="reducedFlashes" checked /> Reduced flashes / lower peaks</label>
+      <label><input type="checkbox" data-setting="colorSafe" /> Color-vision-friendly contrast (less color dependence)</label>
+      <label><input type="checkbox" data-setting="calm" /> Calm mode · slower, dimmer, less dense</label>
+    </fieldset>
+    <div class="tune-feedback"><button data-feedback="like" aria-pressed="false">like</button><button data-feedback="skip">skip</button><button data-feedback="save" aria-pressed="false">save</button><button data-feedback="calmer">calmer</button><button data-feedback="brighter">brighter</button><button data-feedback="abstract">more abstract</button><button data-feedback="energetic">more energetic</button></div>
+    <p class="tune-help">Feedback is session-only unless you enable remembering below. Select a world to revisit; use Like or Save again to remove it.</p>
+    <p class="tune-help">Saved worlds</p><div id="savedWorlds" class="world-list">No saved worlds</div>
+    <p class="tune-help">Liked worlds</p><div id="likedWorlds" class="world-list">No liked worlds</div>
+    <fieldset><legend>Optional audio · off until you choose</legend>
+      <p class="tune-help">Use a local audio file or explicitly allow your microphone. Nothing is uploaded or recorded. Microphone sound is not played back. No audio? The scene makes its own drifting rhythm.</p>
+      <label class="audio-file">Local audio file<input id="audioFile" type="file" accept="audio/*" /></label>
+      <div class="audio-actions"><button id="microphoneStart">allow microphone</button><button id="audioStop">stop audio &amp; release mic</button></div>
+      <div id="audioPlayer"></div><p id="audioStatus" role="status">Internal rhythm · no audio access</p><p id="signalReadout" class="tune-help"></p>
+    </fieldset>
+    <p id="qualityStatus" class="tune-help"></p>
+    <label class="remember"><input id="rememberExperience" type="checkbox" /> Remember settings, likes and saved worlds on this device</label>
+    <p class="tune-help">Optional local storage only. Audio, file names and microphone data are never saved. Turn remembering off to delete stored preferences. Reset clears stored and session preferences and stops audio.</p>
+    <button id="resetExperience">reset preferences &amp; stop audio</button>
+  </section>
+
   <noscript><div class="noscript">This cabinet is built from live mathematics — please enable JavaScript.</div></noscript>
   <div class="fatal" id="fatal" hidden></div>
 </div>
 
-<script src="assets/js/glsl-prelude.js"></script>
-<script src="assets/js/gl.js"></script>
-<script src="assets/js/designs/shaders-a.js"></script>
-<script src="assets/js/designs/shaders-b.js"></script>
-<script src="assets/js/designs/shaders-c.js"></script>
-<script src="assets/js/designs/canvas.js"></script>
-<script src="assets/js/designs/shaders-d.js"></script>
-<script src="assets/js/designs/shaders-e.js"></script>
-<script src="assets/js/designs/sims.js"></script>
-<script src="assets/js/designs/canvas-b.js"></script>
-<script src="assets/js/designs/collection-iii.js"></script>
-<script src="assets/js/designs/collection-iii-canvas.js"></script>
-<script src="assets/js/designs/collection-iv.js"></script>
-<script src="assets/js/designs/collection-iv-canvas.js"></script>
-<script src="assets/js/designs/collection-v.js"></script>
-<script src="assets/js/designs/collection-v-canvas.js"></script>
-<script src="assets/js/designs/collection-vi.js"></script>
-<script src="assets/js/designs/collection-vi-canvas.js"></script>
-<script src="assets/js/catalogue.js"></script>
-<script src="assets/js/engine.js"></script>
-<script src="assets/js/main.js"></script>
+<script src="assets/js/glsl-prelude.js?v=7"></script>
+<script src="assets/js/gl.js?v=7"></script>
+<script src="assets/js/designs/shaders-a.js?v=7"></script>
+<script src="assets/js/designs/shaders-b.js?v=7"></script>
+<script src="assets/js/designs/shaders-c.js?v=7"></script>
+<script src="assets/js/designs/canvas.js?v=7"></script>
+<script src="assets/js/designs/shaders-d.js?v=7"></script>
+<script src="assets/js/designs/shaders-e.js?v=7"></script>
+<script src="assets/js/designs/sims.js?v=7"></script>
+<script src="assets/js/designs/canvas-b.js?v=7"></script>
+<script src="assets/js/designs/collection-iii.js?v=7"></script>
+<script src="assets/js/designs/collection-iii-canvas.js?v=7"></script>
+<script src="assets/js/designs/collection-iv.js?v=7"></script>
+<script src="assets/js/designs/collection-iv-canvas.js?v=7"></script>
+<script src="assets/js/designs/collection-v.js?v=7"></script>
+<script src="assets/js/designs/collection-v-canvas.js?v=7"></script>
+<script src="assets/js/designs/collection-vi.js?v=7"></script>
+<script src="assets/js/designs/collection-vi-canvas.js?v=7"></script>
+<script src="assets/js/designs/collection-vii.js?v=7"></script>
+<script src="assets/js/designs/collection-vii-canvas.js?v=7"></script>
+<script src="assets/js/catalogue.js?v=7"></script>
+<script src="assets/js/experience.js?v=7"></script>
+<script src="assets/js/engine.js?v=7"></script>
+<script src="assets/js/main.js?v=7"></script>
 </body>
 </html>

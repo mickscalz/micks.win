@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, 192
+   One shared WebGL2 context, one 2D context, one crossfade layer, 256
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -13,6 +13,7 @@
     designs: DESIGNS,
     index: 0,
     dwell: 21,          // seconds a world holds the stage before the next
+    artT: 0,
     t: 0,               // time inside the current world
     gt: 0,              // global clock
     fade: 0,
@@ -76,13 +77,16 @@
     var wantW = Math.round(cssW * E.dpr * E.scale);
     var wantH = Math.round(cssH * E.dpr * E.scale);
     var px = wantW * wantH;
+    var tuning=w.Experience?w.Experience.frame():null;
+    budget *= tuning ? Math.max(.45,tuning.quality)*(.4+.6*tuning.detail) : 1;
     if (px > budget) {
       var k = Math.sqrt(budget / px);
       wantW = Math.round(wantW * k); wantH = Math.round(wantH * k);
     }
     sizeCanvas(cGL, null, cssW, cssH, wantW, wantH);
 
-    var d2 = Math.min(E.dpr, 1.5);
+    var q=w.Experience?w.Experience.frame().quality:1;
+    var d2 = Math.min(E.dpr, 1.5)*Math.max(.5,q*Math.sqrt(tuning ? .4+.6*tuning.detail : 1));
     sizeCanvas(c2D, ctx2, cssW, cssH, Math.round(cssW * d2), Math.round(cssH * d2));
     ctx2.setTransform(d2, 0, 0, d2, 0, 0);
 
@@ -121,7 +125,7 @@
       cFade.style.opacity = '1';
       // next frame, let it dissolve
       requestAnimationFrame(function () {
-        cFade.style.transition = 'opacity 1.5s cubic-bezier(.16,1,.3,1)';
+        cFade.style.transition = 'opacity 3.6s cubic-bezier(.16,1,.3,1)';
         cFade.style.opacity = '0';
       });
     } catch (e) { /* ignore */ }
@@ -149,8 +153,9 @@
     resize();
 
     E.t = 0;
+    E.artT = 0;
     E.cycleOffset = 0;
-    E.revealComplete = E.paused;
+    E.revealComplete = E.paused || (prev && E.playing && opts.snapshot !== false);
     E.fade = E.paused ? 1 : 0;
     sinceSwitch = 0;
     warmAt = -1;
@@ -158,11 +163,8 @@
     S.seed = E.seed;
 
     stage.setAttribute('data-kind', design.kind === '2d' ? '2d' : 'gl');
-    stage.classList.remove('reveal');
-    void stage.offsetWidth;                     // restart the reveal animation
-    stage.classList.add('reveal');
-    stage.classList.add('flash');
-    setTimeout(function () { stage.classList.remove('flash'); }, 220);
+    // Crossfade only: no flash or per-world zoom reset.
+    if(w.Experience) w.Experience.enter(design);
 
     // card
     d.body.setAttribute('data-world-theme', design.theme || 'dark');
@@ -302,6 +304,7 @@
 
   var galReturnFocus = null;
   function openGal() {
+    if(w.Experience && w.Experience.isOpen()) w.Experience.open(false);
     if (E.immersive) setImmersive(false);
     galReturnFocus = d.activeElement;
     gal.inert = false;
@@ -361,7 +364,7 @@
     if (on) immersionFocus = d.activeElement;
     d.body.classList.toggle('is-immersive', !!on);
     back.hidden = !on;
-    ['brand','card','rail','ctl','hint'].forEach(function(id){
+    ['brand','card','rail','ctl','hint','experienceDock'].forEach(function(id){
       var el = d.getElementById(id);
       if(el){ el.inert = !!on; if(on)el.setAttribute('aria-hidden','true');else el.removeAttribute('aria-hidden'); }
     });
@@ -380,6 +383,7 @@
   var digitBuf = '', digitAt = 0;
   w.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if(e.target && e.target.closest && e.target.closest('#experiencePanel')) return;
     if (e.key !== 'Tab' && e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
       if (e.key === 'Escape') closeGal();
       return;
@@ -434,12 +438,13 @@
   }, { passive: true });
 
   /* ------------------------------------------------------------ the loop */
-  var last = 0, acc = 0, frames = 0, fpsT = 0, warmAt = -1, sinceSwitch = 0, fast = 0;
+  var last = 0, realDt = 1/60, acc = 0, frames = 0, fpsT = 0, warmAt = -1, sinceSwitch = 0, fast = 0;
 
   function tick(now) {
     requestAnimationFrame(tick);
     if (!E.playing) { last = now; return; }
-    var dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
+    realDt = last ? Math.max(.001,(now-last)/1000) : 1/60;
+    var dt = Math.min(realDt,1/20);
     last = now;
     if (d.hidden) return;
     if (E.paused && !E.needsDraw) return;
@@ -449,8 +454,11 @@
 
   function draw(dt, now) {
     E.gt += dt;
-    S.dt = dt;
-    S.energy = 0.5 + 0.5 * Math.sin(E.gt * 0.29) * Math.sin(E.gt * 0.11 + 1.3);
+    var ex = w.Experience ? w.Experience.advance(dt) : null;
+    S.experience = ex;
+    S.detail = ex ? ex.detail : 1; S.density = ex ? ex.density : 1;
+    S.dt = dt * (ex ? ex.motion : 1);
+    S.energy = ex ? ex.energy : .5+.5*Math.sin(E.gt*.29);
 
     // smoothed pointer
     S.mouse.x += (target.x - S.mouse.x) * Math.min(1, dt * 3.2);
@@ -458,11 +466,12 @@
 
     if (!E.paused) {
       E.t += dt;
+      E.artT += S.dt*(.85+.3*S.energy);
       sinceSwitch += dt;
     }
     if (E.paused) E.revealComplete = true;
     E.fade = E.revealComplete ? 1 : Math.min(1, E.t / 1.25);
-    S.t = E.t;
+    S.t = E.artT;
     S.fade = E.fade;
 
     var design = E.designs[E.index];
@@ -480,7 +489,10 @@
         R.blit(design.prog, null, {
           uRes: [cGL.width, cGL.height], uTime: S.t, uDt: dt,
           uFade: E.fade, uMouse: [S.mouse.x, S.mouse.y],
-          uEnergy: S.energy, uRand: S.seed
+          uEnergy: S.energy, uRand: S.seed,
+          uPulse:ex?ex.pulse:.5,uIntensity:ex?ex.intensity:.65,uDetail:S.detail,uDensity:S.density,
+          uNovelty:ex?ex.novelty:.7,uColorRange:ex?ex.color:1,uColorSafe:ex&&ex.colorSafe?1:0,
+          uBass:ex?ex.bass:0,uMid:ex?ex.mid:0,uTreble:ex?ex.treble:0,uOnset:ex?ex.onset:0,uStereo:ex?ex.stereo:0
         });
       } else if (design.kind === 'glx') {
         design.frame(R, S);
@@ -494,8 +506,8 @@
     }
 
     // cycle
-    if (!E.paused && !E.lingering && E.t - E.cycleOffset > E.dwell) {
-      show(E.index + 1);
+    if (!E.paused && !E.lingering && (!ex || ex.mode !== 'manual') && E.t - E.cycleOffset > E.dwell) {
+      show(w.Experience ? w.Experience.choose(E.designs,E.index) : E.index + 1);
       sinceSwitch = 0;
       warmAt = -1;
     }
@@ -503,13 +515,17 @@
     cycleBar.style.width = (E.lingering ? 0 : prog) * 100 + '%';
 
     // adaptive resolution
-    frames++; acc += dt;
+    frames++; acc += realDt;
     if (acc > 1.2) {
       var fps = frames / acc;
+      if(w.Experience) w.Experience.performanceSample(fps,1000/fps);
       if (statFps) statFps.textContent = fps.toFixed(0) + ' fps';
-      if (fps < 40 && E.scale > 0.52) { E.scale = Math.max(0.5, E.scale - 0.12); resize(); fast = 0; }
+      var qualityMode=w.Experience?w.Experience.getSettings().quality:'auto';
+      if(qualityMode!=='auto'){E.scale={high:1,balanced:.8,economy:.6}[qualityMode];resize();}
+      else if (fps < 40 && E.scale > 0.52) { E.scale = Math.max(0.5, E.scale - 0.12); resize(); fast = 0; }
       else if (fps > 57 && E.scale < 1) { fast++; E.scale = Math.min(1, E.scale + (fast > 1 ? 0.12 : 0.05)); resize(); }
       else fast = 0;
+      if(w.Experience && qualityMode==='auto') resize();
       frames = 0; acc = 0;
     }
   }
@@ -521,7 +537,7 @@
     d.body.classList.remove('is-idle');
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function(){
-      if (gal.classList.contains('on') || keyboardUI) { wakeUI(); return; }
+      if (gal.classList.contains('on') || (w.Experience && w.Experience.isOpen()) || keyboardUI) { wakeUI(); return; }
       d.body.classList.add('is-idle');
       tip.classList.remove('on');
     }, E.idleDelay);
@@ -558,4 +574,6 @@
   w.Cabinet = E;
   w.Cabinet.show = show;
   w.Cabinet.wakeUI = wakeUI;
+  w.Cabinet.resize=resize;w.Cabinet.closeGallery=closeGal;w.Cabinet.setImmersive=setImmersive;
+  if(w.Experience) w.Experience.mount(E);
 })(window, document);
