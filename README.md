@@ -24,6 +24,36 @@ python3 -m http.server 3000      # or: npx serve .
 Requires **WebGL2** (any current Chrome, Edge, Firefox or Safari with hardware
 acceleration). Resolution scales itself to keep the frame rate honest.
 
+## Live
+
+Published with GitHub Pages from `main` (branch deploy, Jekyll bypassed by
+`.nojekyll`), so a merge to `main` is a deploy:
+
+**<https://mickscalz.github.io/micks.win/>**
+
+### Pointing `micks.win` at it
+
+The apex domain needs DNS, then the domain needs telling to Pages. In your DNS
+provider:
+
+| type | name | value |
+|---|---|---|
+| `A` | `@` | `185.199.108.153` |
+| `A` | `@` | `185.199.109.153` |
+| `A` | `@` | `185.199.110.153` |
+| `A` | `@` | `185.199.111.153` |
+| `AAAA` | `@` | `2606:50c0:8000::153` |
+| `AAAA` | `@` | `2606:50c0:8001::153` |
+| `AAAA` | `@` | `2606:50c0:8002::153` |
+| `AAAA` | `@` | `2606:50c0:8003::153` |
+| `CNAME` | `www` | `mickscalz.github.io` |
+
+Then add a `CNAME` file containing `micks.win` at the repository root (or set
+the custom domain in **Settings → Pages**) and switch **Enforce HTTPS** on once
+the certificate has provisioned. Do it in that order — setting the custom domain
+before the DNS exists makes the `github.io` address redirect to a host that does
+not resolve yet.
+
 ## Controls
 
 | | |
