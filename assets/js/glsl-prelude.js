@@ -33,6 +33,7 @@
     'uniform float uEnergy;   // slow 0..1 breath',
     'uniform float uRand;     // per-visit seed',
     '',
+    'uniform float uPulse,uIntensity,uDetail,uDensity,uNovelty,uColorRange,uColorSafe,uBass,uMid,uTreble,uOnset,uStereo;',
     '#define PI  3.14159265359',
     '#define TAU 6.28318530718',
     '#define GOLD 0.61803398875',
