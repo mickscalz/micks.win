@@ -15,11 +15,12 @@
   /* ──────────────────────────────  07 · LIQUID CHROME  ─────────────────── */
   D({
     id: 'liquid-chrome',
-    rank: 7,
+    preview: 'assets/previews/liquid-chrome.webp',
+    rank: 13,
     name: 'Liquid Chrome',
     tag: 'metaballs · thin-film dispersion',
     blurb: 'Mercury with a memory. Five spheres that never quite decide whether they are one body or many.',
-    captivation: 93,
+    captivation: 85,
     art: 'linear-gradient(140deg, #f4f8ff 0%, #9fb3d9 18%, #2b3350 38%, #6f5bd8 58%, #ff9ad5 78%, #101426 100%)',
     kind: 'gl',
     frag: [
@@ -106,11 +107,12 @@
   /* ────────────────────────────  08 · MANDELBULB INFINITE  ─────────────── */
   D({
     id: 'mandelbulb',
-    rank: 8,
+    preview: 'assets/previews/mandelbulb.webp',
+    rank: 15,
     name: 'Mandelbulb Infinite',
     tag: 'power-8 fractal · orbit-trap colour',
     blurb: 'A shape with no surface and no end. Zooming in only reveals more of the same argument, forever.',
-    captivation: 92,
+    captivation: 83,
     art: 'radial-gradient(80% 80% at 40% 32%, #ffe9b0 0%, #ff9a3c 18%, #c93a6b 38%, #4a1b8f 62%, #06030f 100%)',
     kind: 'gl',
     frag: [
@@ -199,11 +201,12 @@
   /* ──────────────────────────────  10 · IRIDESCENCE  ───────────────────── */
   D({
     id: 'iridescence',
-    rank: 10,
+    preview: 'assets/previews/iridescence.webp',
+    rank: 19,
     name: 'Iridescence',
     tag: 'gyroid lattice · thin-film interference',
     blurb: 'The colour of a soap film frozen into crystal. The hue is not pigment — it is arithmetic about thickness.',
-    captivation: 90,
+    captivation: 78,
     art: 'linear-gradient(125deg, #08111f 0%, #1e5f8f 20%, #49d6c0 40%, #b98bff 60%, #ff7ad9 80%, #1a0a2e 100%)',
     kind: 'gl',
     frag: [
@@ -277,11 +280,12 @@
   /* ───────────────────────────────  11 · SUPERNOVA  ────────────────────── */
   D({
     id: 'supernova',
-    rank: 11,
+    preview: 'assets/previews/supernova.webp',
+    rank: 20,
     name: 'Supernova',
     tag: 'shock front · lensed starfield',
     blurb: 'Twelve seconds per star. The front passes through the sky and for a moment every photon takes a different road.',
-    captivation: 89,
+    captivation: 77,
     art: 'radial-gradient(60% 60% at 46% 44%, #fffdf2 0%, #ffd27a 9%, #ff6a2e 20%, #c02b6a 34%, #2a1052 62%, #04030a 100%)',
     kind: 'gl',
     frag: [
@@ -347,11 +351,12 @@
   /* ────────────────────────────  12 · HYPNOTIC MOIRÉ  ──────────────────── */
   D({
     id: 'hypnotic-moire',
-    rank: 12,
+    preview: 'assets/previews/hypnotic-moire.webp',
+    rank: 22,
     name: 'Hypnotic Moiré',
     tag: 'op-art interference · do not stare too long',
     blurb: 'Two patterns, almost the same frequency, fighting. The pattern you see is not on the screen — it is made in your head.',
-    captivation: 88,
+    captivation: 75,
     art: 'repeating-conic-gradient(from 0deg at 50% 50%, #ffffff 0deg 6deg, #050510 6deg 12deg)',
     kind: 'gl',
     frag: [
@@ -404,11 +409,12 @@
   /* ───────────────────────────  13 · INFINITE FRONTIER  ────────────────── */
   D({
     id: 'infinite-frontier',
-    rank: 13,
+    preview: 'assets/previews/infinite-frontier.webp',
+    rank: 23,
     name: 'Infinite Frontier',
     tag: 'procedural range · still water',
     blurb: 'A range of mountains that has never been drawn before and will never be drawn again. You are the first and last to see it.',
-    captivation: 87,
+    captivation: 74,
     art: 'linear-gradient(180deg, #1a2a55 0%, #4a6ba8 22%, #9fc0d8 44%, #d9b48a 56%, #2d3a4a 74%, #0a0d16 100%)',
     kind: 'gl',
     frag: [

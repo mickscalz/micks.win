@@ -1,0 +1,12 @@
+{
+  "name": "micks-win",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/catalogue.test.cjs",
+    "test:browser": "node tests/browser.mjs",
+    "previews": "node tests/render-previews.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.64.1"
+  }
+}

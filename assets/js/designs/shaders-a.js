@@ -15,6 +15,7 @@
   /* ─────────────────────────────  01 · SINGULAR BLOOM  ─────────────────── */
   D({
     id: 'singular-bloom',
+    preview: 'assets/previews/singular-bloom.webp',
     rank: 1,
     name: 'Singular Bloom',
     tag: 'volumetric nebula · gravitational lens',
@@ -198,11 +199,12 @@
 
   D({
     id: 'chroma-flux',
-    rank: 2,
+    preview: 'assets/previews/chroma-flux.webp',
+    rank: 3,
     name: 'Chroma Flux',
     tag: 'navier–stokes · live gpu fluid',
     blurb: 'Not a recording — a real fluid solved on your GPU, sixty times a second. Push the cursor through it and it remembers you.',
-    captivation: 98,
+    captivation: 97,
     art: 'radial-gradient(90% 70% at 20% 25%, #12f7c8 0%, #2b7bff 30%, #7a2bff 55%, #ff2b8f 78%, #0b0418 100%)',
     kind: 'glx',
     simRes: 168,
@@ -314,11 +316,12 @@
   /* ───────────────────────────────  03 · HYPERSPACE  ───────────────────── */
   D({
     id: 'hyperspace',
-    rank: 3,
+    preview: 'assets/previews/hyperspace.webp',
+    rank: 7,
     name: 'Hyperspace',
     tag: 'warp tunnel · chromatic aberration',
     blurb: 'Somewhere past the speed of light the stars stop being points and start being memory. Hold on — the tunnel breathes.',
-    captivation: 97,
+    captivation: 92,
     art: 'radial-gradient(70% 70% at 50% 50%, #eaffff 0%, #6fd6ff 12%, #3a4bff 34%, #150a3a 66%, #03030a 100%)',
     kind: 'gl',
     frag: [
@@ -381,11 +384,12 @@
   /* ──────────────────────────────  04 · EVENT HORIZON  ─────────────────── */
   D({
     id: 'event-horizon',
-    rank: 4,
+    preview: 'assets/previews/event-horizon.webp',
+    rank: 5,
     name: 'Event Horizon',
     tag: 'schwarzschild geodesics · accretion disk',
     blurb: 'A real integration of light around a black hole. The disk you see behind the star is the same disk you see in front — bent around the dark.',
-    captivation: 96,
+    captivation: 94,
     art: 'radial-gradient(60% 60% at 50% 46%, #000 0%, #000 26%, #ffb04a 30%, #ff5b2e 36%, #7a2bff 60%, #08040f 100%)',
     kind: 'gl',
     frag: [
@@ -477,11 +481,12 @@
   /* ────────────────────────────  05 · AURORA CATHEDRAL  ────────────────── */
   D({
     id: 'aurora-cathedral',
-    rank: 5,
+    preview: 'assets/previews/aurora-cathedral.webp',
+    rank: 9,
     name: 'Aurora Cathedral',
     tag: 'volumetric curtains · ice water',
     blurb: 'Stand on frozen water under a sky that is quietly on fire. The light falls in columns, and the ice answers back.',
-    captivation: 95,
+    captivation: 90,
     art: 'linear-gradient(180deg, #03050c 0%, #062a33 26%, #0fa07a 52%, #7cf2c8 68%, #123b4a 84%, #04070d 100%)',
     kind: 'gl',
     frag: [
@@ -677,11 +682,12 @@
 
   D({
     id: 'silk-currents',
-    rank: 6,
+    preview: 'assets/previews/silk-currents.webp',
+    rank: 11,
     name: 'Silk Currents',
     tag: '65k gpu particles · curl noise · feedback',
     blurb: 'Sixty-five thousand threads of light let go inside an invisible river. Each one dies and is born again before you can follow it.',
-    captivation: 94,
+    captivation: 87,
     art: 'radial-gradient(80% 80% at 45% 40%, #b7f7ff 0%, #4d9dff 26%, #7b3cff 52%, #1a0a3c 76%, #05040c 100%)',
     kind: 'glx',
     init: function (R) {

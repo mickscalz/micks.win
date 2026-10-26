@@ -4,10 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>micks.win — A Cabinet of Infinite Rooms</title>
-<meta name="description" content="micks.win — twenty-four living, breathing worlds rendered in real time. An endless gallery of light." />
+<meta name="description" content="micks.win — forty-six living, breathing worlds rendered in real time. An endless gallery of light." />
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
-<meta property="og:description" content="Twenty-four living worlds rendered in real time." />
+<meta property="og:description" content="Forty-six living worlds rendered in real time." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" />
@@ -46,7 +46,7 @@
 
   <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
   <section class="card" id="card" aria-live="polite">
-    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 24</em></div>
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 46</em></div>
     <h1 class="card__name" id="cardName"></h1>
     <p class="card__tag" id="cardTag"></p>
     <p class="card__blurb" id="cardBlurb"></p>
@@ -79,19 +79,28 @@
   </div>
 
   <div class="hint" id="hint">
-    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; move the cursor to touch the world
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>46</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
   </div>
 
   <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
-  <div class="gal" id="gal" aria-hidden="true">
+  <div class="gal" id="gal" role="dialog" aria-modal="true" aria-labelledby="galTitle" aria-hidden="true" inert>
     <div class="gal__head">
       <div>
-        <h2>The Cabinet</h2>
-        <p>Twenty-four rooms, ranked by how hard they hold the eye.</p>
+        <h2 id="galTitle">The Cabinet</h2>
+        <p><b id="galCount">46</b> rooms, ranked by how hard they hold the eye. Five wings of mathematics.</p>
       </div>
-      <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
-        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
+      <div class="gal__tools">
+        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="46" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
+        <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="gal__filters" id="galFilters" role="group" aria-label="Filter worlds by technique">
+      <button type="button" class="chip is-on" data-filter="all">all <i></i></button>
+      <button type="button" class="chip" data-filter="gl">shaders <i></i></button>
+      <button type="button" class="chip" data-filter="glx">simulations <i></i></button>
+      <button type="button" class="chip" data-filter="2d">drawn <i></i></button>
     </div>
     <div class="gal__grid" id="galGrid"></div>
   </div>
@@ -101,7 +110,7 @@
     <div class="curtain__inner">
       <div class="curtain__orb"></div>
       <div class="curtain__title">micks<span>.</span>win</div>
-      <div class="curtain__sub">twenty-four worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
+      <div class="curtain__sub">forty-six worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
       <button class="curtain__enter" id="enter">enter</button>
       <div class="curtain__note">headphones optional · a fast GPU recommended</div>
     </div>
@@ -117,6 +126,10 @@
 <script src="assets/js/designs/shaders-b.js"></script>
 <script src="assets/js/designs/shaders-c.js"></script>
 <script src="assets/js/designs/canvas.js"></script>
+<script src="assets/js/designs/shaders-d.js"></script>
+<script src="assets/js/designs/shaders-e.js"></script>
+<script src="assets/js/designs/sims.js"></script>
+<script src="assets/js/designs/canvas-b.js"></script>
 <script src="assets/js/engine.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
