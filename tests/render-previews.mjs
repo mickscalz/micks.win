@@ -13,7 +13,7 @@ try {
  await page.route('**/fonts.gstatic.com/**',r=>r.fulfill({body:''}));
  await page.addInitScript(()=>{window.requestAnimationFrame=()=>1;});
  await page.goto(process.env.SITE_URL||'http://localhost:3000');
- await page.locator('#enter').click();
+ await page.waitForFunction(()=>window.Cabinet && Cabinet.playing);
  await page.evaluate(()=>{
    const cv=document.createElement('canvas');cv.width=384;cv.height=240;
    const c2=document.createElement('canvas');c2.width=960;c2.height=600;
