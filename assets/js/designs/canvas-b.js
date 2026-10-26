@@ -39,6 +39,7 @@
   /* ──────────────────────────  39 · HARMONOGRAPH  ──────────────────────── */
   D({
     id: 'harmonograph',
+    edition: 2,
     preview: 'assets/previews/harmonograph.webp',
     rank: 37,
     name: 'Harmonograph',
@@ -106,6 +107,7 @@
   /* ────────────────────────  40 · FOURIER EPICYCLES  ───────────────────── */
   D({
     id: 'fourier-epicycles',
+    edition: 2,
     preview: 'assets/previews/fourier-epicycles.webp',
     rank: 40,
     name: 'Fourier Epicycles',
@@ -214,6 +216,7 @@
   /* ──────────────────────────  41 · MÖBIUS BLOOM  ──────────────────────── */
   D({
     id: 'mobius-bloom',
+    edition: 2,
     preview: 'assets/previews/mobius-bloom.webp',
     rank: 41,
     name: 'Möbius Bloom',
@@ -288,6 +291,7 @@
   /* ─────────────────────────  42 · FRACTAL CANOPY  ─────────────────────── */
   D({
     id: 'fractal-canopy',
+    edition: 2,
     preview: 'assets/previews/fractal-canopy.webp',
     rank: 42,
     name: 'Fractal Canopy',
@@ -351,6 +355,7 @@
   /* ──────────────────────────  43 · TRUCHET LOOPS  ─────────────────────── */
   D({
     id: 'truchet-loops',
+    edition: 2,
     preview: 'assets/previews/truchet-loops.webp',
     rank: 43,
     name: 'Truchet Loops',
@@ -426,6 +431,7 @@
   /* ────────────────────────────  44 · SANDFALL  ────────────────────────── */
   D({
     id: 'sandfall',
+    edition: 2,
     preview: 'assets/previews/sandfall.webp',
     rank: 44,
     name: 'Sandfall',
@@ -504,6 +510,7 @@
   /* ───────────────────────────  45 · RIPPLE TANK  ──────────────────────── */
   D({
     id: 'ripple-tank',
+    edition: 2,
     preview: 'assets/previews/ripple-tank.webp',
     rank: 45,
     name: 'Ripple Tank',
@@ -597,6 +604,7 @@
   /* ───────────────────────────  46 · SPIROGRAPH  ───────────────────────── */
   D({
     id: 'spirograph',
+    edition: 2,
     preview: 'assets/previews/spirograph.webp',
     rank: 46,
     name: 'Spirograph',

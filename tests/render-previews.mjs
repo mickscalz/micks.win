@@ -35,7 +35,7 @@ try {
        R.blit(p,null,{uRes:[384,240],uTime:8,uFade:1,uMouse:[0,0],uDt:1/60,uEnergy:.5,uRand:.37});
      }else{
        d.init(is2d?S:R);
-       let frames=is2d?1:200;
+       let frames=is2d?(d.previewFrames||1):200;
        if(id==='living-coral')frames=220;
        if(id==='digital-rain')frames=90;
        if(id==='harmonograph'||id==='fourier-epicycles'||id==='spirograph')frames=180;
@@ -47,9 +47,10 @@ try {
      }
      const thumb=document.createElement('canvas');thumb.width=480;thumb.height=300;
      thumb.getContext('2d').drawImage(is2d?c2:cv,0,0,480,300);
-     return thumb.toDataURL('image/webp',.77).split(',')[1];
+     return {webp:thumb.toDataURL('image/webp',.77).split(',')[1], png:thumb.toDataURL('image/png').split(',')[1]};
    },id);
-   fs.writeFileSync(path.join(root,'assets/previews',id+'.webp'),Buffer.from(image,'base64'));
+   fs.writeFileSync(path.join(root,'assets/previews',id+'.webp'),Buffer.from(image.webp,'base64'));
+   if(process.env.PREVIEW_DEBUG_DIR){fs.mkdirSync(process.env.PREVIEW_DEBUG_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.PREVIEW_DEBUG_DIR,id+'.png'),Buffer.from(image.png,'base64'));}
    console.log('Rendered '+id);
  }
 } finally {await browser.close();}

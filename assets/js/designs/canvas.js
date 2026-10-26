@@ -25,6 +25,7 @@
   /* ────────────────────────────  09 · STRANGE ATTRACTOR  ───────────────── */
   D({
     id: 'strange-attractor',
+    edition: 1,
     preview: 'assets/previews/strange-attractor.webp',
     rank: 17,
     name: 'Strange Attractor',
@@ -135,6 +136,7 @@
   /* ──────────────────────────────  14 · ELECTRIC STORM  ────────────────── */
   D({
     id: 'electric-storm',
+    edition: 1,
     preview: 'assets/previews/electric-storm.webp',
     rank: 24,
     name: 'Electric Storm',
@@ -323,6 +325,7 @@
   /* ───────────────────────────────  16 · COSMIC WEB  ───────────────────── */
   D({
     id: 'cosmic-web',
+    edition: 1,
     preview: 'assets/previews/cosmic-web.webp',
     rank: 27,
     name: 'Cosmic Web',
@@ -448,6 +451,7 @@
   /* ────────────────────────────────  19 · INK BLOOM  ───────────────────── */
   D({
     id: 'ink-bloom',
+    edition: 1,
     preview: 'assets/previews/ink-bloom.webp',
     rank: 32,
     name: 'Ink Bloom',
@@ -533,6 +537,7 @@
   /* ──────────────────────────────  21 · FIREFLY DEEP  ──────────────────── */
   D({
     id: 'firefly-deep',
+    edition: 1,
     preview: 'assets/previews/firefly-deep.webp',
     rank: 35,
     name: 'Firefly Deep',
@@ -625,6 +630,7 @@
   /* ───────────────────────────────  22 · DIGITAL RAIN  ─────────────────── */
   D({
     id: 'digital-rain',
+    edition: 1,
     preview: 'assets/previews/digital-rain.webp',
     rank: 36,
     name: 'Digital Rain',
@@ -723,6 +729,7 @@
   /* ──────────────────────────────  23 · PARTICLE MORPH  ────────────────── */
   D({
     id: 'particle-morph',
+    edition: 1,
     preview: 'assets/previews/particle-morph.webp',
     rank: 38,
     name: 'Particle Morph',
@@ -878,6 +885,7 @@
   /* ────────────────────────────────  24 · SILK DRAPE  ──────────────────── */
   D({
     id: 'silk-drape',
+    edition: 1,
     preview: 'assets/previews/silk-drape.webp',
     rank: 39,
     name: 'Silk Drape',

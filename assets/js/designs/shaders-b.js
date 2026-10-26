@@ -15,6 +15,7 @@
   /* ──────────────────────────────  07 · LIQUID CHROME  ─────────────────── */
   D({
     id: 'liquid-chrome',
+    edition: 1,
     preview: 'assets/previews/liquid-chrome.webp',
     rank: 13,
     name: 'Liquid Chrome',
@@ -107,6 +108,7 @@
   /* ────────────────────────────  08 · MANDELBULB INFINITE  ─────────────── */
   D({
     id: 'mandelbulb',
+    edition: 1,
     preview: 'assets/previews/mandelbulb.webp',
     rank: 15,
     name: 'Mandelbulb Infinite',
@@ -201,6 +203,7 @@
   /* ──────────────────────────────  10 · IRIDESCENCE  ───────────────────── */
   D({
     id: 'iridescence',
+    edition: 1,
     preview: 'assets/previews/iridescence.webp',
     rank: 19,
     name: 'Iridescence',
@@ -280,6 +283,7 @@
   /* ───────────────────────────────  11 · SUPERNOVA  ────────────────────── */
   D({
     id: 'supernova',
+    edition: 1,
     preview: 'assets/previews/supernova.webp',
     rank: 20,
     name: 'Supernova',
@@ -351,6 +355,7 @@
   /* ────────────────────────────  12 · HYPNOTIC MOIRÉ  ──────────────────── */
   D({
     id: 'hypnotic-moire',
+    edition: 1,
     preview: 'assets/previews/hypnotic-moire.webp',
     rank: 22,
     name: 'Hypnotic Moiré',
@@ -409,6 +414,7 @@
   /* ───────────────────────────  13 · INFINITE FRONTIER  ────────────────── */
   D({
     id: 'infinite-frontier',
+    edition: 1,
     preview: 'assets/previews/infinite-frontier.webp',
     rank: 23,
     name: 'Infinite Frontier',

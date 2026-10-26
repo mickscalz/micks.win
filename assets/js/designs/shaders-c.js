@@ -13,6 +13,7 @@
   /* ──────────────────────────────  15 · QUANTUM FOAM  ──────────────────── */
   D({
     id: 'quantum-foam',
+    edition: 1,
     preview: 'assets/previews/quantum-foam.webp',
     rank: 26,
     name: 'Quantum Foam',
@@ -77,6 +78,7 @@
   /* ────────────────────────────  17 · STAINED COSMOS  ──────────────────── */
   D({
     id: 'stained-cosmos',
+    edition: 1,
     preview: 'assets/previews/stained-cosmos.webp',
     rank: 29,
     name: 'Stained Cosmos',
@@ -141,6 +143,7 @@
   /* ──────────────────────────────  18 · NEON HORIZON  ──────────────────── */
   D({
     id: 'neon-horizon',
+    edition: 1,
     preview: 'assets/previews/neon-horizon.webp',
     rank: 30,
     name: 'Neon Horizon',
@@ -220,6 +223,7 @@
   /* ──────────────────────────────  20 · SILKEN PLASMA  ─────────────────── */
   D({
     id: 'silken-plasma',
+    edition: 1,
     preview: 'assets/previews/silken-plasma.webp',
     rank: 33,
     name: 'Silken Plasma',

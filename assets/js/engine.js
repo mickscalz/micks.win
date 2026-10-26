@@ -1,12 +1,13 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, forty-six
+   One shared WebGL2 context, one 2D context, one crossfade layer, sixty-six
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
   'use strict';
 
-  var DESIGNS = (w.DESIGNS || []).slice().sort(function (a, b) { return a.rank - b.rank; });
+  var DESIGNS = w.CabinetCatalogue.order(w.DESIGNS || []);
+  var latestEdition = DESIGNS.length ? DESIGNS[0].edition : 1;
 
   var E = {
     designs: DESIGNS,
@@ -68,7 +69,7 @@
     cssW = w.innerWidth; cssH = w.innerHeight;
     E.dpr = Math.min(w.devicePixelRatio || 1, 2);
 
-    var budget = 1900000;                                  // pixel budget per frame
+    var budget = (E.designs[E.index] && E.designs[E.index].pixelBudget) || 1900000;                                  // pixel budget per frame
     var wantW = Math.round(cssW * E.dpr * E.scale);
     var wantH = Math.round(cssH * E.dpr * E.scale);
     var px = wantW * wantH;
@@ -142,6 +143,8 @@
       design = E.designs[E.index];
     }
 
+    resize();
+
     E.t = 0;
     E.fade = 0;
     sinceSwitch = 0;
@@ -157,6 +160,9 @@
     setTimeout(function () { stage.classList.remove('flash'); }, 220);
 
     // card
+    d.body.setAttribute('data-world-theme', design.theme || 'dark');
+    var collection = $('#cardCollection');
+    if (collection) collection.textContent = 'collection ' + pad(design.edition || 1) + ' · ' + (design.edition === latestEdition ? 'latest · ' : '') + 'rank ' + pad(design.collectionRank);
     elRank.firstChild ? (elRank.firstChild.nodeValue = pad(design.rank)) : (elRank.textContent = pad(design.rank));
     if (elTotal) elTotal.textContent = '/ ' + pad(E.designs.length);
     elName.textContent = design.name;
@@ -230,12 +236,14 @@
       b.className = 'tile';
       b.type = 'button';
       b.setAttribute('data-family', ds.kind || 'gl');
+      b.setAttribute('data-edition', ds.edition || 1);
       // URLs inside custom properties resolve against the CSS file, not the
       // document. Make the preview URL absolute so project Pages works too.
       b.style.setProperty('--art', ds.preview ? 'url("' + new w.URL(ds.preview, d.baseURI).href + '")' : (ds.art || 'linear-gradient(135deg,#222,#000)'));
       b.style.setProperty('--glow', 'rgba(143,227,255,.45)');
       b.innerHTML =
         '<span class="tile__art"></span>' +
+        '<span class="tile__edition">collection ' + pad(ds.edition || 1) + (ds.edition === latestEdition ? ' · new' : '') + '</span>' +
         '<span class="tile__heat">' + (ds.captivation || 0) + '</span>' +
         '<span class="tile__body">' +
         '<span class="tile__no">' + pad(ds.rank) + ' / ' + pad(E.designs.length) + '</span>' +
@@ -258,7 +266,7 @@
       for (var c = 0; c < chips.length; c++) {
         var f = chips[c].getAttribute('data-filter');
         chips[c].setAttribute('aria-pressed', f === 'all' ? 'true' : 'false');
-        var n = f === 'all' ? E.designs.length : E.designs.filter(function (x) { return (x.kind || 'gl') === f; }).length;
+        var n = f === 'all' ? E.designs.length : E.designs.filter(function (x) { return f === 'latest' ? x.edition === latestEdition : (x.kind || 'gl') === f; }).length;
         var badge = chips[c].querySelector('i');
         if (badge) badge.textContent = n;
       }
@@ -275,7 +283,7 @@
     }
     var tiles = galGrid.children;
     for (var i = 0; i < tiles.length; i++) {
-      tiles[i].hidden = !(f === 'all' || tiles[i].getAttribute('data-family') === f);
+      tiles[i].hidden = !(f === 'all' || (f === 'latest' ? Number(tiles[i].getAttribute('data-edition')) === latestEdition : tiles[i].getAttribute('data-family') === f));
     }
   }
 

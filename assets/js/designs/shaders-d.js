@@ -12,6 +12,7 @@
   /* ───────────────────────  25 · MENGER CATHEDRAL  ─────────────────────── */
   D({
     id: 'menger-cathedral',
+    edition: 2,
     preview: 'assets/previews/menger-cathedral.webp',
     rank: 4,
     name: 'Menger Cathedral',
@@ -106,6 +107,7 @@
   /* ─────────────────────────  26 · CAUSTIC ABYSS  ──────────────────────── */
   D({
     id: 'caustic-abyss',
+    edition: 2,
     preview: 'assets/previews/caustic-abyss.webp',
     rank: 6,
     name: 'Caustic Abyss',
@@ -177,6 +179,7 @@
   /* ─────────────────────────  27 · PHYLLOTAXIS  ────────────────────────── */
   D({
     id: 'phyllotaxis',
+    edition: 2,
     preview: 'assets/previews/phyllotaxis.webp',
     rank: 16,
     name: 'Phyllotaxis',
@@ -254,6 +257,7 @@
   /* ────────────────────────  28 · CHLADNI RESONANCE  ───────────────────── */
   D({
     id: 'chladni-resonance',
+    edition: 2,
     preview: 'assets/previews/chladni-resonance.webp',
     rank: 28,
     name: 'Chladni Resonance',
@@ -312,6 +316,7 @@
   /* ─────────────────────────  29 · CRYSTAL PRISON  ─────────────────────── */
   D({
     id: 'crystal-prison',
+    edition: 2,
     preview: 'assets/previews/crystal-prison.webp',
     rank: 10,
     name: 'Crystal Prison',
@@ -403,6 +408,7 @@
   /* ───────────────────────────  30 · FERROFLUID  ───────────────────────── */
   D({
     id: 'ferrofluid',
+    edition: 2,
     preview: 'assets/previews/ferrofluid.webp',
     rank: 21,
     name: 'Ferrofluid',
