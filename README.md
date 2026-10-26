@@ -26,15 +26,21 @@ acceleration). Resolution scales itself to keep the frame rate honest.
 
 ## Live
 
-Published with GitHub Pages from `main` (branch deploy, Jekyll bypassed by
-`.nojekyll`), so a merge to `main` is a deploy:
+Published with GitHub Pages from `main`. The site is configured with
+`build_type: workflow`, so `.github/workflows/pages.yml` assembles `index.html`,
+`404.html`, `assets/` and `.nojekyll` into a Pages artifact and deploys it on
+every merge to `main`. The `.nojekyll` file keeps Jekyll from touching the
+output.
 
 **<https://mickscalz.github.io/micks.win/>**
 
 ### Pointing `micks.win` at it
 
-The apex domain needs DNS, then the domain needs telling to Pages. In your DNS
-provider:
+The domain is registered but its zone (on Cloudflare) currently has **no `A`,
+`AAAA` or `www` web records**, so it does not resolve to anything yet. That
+step needs access to the Cloudflare account — it cannot be done from this repo.
+
+In Cloudflare → DNS → Records, add:
 
 | type | name | value |
 |---|---|---|
@@ -47,6 +53,10 @@ provider:
 | `AAAA` | `@` | `2606:50c0:8002::153` |
 | `AAAA` | `@` | `2606:50c0:8003::153` |
 | `CNAME` | `www` | `mickscalz.github.io` |
+
+Set all of them to **DNS only** (grey cloud), not proxied. Cloudflare proxying
+sits between Pages and the visitor and can stop GitHub from issuing the TLS
+certificate. Turn the proxy back on only after HTTPS is confirmed working.
 
 Then add a `CNAME` file containing just `micks.win` at the repository root and
 push it — the deploy workflow publishes it automatically, so the next merge
