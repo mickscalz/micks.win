@@ -90,6 +90,9 @@ try {
     [],
   );
   await page.locator("#nurseryToggle").click();
+  // Explicit legacy adapters exercise the unchanged version-1 renderer/storage path.
+  await page.locator('#nurseryParent0').selectOption('founder:eden-of-divergence');
+  await page.locator('#nurseryParent1').selectOption('founder:glass-moth-migration');
   await page.locator("[data-nursery-action=breed]").click();
   await wait(
     () =>

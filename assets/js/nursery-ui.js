@@ -10,6 +10,9 @@
     busy = false,
     queue = Promise.resolve(),
     selected = null;
+  let previewR = null,
+    stopped = false;
+  const transient = new Map();
   const $ = (id) => d.getElementById(id),
     status = (s) => ($("nurseryStatus").textContent = s);
   function option(value, text) {
@@ -22,7 +25,7 @@
     return [...founders.values(), ...library.values()];
   }
   function recipe(id) {
-    return library.get(id) || founders.get(id);
+    return library.get(id) || founders.get(id) || transient.get(id);
   }
   function run(job) {
     queue = queue.then(async () => {
@@ -54,13 +57,26 @@
         s.append(
           option(
             p.id,
-            (founders.has(p.id) ? "Authored adapter · " : "Offspring · ") +
+            (founders.has(p.id) ? p.solver + " adapter · " : "Offspring · ") +
               p.name,
           ),
         );
       if (all().some((p) => p.id === previous[i])) s.value = previous[i];
       else if (i < 2) s.selectedIndex = i;
     }
+    const pool = $("nurseryPool"),
+      prior = new Set([...pool.selectedOptions].map((o) => o.value));
+    pool.replaceChildren();
+    for (const p of all()) {
+      const o = option(p.id, p.name + " · " + p.solver);
+      o.selected = prior.has(p.id);
+      pool.append(o);
+    }
+    const taste = $("nurseryTaste"),
+      oldTaste = taste.value;
+    taste.replaceChildren(option("", "No preference · diversity only"));
+    for (const p of library.values()) taste.append(option(p.id, p.name));
+    taste.value = oldTaste;
     const list = $("nurseryLibrary");
     list.replaceChildren();
     for (const p of library.values()) {
@@ -200,13 +216,14 @@
       }
     }
     for (const p of library.values()) include(p);
-    if (items.size > 132) throw Error("Export exceeds 132 versioned records");
+    if (items.size > 512) throw Error("Export exceeds 512 versioned records");
     const blob = new Blob(
         [JSON.stringify({ version: 1, recipes: [...items.values()] })],
         { type: "application/json" },
       ),
-      url = URL.createObjectURL(blob),
+      url = blob.size <= 2097152 ? URL.createObjectURL(blob) : null,
       a = d.createElement("a");
+    if (!url) throw Error("Export exceeds 2 MiB; export a smaller library");
     a.href = url;
     a.download = "cabinet-nursery.json";
     a.click();
@@ -246,7 +263,9 @@
     info.textContent =
       "Seed " +
       p.seed +
-      " · eco-v1 · recipe restarts, not simulation checkpoints. Tree display: 12 levels / 200 nodes maximum; exports retain stored recipes. " +
+      " · " +
+      p.solver +
+      " · recipe restarts, not simulation checkpoints. Tree display: 12 levels / 200 nodes maximum; exports retain stored recipes. " +
       p.provenance
         .map(
           (g) =>
@@ -266,25 +285,48 @@
     cv.width = 240;
     cv.height = 150;
     const model = N.renderer(recipe);
-    model.init();
     const e = w.CabinetVIII.ecology.tune({});
-    for (let i = 0; i < 50; i++) model.advance({ dt: 0.05, experience: e });
-    model.frame({
-      ctx: cv.getContext("2d"),
-      w: 240,
-      h: 150,
-      dt: 0,
-      experience: e,
-    });
+    let output = cv;
+    if (model.kind === "glx") {
+      if (!previewR) {
+        const gpu = d.createElement("canvas");
+        gpu.width = 240;
+        gpu.height = 150;
+        previewR = w.GLR.create(gpu);
+      }
+      if (!previewR) throw Error("WebGL2 unavailable for habitat previews");
+      try {
+        model.init(previewR);
+        for (let i = 0; i < 50; i++) model.advance({ dt: 0.05, experience: e });
+        model.frame(previewR, { dt: 0, fade: 1, experience: e });
+        previewR.gl.finish();
+        output = previewR.canvas;
+      } finally {
+        model.dispose(previewR);
+      }
+    } else {
+      model.init();
+      for (let i = 0; i < 50; i++) model.advance({ dt: 0.05, experience: e });
+      model.frame({
+        ctx: cv.getContext("2d"),
+        w: 240,
+        h: 150,
+        dt: 0,
+        experience: e,
+      });
+    }
     const image = d.createElement("img");
     image.className = "nursery-thumbnail";
     image.width = 240;
     image.height = 150;
-    image.alt = "Actual eco-v1 recipe at 2.5 simulated seconds, default tuning";
-    image.src = cv.toDataURL("image/webp", 0.77);
+    image.alt =
+      "Actual " +
+      recipe.solver +
+      " recipe at 2.5 simulated seconds, default tuning";
+    image.src = output.toDataURL("image/webp", 0.77);
     return image;
   }
-  function auditions() {
+  async function auditions() {
     const box = $("nurseryCandidates");
     box.replaceChildren();
     for (let i = 0; i < candidates.length; i++) {
@@ -310,6 +352,7 @@
         row.append(b);
       }
       box.append(row);
+      await new Promise((r) => setTimeout(r, 0));
     }
   }
   function play(p) {
@@ -323,12 +366,7 @@
   }
   async function action(action, button) {
     if (action === "breed") {
-      const parents = [0, 1, 2, 3]
-        .map((i) => recipe($("nurseryParent" + i).value))
-        .filter(Boolean);
-      const weights = [0, 1, 2, 3]
-        .filter((i) => $("nurseryParent" + i).value)
-        .map((i) => Number($("nurseryWeight" + i).value));
+      const { parents, weights } = parentSelection();
       const seed = new Uint32Array(1);
       crypto.getRandomValues(seed);
       candidates = [
@@ -338,20 +376,82 @@
           weights,
         }),
       ];
+      transient.clear();
       candidates[0].name = $("nurseryMood").value + " seedling";
       candidates.push(N.twin(candidates[0], (seed[0] ^ 0x7139abcd) >>> 0 || 1));
-      auditions();
+      await auditions();
       status(
         "Two twins: same inherited genome, different habitat seeds. Audition before saving.",
       );
+    } else if (action === "evolve") {
+      const selection = parentSelection();
+      stopped = false;
+      $("nurseryStop").disabled = false;
+      try {
+        const seed = new Uint32Array(1);
+        crypto.getRandomValues(seed);
+        const result = await w.NurseryEvolution.run({
+          ...selection,
+          seed: seed[0] || 1,
+          mood: $("nurseryMood").value,
+          generations: Number($("nurseryGenerations").value),
+          candidates: Number($("nurseryBudget").value),
+          seconds: Number($("nurserySeconds").value),
+          archive: Number($("nurseryArchive").value),
+          taste: recipe($("nurseryTaste").value),
+          cancelled: () => stopped,
+          progress: (p) =>
+            status(
+              "Local search · " +
+                p.count +
+                " candidates · generation " +
+                p.generation +
+                " · " +
+                p.retained +
+                " diverse survivors. Stop is immediate between candidates.",
+            ),
+        });
+        $("nurseryStop").disabled = true;
+        transient.clear();
+        result.ancestry.forEach((p) => transient.set(p.id, p));
+        candidates = result.recipes;
+        await auditions();
+        status(
+          result.reason +
+            " · " +
+            result.count +
+            " evaluated genomes, " +
+            candidates.length +
+            " retained. Scores use genome diversity / moderate developmental traits / optional taste distance, not rendered beauty. Saving also keeps available unsaved ancestors (100-record limit).",
+        );
+      } finally {
+        $("nurseryStop").disabled = true;
+      }
     } else if (action === "audition")
       play(candidates[Number(button.dataset.candidate)]);
     else if (action === "traits")
       ancestry(candidates[Number(button.dataset.candidate)]);
     else if (action === "save") {
       const p = N.validate(candidates[Number(button.dataset.candidate)]),
-        next = merge([p]);
-      if (remember) await transaction([p]);
+        items = new Map([[p.id, p]]);
+      function collect(child) {
+        for (const id of child.parents) {
+          const ancestor = recipe(id);
+          if (
+            ancestor &&
+            !founders.has(id) &&
+            !library.has(id) &&
+            !items.has(id)
+          ) {
+            items.set(id, N.validate(ancestor));
+            collect(ancestor);
+          }
+        }
+      }
+      collect(p);
+      const batch = [...items.values()],
+        next = merge(batch);
+      if (remember) await transaction(batch);
       library.clear();
       next.forEach((p, k) => library.set(k, p));
       render();
@@ -381,6 +481,7 @@
       const next = [...library.values()].filter((p) => p.id !== id);
       if (remember) await transaction(next, true);
       library.delete(id);
+      transient.delete(id);
       render();
       if (selected?.id === id) $("nurseryAncestry").replaceChildren();
       status(
@@ -399,7 +500,8 @@
       selected = null;
       library.clear();
       candidates = [];
-      auditions();
+      transient.clear();
+      await auditions();
       $("nurseryAncestry").replaceChildren();
       render();
       status("Nursery cleared. Authored worlds unchanged.");
@@ -408,7 +510,40 @@
       status("Returned to the authored catalogue.");
     }
   }
+  function parentSelection() {
+    if ($("nurseryPoolMode").checked) {
+      const selected = [...$("nurseryPool").selectedOptions],
+        raw = $("nurseryPoolWeights").value.trim(),
+        weights = raw ? raw.split(",").map(Number) : selected.map(() => 1);
+      if (selected.length < 2 || selected.length > 32)
+        throw Error("Select 2–32 different pool parents");
+      if (
+        weights.length !== selected.length ||
+        weights.some((x) => !Number.isFinite(x) || x < 0 || x > 1)
+      )
+        throw Error(
+          "Give one weight (0–1) per selected pool parent, in displayed order",
+        );
+      return { parents: selected.map((o) => recipe(o.value)), weights };
+    }
+    const indices = [0, 1, 2, 3].filter((i) => $("nurseryParent" + i).value);
+    return {
+      parents: indices.map((i) => recipe($("nurseryParent" + i).value)),
+      weights: indices.map((i) => Number($("nurseryWeight" + i).value)),
+    };
+  }
   function mount() {
+    for (const world of w.Cabinet.designs) {
+      const f = N.founderAny(world);
+      founders.set(f.id, f);
+    }
+    $("nurseryStop").onclick = () => {
+      stopped = true;
+      status("Stopping search; keeping completed candidates.");
+    };
+    d.addEventListener("visibilitychange", () => {
+      if (d.hidden) stopped = true;
+    });
     for (const world of w.Cabinet.designs)
       try {
         const f = N.founder(world);
@@ -462,7 +597,7 @@
       e.target.value = "";
       if (!file) return;
       run(async () => {
-        if (file.size > 524288) throw Error("Import limit: 512 KiB");
+        if (file.size > 2097152) throw Error("Import limit: 2 MiB");
         const items = N.importRecipes(await file.text()),
           next = merge(items);
         if (remember) await transaction([...next.values()]);
@@ -475,6 +610,7 @@
       });
     };
     w.addEventListener("pagehide", () => {
+      stopped = true;
       if (db) db.close();
     });
   }

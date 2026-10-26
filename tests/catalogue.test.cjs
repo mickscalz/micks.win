@@ -113,7 +113,7 @@ test('conductor uniforms cannot collide with existing shader and GPU helper decl
 
 test('release assets are cache-versioned together',()=>{
  const urls=[...html.matchAll(/(?:src|href)="(assets\/[^"]+\.(?:js|css)\?[^"]+)"/g)].map(m=>m[1]);
- assert.equal(urls.length,scripts.length+1);assert.ok(urls.every(url=>url.endsWith('?v=9')));
+ assert.equal(urls.length,scripts.length+1);assert.ok(urls.every(url=>url.endsWith('?v=10')));
 });
 
 

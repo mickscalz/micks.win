@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
 <meta property="og:description" content="256 living worlds rendered in real time." />
-<link rel="stylesheet" href="assets/css/style.css?v=9" />
+<link rel="stylesheet" href="assets/css/style.css?v=10" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -149,9 +149,26 @@
     <p class="tune-help">Liked worlds</p><div id="likedWorlds" class="world-list">No liked worlds</div>
     <details id="nurseryPanel" class="lab-panel">
       <summary>Lineage nursery · breed and keep offspring</summary>
-      <p class="tune-help">Choose 2–4 different compatible parents. Only Collection VIII nutrient-agent worlds are eligible; shaders, chemistry and nonlinear attractors remain separate solver families. Authored parents are explicit <b>eco-v1 adapters</b>: seeded geometry, material and behavioural recipes inspired by Collection VIII, not exact copies of their original renderers. Children recombine numeric traits and whole geometry/force modules, not pixels or shader strings.</p>
+      <p class="tune-help">All 320 authored worlds now contribute labelled <b>habitat-v2 module adapters</b> (not exact clones of their shaders/solvers). Choose 2–32 parents: geometry, topology, material and rhythm modules inherit whole, while bounded numeric traits mix. A finite nutrient colony deforms the GPU habitat and follows its structural flow—not a pixel overlay. Legacy eco-v1 recipes remain compatible and keep their original renderer.</p>
       <div class="nursery-parents">
 <label>Parent 1<select id="nurseryParent0" aria-label="Parent 1"></select></label><label>Weight 1<input id="nurseryWeight0" aria-label="Parent 1 weight" type="number" min="0" max="1" step="0.1" value="1" /></label><label>Parent 2<select id="nurseryParent1" aria-label="Parent 2"></select></label><label>Weight 2<input id="nurseryWeight1" aria-label="Parent 2 weight" type="number" min="0" max="1" step="0.1" value="1" /></label><label>Parent 3 (optional)<select id="nurseryParent2" aria-label="Parent 3"></select></label><label>Weight 3<input id="nurseryWeight2" aria-label="Parent 3 weight" type="number" min="0" max="1" step="0.1" value="1" /></label><label>Parent 4 (optional)<select id="nurseryParent3" aria-label="Parent 4"></select></label><label>Weight 4<input id="nurseryWeight3" aria-label="Parent 4 weight" type="number" min="0" max="1" step="0.1" value="1" /></label></div>
+      <details><summary>Advanced parent pool · up to 32 contributors</summary>
+        <label class="remember"><input type="checkbox" id="nurseryPoolMode" /> Use this pool instead of the four quick slots</label>
+        <label>Choose 2–32 (Ctrl / Cmd-click on desktop; system multi-select on touch)<select id="nurseryPool" multiple size="8" aria-label="Advanced parent pool"></select></label>
+        <label>Optional comma-separated weights (0–1), in displayed parent order<input id="nurseryPoolWeights" type="text" placeholder="Blank = equal weights" maxlength="300" /></label>
+        <p class="tune-help">Weights normalize automatically. Whole modules have one donor; a 32-parent recipe does not guarantee every parent donates a categorical module. Numeric trait provenance shows all weights.</p>
+      </details>
+      <details><summary>Bounded automatic nursery · opt-in per run</summary>
+        <div class="nursery-parents">
+          <label>Generations (1–20)<input id="nurseryGenerations" type="number" min="1" max="20" value="6" /></label>
+          <label>Candidate budget (1–96)<input id="nurseryBudget" type="number" min="1" max="96" value="48" /></label>
+          <label>Time budget (seconds, 1–60)<input id="nurserySeconds" type="number" min="1" max="60" value="15" /></label>
+          <label>Retain (1–24)<input id="nurseryArchive" type="number" min="1" max="24" value="12" /></label>
+        </div>
+        <label>Taste reference (optional saved offspring)<select id="nurseryTaste"></select></label>
+        <p class="tune-help">Search uses 55% genome diversity, 30% moderate developmental-trait proxy and 15% similarity to your taste reference (neutral if absent). These are transparent heuristics—not learned beauty or image-quality scores. No audio, ratings or taste history is stored. Yields after each candidate; stops when hidden. Time budget covers genome search, not final thumbnail rendering. Nothing auto-saves; saving a survivor includes its available unsaved ancestry within the 100-record library cap.</p>
+        <div class="audio-actions"><button data-nursery-action="evolve">run bounded search</button><button id="nurseryStop" type="button" disabled>stop search</button></div>
+      </details>
       <label>Temperament<select id="nurseryMood"><option value="balanced">Balanced · family resemblance</option><option value="calm">Calm · slower development and drift</option><option value="wild">Wild · wider bounded variation</option></select></label>
       <div class="audio-actions"><button data-nursery-action="breed">breed twins</button><button data-nursery-action="return">return to authored world</button></div>
       <p class="tune-help">Twins share a genome but have different population/habitat seeds. Audition, name and save either; saved children can become parents. The nursery stays separate from the 320-world catalogue. Auditions turn on Linger; arrows return to authored travel.</p>
@@ -160,7 +177,7 @@
       <p class="tune-help">Off by default on every visit. Check to load your device library and persist saves; uncheck to erase that device library while keeping session recipes. Export before clearing. Maximum 100 saved recipes. Audio and filenames never enter recipes.</p>
       <p id="nurseryCount" class="tune-help"></p><div id="nurseryLibrary"></div>
       <div class="audio-actions"><button data-nursery-action="export">export recipes &amp; available ancestors</button><label class="audio-file">Import recipe JSON<input id="nurseryImport" type="file" accept="application/json,.json" /></label><button data-nursery-action="clear">clear nursery…</button></div>
-      <p class="tune-help">Imports are versioned numeric data, never executable code (512 KiB / 100 saved recipes plus up to 32 founder records). Deleting a parent leaves its ID in descendants, visibly marked missing, rather than deleting a family. Exports contain seeds and recipes, not runtime checkpoints.</p>
+      <p class="tune-help">Imports are versioned numeric data, never executable code (2 MiB / 512 total versioned records; library remains 100 saved offspring). Deleting a parent leaves its ID in descendants, visibly marked missing, rather than deleting a family. Exports contain seeds and recipes, not runtime checkpoints.</p>
       <div id="nurseryAncestry"></div>
     </details>
     <details id="musicLabPanel" class="lab-panel">
@@ -171,8 +188,8 @@
       <div class="audio-actions"><button id="musicResetRoutes">reset this profile</button><button id="musicClearProfiles">reset all route profiles</button></div><p id="musicStatus" role="status"></p>
       <p class="tune-help">Profiles persist only with “Remember settings” below (up to 64). Other worlds inherit global routes. Reset preferences clears all profiles. Microphone remains real-time; the analysis below never captures it.</p>
       <h3>Optional local-file analysis</h3>
-      <p class="tune-help">First choose a playback file below, then explicitly analyze it. This initial look-ahead engine supports uncompressed mono/stereo PCM16 or float32 WAV only (32 MiB, 10 minutes). MP3 and other playable formats retain real-time response and manual tap tempo. A cancellable worker computes two-resolution spectra, RMS, centroid, rolloff, flatness, chroma, novelty and conservative tempo candidates. No audio is uploaded or stored.</p>
-      <div class="audio-actions"><button id="analyzeTrack">analyze selected playback WAV</button><button id="cancelAnalysis">cancel analysis</button></div>
+      <p class="tune-help">First choose a playback file below, then explicitly analyze it. Look-ahead supports mono/stereo PCM16 or float32 WAV (32 MiB, 10 minutes), plus browser-supported MP3, AAC/M4A, FLAC, Ogg and WebM via native decoding (32 MiB encoded, finite metadata, 3 minutes, 16 kHz mono/stereo output). Codec availability varies. Native decode may allocate extra memory and cannot be interrupted in flight; Stop immediately discards stale results, but native work can finish in the background. Output is bounded, not streamed. Playback and tap tempo remain available if look-ahead is unsupported. A cancellable worker computes two-resolution spectra, RMS, centroid, rolloff, flatness, chroma, novelty and conservative tempo candidates. No audio is uploaded or stored.</p>
+      <div class="audio-actions"><button id="analyzeTrack">analyze selected playback file</button><button id="cancelAnalysis">cancel analysis</button></div>
       <p id="analysisStatus" role="status">No local analysis retained</p>
       <canvas id="analysisTimeline" width="800" height="130" role="img" aria-label="Track energy timeline, chroma strip, candidate and manual change markers"></canvas>
       <p id="analysisDetails" class="tune-help">No analyzed track.</p>
@@ -180,7 +197,7 @@
       <label class="tune-range">Arc look-ahead (seconds)<input id="lookaheadSeconds" type="range" min="0" max="10" step="0.5" value="3" /></label>
       <label class="tune-range">Feature / beat alignment offset (seconds)<input id="analysisOffset" type="range" min="-2" max="2" step="0.05" value="0" /></label>
       <div class="audio-actions"><button id="tapMusicTempo">tap tempo</button><button id="halfMusicTempo">half tempo</button><button id="doubleMusicTempo">double tempo</button><button id="addMusicMarker">mark current position</button><button id="clearMusicMarkers">clear manual markers</button></div>
-      <p class="tune-help">Arc = normalized future energy; spectral = high-frequency energy fraction; texture = spectral flatness; novelty = chroma/energy change, not a chorus detector. These four sources require completed WAV analysis and enabled look-ahead. Beat is a continuous phase clock only when tempo has evidence or you tap it; offset corrects alignment, not an inferred downbeat. Pitch-class energy does not prove key or chords. White markers are your annotations (and gentle novelty cues when routed), gold markers are change candidates. Audio stop/replacement/reload discards file references, features and corrections. No models are downloaded.</p>
+      <p class="tune-help">Arc = normalized future energy; spectral = high-frequency energy fraction; texture = spectral flatness; novelty = chroma/energy change, not a chorus detector. These four sources require completed local-file analysis and enabled look-ahead. Beat is a continuous phase clock only when tempo has evidence or you tap it; offset corrects alignment, not an inferred downbeat. Pitch-class energy does not prove key or chords. White markers are your annotations (and gentle novelty cues when routed), gold markers are change candidates. Audio stop/replacement/reload discards file references, features and corrections. No models are downloaded.</p>
     </details>
     <fieldset><legend>Optional audio · off until you choose</legend>
       <p class="tune-help">Use a local audio file or explicitly allow your microphone. Nothing is uploaded or recorded. Microphone sound is not played back. No audio? The scene makes its own drifting rhythm.</p>
@@ -199,35 +216,38 @@
   <div class="fatal" id="fatal" hidden></div>
 </div>
 
-<script src="assets/js/glsl-prelude.js?v=9"></script>
-<script src="assets/js/gl.js?v=9"></script>
-<script src="assets/js/designs/shaders-a.js?v=9"></script>
-<script src="assets/js/designs/shaders-b.js?v=9"></script>
-<script src="assets/js/designs/shaders-c.js?v=9"></script>
-<script src="assets/js/designs/canvas.js?v=9"></script>
-<script src="assets/js/designs/shaders-d.js?v=9"></script>
-<script src="assets/js/designs/shaders-e.js?v=9"></script>
-<script src="assets/js/designs/sims.js?v=9"></script>
-<script src="assets/js/designs/canvas-b.js?v=9"></script>
-<script src="assets/js/designs/collection-iii.js?v=9"></script>
-<script src="assets/js/designs/collection-iii-canvas.js?v=9"></script>
-<script src="assets/js/designs/collection-iv.js?v=9"></script>
-<script src="assets/js/designs/collection-iv-canvas.js?v=9"></script>
-<script src="assets/js/designs/collection-v.js?v=9"></script>
-<script src="assets/js/designs/collection-v-canvas.js?v=9"></script>
-<script src="assets/js/designs/collection-vi.js?v=9"></script>
-<script src="assets/js/designs/collection-vi-canvas.js?v=9"></script>
-<script src="assets/js/designs/collection-vii.js?v=9"></script>
-<script src="assets/js/designs/collection-vii-canvas.js?v=9"></script>
-<script src="assets/js/designs/collection-viii.js?v=9"></script>
-<script src="assets/js/designs/collection-viii-canvas.js?v=9"></script>
-<script src="assets/js/transitions.js?v=9"></script>
-<script src="assets/js/catalogue.js?v=9"></script>
-<script src="assets/js/music-lab.js?v=9"></script>
-<script src="assets/js/nursery.js?v=9"></script>
-<script src="assets/js/experience.js?v=9"></script>
-<script src="assets/js/engine.js?v=9"></script>
-<script src="assets/js/nursery-ui.js?v=9"></script>
-<script src="assets/js/main.js?v=9"></script>
+<script src="assets/js/glsl-prelude.js?v=10"></script>
+<script src="assets/js/gl.js?v=10"></script>
+<script src="assets/js/designs/shaders-a.js?v=10"></script>
+<script src="assets/js/designs/shaders-b.js?v=10"></script>
+<script src="assets/js/designs/shaders-c.js?v=10"></script>
+<script src="assets/js/designs/canvas.js?v=10"></script>
+<script src="assets/js/designs/shaders-d.js?v=10"></script>
+<script src="assets/js/designs/shaders-e.js?v=10"></script>
+<script src="assets/js/designs/sims.js?v=10"></script>
+<script src="assets/js/designs/canvas-b.js?v=10"></script>
+<script src="assets/js/designs/collection-iii.js?v=10"></script>
+<script src="assets/js/designs/collection-iii-canvas.js?v=10"></script>
+<script src="assets/js/designs/collection-iv.js?v=10"></script>
+<script src="assets/js/designs/collection-iv-canvas.js?v=10"></script>
+<script src="assets/js/designs/collection-v.js?v=10"></script>
+<script src="assets/js/designs/collection-v-canvas.js?v=10"></script>
+<script src="assets/js/designs/collection-vi.js?v=10"></script>
+<script src="assets/js/designs/collection-vi-canvas.js?v=10"></script>
+<script src="assets/js/designs/collection-vii.js?v=10"></script>
+<script src="assets/js/designs/collection-vii-canvas.js?v=10"></script>
+<script src="assets/js/designs/collection-viii.js?v=10"></script>
+<script src="assets/js/designs/collection-viii-canvas.js?v=10"></script>
+<script src="assets/js/transitions.js?v=10"></script>
+<script src="assets/js/catalogue.js?v=10"></script>
+<script src="assets/js/audio-decode.js?v=10"></script>
+<script src="assets/js/music-lab.js?v=10"></script>
+<script src="assets/js/nursery.js?v=10"></script>
+<script src="assets/js/habitat.js?v=10"></script>
+<script src="assets/js/experience.js?v=10"></script>
+<script src="assets/js/engine.js?v=10"></script>
+<script src="assets/js/nursery-evolution.js?v=10"></script>
+<script src="assets/js/nursery-ui.js?v=10"></script>
+<script src="assets/js/main.js?v=10"></script>
 </body>
 </html>

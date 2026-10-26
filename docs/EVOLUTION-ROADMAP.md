@@ -1,19 +1,19 @@
 # A living cabinet, not an ever-longer slideshow
 
-## Working first-stage nursery and music tools
+## Working nursery and music tools
 
-The [new delivery notes](NURSERY-AND-MUSIC-LAB.md) document what now works:
-2–4 weighted compatible eco-v1 adapters, inherited geometry/behaviour recipes,
-twin auditions, a separate opt-in local library, offspring-as-parents, ancestry,
-trait provenance, validated JSON import/export; editable global/per-world causal
-routes; and an optional bounded local PCM-WAV spectral/chroma/energy timeline with
-look-ahead, tempo/marker corrections and cancellation.
+[Delivery notes](NURSERY-AND-MUSIC-LAB.md) document the expanded implementation:
+2–32 weighted parent compositions, all-320 labelled habitat-v2 module adapters,
+twelve GPU fields coupled to a bounded colony, legacy eco-v1 compatibility,
+twins, local opt-in library, ancestry/provenance and numeric JSON; bounded automated
+diversity search with Stop; editable causal routes and local PCM/native-codec
+look-ahead with manual timing corrections. Native decode has explicit duration/
+encoded/output limits but cannot be interrupted or promise constant total memory.
 
-These are a constrained first implementation, not every phase below. Full original
-renderer genetics, runtime checkpoints, all-codec look-ahead, HPSS, learned features,
-autonomous quality-diversity search and 32-parent composition remain future work.
-The authored catalogue remains 320 worlds. The design programme below is retained
-as context rather than a claim that all its acceptance goals are complete.
+Arbitrary original-renderer code genetics, runtime checkpoints, overnight jobs,
+all-codec/streaming guarantees, rendered quality/beauty evaluation, HPSS and learned
+musical understanding remain future work. The authored catalogue stays 320 worlds.
+The programme below is context, not a claim that every acceptance goal is complete.
 
 ## Delivered in Collection VIII
 
@@ -112,11 +112,12 @@ compose *compatible modules* with sparse dominance, not average 32 complete
 worlds into mud. Preserve parent contributions and let the user inspect them.
 Lineages should diversify rather than produce an indiscriminate light soup.
 
-**Current status:** two-to-four-parent compatible recipe breeding, a separate opt-in
-nursery, ancestry/provenance, twins and JSON transfer now work. Authored founders are
-explicit adapters into a small shared phenotype vocabulary, not exact original
-renderers. Missing ancestor IDs are shown; no runtime checkpoints, autonomous
-breeding or 32-parent solver are shipped.
+**Current status:** 2–32-parent typed module compositions and bounded per-run
+quality-diversity *proxy* search now work, with 96 candidates / 20 generations /
+60 seconds / 24 survivors. The proxy is genome distance plus moderate traits and an
+optional taste reference—not image analysis or proof of beauty. Real thumbnails
+and human auditions remain essential. Ancestry is retained on explicit saves within
+the library cap. No overnight job or runtime checkpoint is shipped.
 
 ## Priority 2 — music and world as one organism
 
@@ -185,8 +186,8 @@ hardware FPS or low audio latency.
 2. Expand compatible modules without losing per-trait provenance or finite budgets.
 3. Add runtime checkpoints and richer ancestry navigation after recipe stability.
 4. Broaden codecs and improve musical timing/features beyond the initial WAV worker.
-5. Expand diversity-preserving automated lineage search only after resource and
-   safety limits are proven; revisit 32-parent compositions after 2–4 work well.
+5. Evaluate the delivered bounded 32-parent/module search with human review before
+   considering more contributors, image-based quality metrics or longer jobs.
 
 This is an ambitious development programme, not a promise that an assistant keeps
 working unattended for six to eight hours after a session ends. Long-running work
