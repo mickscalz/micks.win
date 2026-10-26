@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>micks.win — this room is not here</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=JetBrains+Mono:wght@300&display=swap" />
+<style>
+  :root{ --ink:#f4f6ff; --mono:'JetBrains Mono',ui-monospace,monospace; }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background:radial-gradient(120% 90% at 50% 40%, #0b0d1a 0%, #04040a 62%, #000 100%);
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif; font-weight:300;
+    display:grid; place-items:center; overflow:hidden; text-align:center; padding:32px;
+  }
+  .orb{
+    width:clamp(80px,11vw,130px); aspect-ratio:1; margin:0 auto 34px; border-radius:50%;
+    background:conic-gradient(from 0deg,#6ad8ff,#b98bff,#ff7ad9,#ffd28a,#6ad8ff);
+    animation:spin 14s linear infinite, breathe 6s ease-in-out infinite;
+    box-shadow:0 0 90px 10px rgba(120,160,255,.30);
+  }
+  .orb::after{ content:''; position:absolute; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @keyframes breathe{ 0%,100%{ filter:blur(1px) saturate(1); } 50%{ filter:blur(9px) saturate(1.5); } }
+  h1{ font-size:clamp(30px,6vw,64px); font-weight:200; letter-spacing:-.03em; margin:0 0 14px;
+      background:linear-gradient(180deg,#fff,#9fb6ff 60%,#5f6fbf);
+      -webkit-background-clip:text; background-clip:text; color:transparent; }
+  p{ margin:0 0 30px; color:rgba(244,246,255,.55); font-size:14px; letter-spacing:.02em; }
+  code{ font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:#8fe3ff; }
+  a{
+    display:inline-block; padding:14px 40px; border-radius:999px; text-decoration:none;
+    color:var(--ink); border:1px solid rgba(255,255,255,.20); background:rgba(255,255,255,.05);
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.34em; text-transform:uppercase;
+    transition:.45s cubic-bezier(.22,.61,.24,1);
+  }
+  a:hover{ background:rgba(255,255,255,.14); border-color:#fff; letter-spacing:.42em;
+           box-shadow:0 0 50px rgba(150,200,255,.40); }
+</style>
+</head>
+<body>
+  <div>
+    <div class="orb" aria-hidden="true"></div>
+    <h1>this room is not here</h1>
+    <p>The cabinet holds twenty-four. This would have been a twenty-fifth.</p>
+    <a href="./">back to the cabinet</a>
+  </div>
+</body>
+</html>
