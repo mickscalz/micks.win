@@ -167,7 +167,7 @@ try {
   const stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("cabinet-experience-v1")),
   );
-  assert.deepEqual(Object.keys(stored).sort(), ["likes", "saved", "settings"]);
+  assert.deepEqual(Object.keys(stored).sort(), ["likes", "routes", "saved", "settings"]);
   await page.reload();
   await page.waitForFunction(() => window.Cabinet && Cabinet.playing, null, {
     polling: 50,

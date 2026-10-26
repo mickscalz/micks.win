@@ -127,6 +127,21 @@
     } catch (e) { /* ignore */ }
   }
 
+  // A temporary audition occupies one stage slot, never the authored catalogue UI.
+  var childSlot = null, childBase = null, priorLinger = false;
+  function restoreChild() {
+    if (childSlot === null) return;
+    E.designs[childSlot] = childBase;
+    childSlot = null; childBase = null;
+    E.lingering = priorLinger;
+    syncLinger();
+  }
+  E.playChild = function (child) {
+    show(E.index, { child: child });
+    E.lingering = true;
+    syncLinger();
+  };
+  E.leaveChild = function () { if (childSlot !== null) show(E.index); };
   function show(i, opts) {
     opts = opts || {};
     var n = E.designs.length;
@@ -134,7 +149,13 @@
     var prev = E.designs[E.index];
     if (opts.snapshot !== false && prev && E.playing && !E.paused) snapshot();else transitions.end();
 
+    restoreChild();
     E.index = i;
+    if (opts.child) {
+      childSlot = i; childBase = E.designs[i]; priorLinger = E.lingering;
+      Object.assign(opts.child, { rank: childBase.rank, collectionRank: childBase.collectionRank });
+      E.designs[i] = opts.child;
+    }
     var design = E.designs[i];
     ensure(design);
     if (E.broken[design.id]) {                 // skip gracefully
@@ -165,7 +186,7 @@
     // card
     d.body.setAttribute('data-world-theme', design.theme || 'dark');
     var collection = $('#cardCollection');
-    if (collection) collection.textContent = 'collection ' + pad(design.edition || 1) + ' · ' + (design.edition === latestEdition ? 'latest · ' : '') + 'rank ' + pad(design.collectionRank);
+    if (collection) collection.textContent = design.nursery ? 'nursery · eco-v1 · offspring audition' : 'collection ' + pad(design.edition || 1) + ' · ' + (design.edition === latestEdition ? 'latest · ' : '') + 'rank ' + pad(design.collectionRank);
     elRank.firstChild ? (elRank.firstChild.nodeValue = pad(design.rank)) : (elRank.textContent = pad(design.rank));
     if (elTotal) elTotal.textContent = '/ ' + pad(E.designs.length);
     elName.textContent = design.name;
@@ -174,10 +195,10 @@
     card.classList.remove('swap');
     void card.offsetWidth;
     card.classList.add('swap');
-    var cap = design.captivation || 70;
+    var cap = design.nursery?0:design.captivation || 70;
     setTimeout(function () {
       elMeter.style.width = cap + '%';
-      elMeterVal.textContent = cap + '/100';
+      elMeterVal.textContent = design.nursery?'unrated':cap + '/100';
     }, 60);
 
     // rail
@@ -345,6 +366,10 @@
     $('#ctl [data-act="play"]').setAttribute('aria-pressed', String(E.paused));
   }
 
+  function syncLinger() {
+    d.body.classList.toggle('is-lingering', E.lingering);
+    $('#ctl [data-act="linger"]').setAttribute('aria-pressed', String(E.lingering));
+  }
   function toggleLinger() {
     E.lingering = !E.lingering;
     E.cycleOffset = E.t; // resume a full dwell without rewinding the artwork
