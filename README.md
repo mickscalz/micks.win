@@ -1,16 +1,16 @@
 # micks.win
 
-**A Cabinet of Infinite Rooms** — 128 real-time worlds across five collections.
-Collection V adds 42 new rooms; all 86 earlier rooms remain.
+**A Cabinet of Infinite Rooms** — 192 real-time worlds across six collections.
+Collection VI adds 64 new rooms; all 128 earlier rooms remain.
 
 **Ordering, from now on:** newest collection first, then highest editorial
 captivation score within that collection. The cycle, rail and gallery use the
 same order, and every new visit starts with the newest collection's top room.
-Earlier rooms follow as Collections IV, III, II and I. Scores express an
+Earlier rooms follow as Collections V, IV, III, II and I. Scores express an
 editorial judgement, not measured audience attention or a scientific ranking.
 
-No videos, no runtime libraries, no build step. Seventy-six single-pass WebGL2 worlds,
-four stateful GPU systems and forty-eight Canvas 2D worlds share one stage.
+No videos, no runtime libraries, no build step. 118 single-pass WebGL2 worlds,
+four stateful GPU systems and 70 Canvas 2D worlds share one stage.
 The cabinet advances every 21 seconds, with snapshot crossfades and adaptive
 WebGL resolution. Complex new scenes have per-room pixel budgets.
 
@@ -23,6 +23,42 @@ python3 -m http.server 3000
 
 Use a current browser with WebGL2 and hardware acceleration. The application
 itself needs no npm installation; npm is only used for development tests.
+
+## Collection VI — After the Impossible
+
+64 new constructions: **42 WebGL worlds and 22 Canvas worlds**. All 128
+previous worlds are retained, with Collection VI leading the cycle and gallery.
+Geometry, density, trajectories and cellular state change over time, not only
+palette. Independent, slow clocks avoid a single synchronised breathing loop.
+
+The new collection spans navigable gyroid chambers, bent-ray accretion disks,
+rotating 4D hypercubes, articulated ring sculptures, advected pigment, Enneper
+surfaces, branching helices, interference relief, softened gravitational dynamics,
+infinite arcades, volumetric auroras, cyclic cellular fronts, liquid organisms,
+geological folds, elastic membranes, recursive cavities, quasicrystals, kinetic
+stairs, slotted shells, pressure packets, Lorenz trajectories, folded velvet,
+spectral dune flight, ciliated cells, carved gems, luminous ink, toppling sandpiles,
+vertebral corridors, moving droplet lenses, logarithmic Riemann sheets, box-fold
+architecture, anisotropic threads, logarithmic shells, lobed membranes, complex
+inversions, magnetic pendulums, dipole sculptures, buoyant volumes, molecular
+braids, crossed beams, Voronoi enamel, inverting tetrahedra, organic tube palaces,
+bathymetry, asteroid flight, levitating quarries, diffraction beats, nonlinear
+flame accumulation, breathing ruins, merging membranes, contracting tunnels,
+perforated mountains, refracted checkerwork, triangular canopies, stellar shells,
+sheared optical domains, articulated kites, fluted siphons, holographic relief,
+differential-growth boundaries, radial machinery, afterimage seas, segmented
+creatures and slit-scan temporal paintings.
+
+**Linger (L or the infinity button)** stays in the current world while its
+animation continues. It is separate from Space, which truly freezes motion.
+Leaving Linger restarts a full 21-second dwell without rewinding the artwork.
+Manual navigation still works, and the choice persists until toggled off.
+The control is available on touch screens and exposes its pressed state.
+
+New simulations use local seeded populations, capped histories and bounded
+lattices. Held frames and resize redraws do not advance simulation state.
+Heavy shaders have individual pixel budgets; inactive scenes are not advanced.
+All 64 new thumbnail assets are rendered from these same live renderers.
 
 ## Collection V — The Unbounded
 
@@ -110,8 +146,9 @@ cellular automaton, wave interference and rolling-circle hypotrochoids.
 | Control | Action |
 |---|---|
 | ← / → | Previous / next world |
-| Space | Hold / resume the cycle |
-| 1–128 | Jump by rank; type successive digits within one second |
+| Space | Freeze / resume world motion and cycling |
+| L / infinity button | Linger in this world while it keeps evolving |
+| 1–192 | Jump by rank; type successive digits within one second |
 | 0 | Jump to rank 10 |
 | G | Gallery: filter by latest / shaders / simulations / drawn |
 | Gallery “go to” | Jump directly to any rank |
@@ -122,146 +159,211 @@ cellular automaton, wave interference and rolling-circle hypotrochoids.
 
 The active image thumbnail scrolls into view on narrow screens. Gallery filters
 show their counts, support keyboard focus, and expose their pressed state. All
-128 tiles use small WebP stills rendered from the actual scenes, not placeholder
+192 tiles use small WebP stills rendered from the actual scenes, not placeholder
 gradients (optimised for a small total download).
 
 ## The rooms
 
 | Rank | Collection | World | Technique |
-|---:|---:|---|---|
-| 01 | 5 | Chromatic Expanse | volumetric flight · incandescent dust · stellar parallax |
-| 02 | 5 | Leviathan Gate | monumental distance fields · atmospheric perspective · portal light |
-| 03 | 5 | Thousand Suns | orbital light fields · stellar nurseries · radiant depth |
-| 04 | 5 | Nebular Migration | 3D spiral arms · luminous star populations · orbital drift |
-| 05 | 5 | Jade Maelstrom | submerged spiral · caustic shafts · abyssal scale |
-| 06 | 5 | Iridescent Megastructure | repeated city SDF · spectral facades · orbital camera |
-| 07 | 5 | Tidal Ribbons | woven sheet waves · depth-sorted strips · satin gradients |
-| 08 | 5 | Plasma Anemone | polar-folded sculpture · soft glow · living filaments |
-| 09 | 5 | Impossible Ocean | folded wave relief · metallic tides · impossible horizon |
-| 10 | 5 | Chromatic Reef | coral branching · polychrome skeletons · underwater drift |
-| 11 | 5 | Heliosphere | stellar plasma · limb scattering · chromatic prominences |
-| 12 | 5 | Crystal Dunes | faceted terrain · cyan reflections · fractured crests |
-| 13 | 5 | Firefly Citadel | spherical habitat · radiant towers · orbital fireflies |
-| 14 | 5 | Velvet Vortex | anisotropic folds · logarithmic drapery · luminous dye |
-| 15 | 5 | Lanternfish Ocean | layered shoals · translucent fins · bioluminescent wake |
-| 16 | 5 | Prismatic Koi | steering shoal · articulated bodies · reflected ripples |
-| 17 | 5 | Electric Glacier | traced ice canyon · subsurface seams · polar radiance |
-| 18 | 5 | Bubble Cathedral | spherical vaults · spectral shells · deep perspective |
-| 19 | 5 | Aerial Archipelago | floating islands · layered silhouettes · atmospheric vastness |
-| 20 | 5 | Endless Causeway | infinite steps · floating treads · vanishing light |
-| 21 | 5 | Spore Universe | fractal mist · emissive density · cosmic spores |
-| 22 | 5 | Infinite Origami | unfolding octahedra · nested solids · crystalline choreography |
-| 23 | 5 | Mosaic Mirage | warped tessellation · metallic relief · chromatic phase |
-| 24 | 5 | Polar Roses | lobed porcelain · spectral lacquer · orbiting sculpture |
-| 25 | 5 | Velvet Mandala | layered petals · spectral ink · slow radial counterpoint |
-| 26 | 5 | Solar Sails | ray-plane facets · translucent membranes · celestial rigging |
-| 27 | 5 | Liquid Spectrum | domain advection · pigment boundaries · marbled radiance |
-| 28 | 5 | Ribbon Torus | woven toroidal surface · depth-sorted facets · chromatic weaving |
-| 29 | 5 | Desert of Glass | pyramid field · mirrored facets · alien sunset |
-| 30 | 5 | Fire Opal | internal mineral fire · spherical volume · chromatic inclusions |
-| 31 | 5 | Bismuth Temple | stepped mineral terraces · isometric spirals · oxide colour |
-| 32 | 5 | Laser Aviary | swept light planes · spectral rigging · haze depth |
-| 33 | 5 | Painted Cosmos | painted gas veils · additive atmospheres · drifting pigments |
-| 34 | 5 | Neon Topology | torus-knot tubes · depth ordering · luminous crossings |
-| 35 | 5 | Chromatic Weather | billowing density · polar illumination · vast cloud strata |
-| 36 | 5 | Auric Swarm | coupled orbital drift · additive particles · gravity theatre |
-| 37 | 5 | Chromatic Rain | perspective light rain · spectral trails · deep falling field |
-| 38 | 5 | Golden Abyss | logarithmic architecture · gilded ribs · falling perspective |
-| 39 | 5 | Luminous Archways | nested polygon portals · perspective phases · colour procession |
-| 40 | 5 | Opaline Petals | translucent bloom · layered bezier membranes · pearlescent light |
-| 41 | 5 | Ember Dunes | layered terrain · drifting embers · incandescent twilight |
-| 42 | 5 | Spectrum Choreography | 3D phase lattice · chromatic nodes · collective motion |
-| 43 | 4 | Glass Meridian | convex optics · internal reflection · spectral dispersion |
-| 44 | 4 | Dune Nocturne | height-field tracing · wind combs · blue-hour sand |
-| 45 | 4 | Rain on Elsewhere | curved droplets · refracted bokeh · night glass |
-| 46 | 4 | Cloisonné Sky | rose-window geometry · enamel cells · transmitted light |
-| 47 | 4 | Ribbon Ballet | depth-sorted silk · parametric surfaces · folded light |
-| 48 | 4 | Amber Reliquary | ellipsoid volume · suspended filaments · warm extinction |
-| 49 | 4 | Folding Atlas | creased sheet · triangular mesh · travelling deformation |
-| 50 | 4 | Silicate Reef | silica shells · radial pores · microscopic light |
-| 51 | 4 | Chromatic Abacus | Verlet chains · distance constraints · pointer forces |
-| 52 | 4 | Peacock Protocol | barb filaments · ocellar eyes · structural colour |
-| 53 | 4 | Cyanotype Garden | botanical silhouettes · venation · photographic blue |
-| 54 | 4 | Schlieren Atlas | density-gradient optics · thermal plumes · knife-edge light |
-| 55 | 4 | Luminous Mycelium | branching growth · tip competition · luminous transport |
-| 56 | 4 | Hyperbolic Bloom | Poincaré disk · circle inversions · infinite boundary |
-| 57 | 4 | Prism Parade | isometric solids · phased extrusion · candy architecture |
-| 58 | 4 | Circuit Dream | etched copper · routed pulses · soldermask relief |
-| 59 | 4 | Kinetic Letterpress | invented glyphs · phase-driven typesetting · warm paper |
-| 60 | 4 | Polar Porcelain | twisted ceramic · fluted silhouette · studio reflections |
-| 61 | 4 | Oculus Automata | elementary cellular automata · spacetime quilting · rule 110 |
-| 62 | 4 | Solar Organ | cylindrical light pipes · phase sequencing · radial depth |
-| 63 | 3 | Prismatic Monolith | black crystal · spectral seams · sphere tracing |
-| 64 | 3 | Orbital Garden | ringed planet · ray intersections · orbital shadows |
-| 65 | 3 | Abyssal Medusa | bioluminescent anatomy · translucent filaments |
-| 66 | 3 | Cathedral of Echoes | repeated vaults · distance-field architecture |
-| 67 | 3 | Tidal Satin | ocean microfacets · rose-gold horizon |
-| 68 | 3 | Kintsugi Earth | porcelain plates · gilded voronoi fractures |
-| 69 | 3 | Newton Garden | complex dynamics · cubic basins of attraction |
-| 70 | 3 | Murmuration | collective motion · local steering · dusk |
-| 71 | 3 | Pyrotechnic Bloom | ballistic sparks · gravity · afterglow |
-| 72 | 3 | Entropy Loom | woven light · anisotropic thread shading |
-| 73 | 3 | Clockwork Orrery | brass gearing · mechanical harmonics · engraved circles |
-| 74 | 3 | Polar Vortex | gas giant · spiral advection · cloud relief |
-| 75 | 3 | Ink Calligraphy | brush ribbons · paper grain · negative space |
-| 76 | 3 | Quasicrystal | aperiodic order · seven interfering lattices |
-| 77 | 3 | Paper Lanterns | translucent rice paper · rising emissive forms |
-| 78 | 3 | Tensegrity Swarm | icosahedral cages · depth-sorted projection |
-| 79 | 3 | Topographic Dream | contour cartography · mineral pigments |
-| 80 | 3 | Pendulum Tides | phase drift · pendulum waves · specular beads |
-| 81 | 3 | Eclipse Observatory | occultation · polar streamers · diamond ring |
-| 82 | 3 | Lenticular Orchard | optical ribs · interference lacquer · grazing light |
-| 83 | 2 | Living Coral | gray–scott · reaction diffusion |
-| 84 | 2 | Menger Cathedral | recursive solids · infinite subdivision |
-| 85 | 2 | Caustic Abyss | underwater optics · bioluminescence |
-| 86 | 2 | Indra's Pearls | circle inversion · kleinian group |
-| 87 | 2 | Crystal Prison | refraction · chromatic dispersion |
-| 88 | 2 | Infinite Regress | video feedback · self-similar optics |
-| 89 | 2 | Cloudsea | volumetric scattering · flight |
-| 90 | 2 | Phyllotaxis | golden angle · 137.5 degrees |
-| 91 | 2 | Liquid Crystal | birefringence · crossed polarisers |
-| 92 | 2 | Ferrofluid | magnetic potential · iron filings |
-| 93 | 2 | Coronal Loops | solar magnetism · trapped plasma |
-| 94 | 2 | Chladni Resonance | eigenmodes · singing plate |
-| 95 | 2 | Diffraction Array | fraunhofer interference · phased emitters |
-| 96 | 2 | Frost Dendrite | hexagonal symmetry · crystal growth |
-| 97 | 2 | Harmonograph | three pendulums · long exposure |
-| 98 | 2 | Fourier Epicycles | discrete transform · drawing with circles |
-| 99 | 2 | Möbius Bloom | non-orientable surface · projection |
-| 100 | 2 | Fractal Canopy | recursive growth · wind |
-| 101 | 2 | Truchet Loops | stochastic tiling · travelling light |
-| 102 | 2 | Sandfall | cellular automaton · granular physics |
-| 103 | 2 | Ripple Tank | wave superposition · interference |
-| 104 | 2 | Spirograph | hypotrochoid · rolling circles |
-| 105 | 1 | Singular Bloom | volumetric nebula · gravitational lens |
-| 106 | 1 | Chroma Flux | navier–stokes · live gpu fluid |
-| 107 | 1 | Event Horizon | schwarzschild geodesics · accretion disk |
-| 108 | 1 | Hyperspace | warp tunnel · chromatic aberration |
-| 109 | 1 | Aurora Cathedral | volumetric curtains · ice water |
-| 110 | 1 | Silk Currents | 65k gpu particles · curl noise · feedback |
-| 111 | 1 | Liquid Chrome | metaballs · thin-film dispersion |
-| 112 | 1 | Mandelbulb Infinite | power-8 fractal · orbit-trap colour |
-| 113 | 1 | Strange Attractor | aizawa system · 60k points |
-| 114 | 1 | Iridescence | gyroid lattice · thin-film interference |
-| 115 | 1 | Supernova | shock front · lensed starfield |
-| 116 | 1 | Hypnotic Moiré | op-art interference · do not stare too long |
-| 117 | 1 | Infinite Frontier | procedural range · still water |
-| 118 | 1 | Electric Storm | fractal lightning · wet city light |
-| 119 | 1 | Quantum Foam | worley cells · soap-film interference |
-| 120 | 1 | Cosmic Web | filamentary structure · depth parallax |
-| 121 | 1 | Stained Cosmos | kaleidoscopic voronoi · leaded glass |
-| 122 | 1 | Neon Horizon | retrowave grid · dying sun |
-| 123 | 1 | Ink Bloom | metaball diffusion · gold on black |
-| 124 | 1 | Silken Plasma | domain-warped fractal noise |
-| 125 | 1 | Firefly Deep | bokeh depth of field · warm dusk |
-| 126 | 1 | Digital Rain | glyph cascade · depth & bleed |
-| 127 | 1 | Particle Morph | shape interpolation · your name in points |
-| 128 | 1 | Silk Drape | layered gradient cloth · specular sheen |
+|---|---|---|---|
+| 01 | 6 | Vertebrae of Light | flexing axial sculpture · repeated ribs · electric marrow |
+| 02 | 6 | Chromofluid Rebellion | nested vector advection · liquid interference · moving pigment |
+| 03 | 6 | Tesseract Tempest | four-dimensional rotations · perspective cells · hypercubic procession |
+| 04 | 6 | Crown of Tides | lobed membrane · concentric rupture · oscillating silica |
+| 05 | 6 | Event Horizon Garden | gravitational lens · accretion filaments · bent starlight |
+| 06 | 6 | Enneper Dream | minimal surface · self-intersecting silk · rotating geometry |
+| 07 | 6 | Nematode Palace | curling tubes · organic chambers · rotating radial skeleton |
+| 08 | 6 | Opal Weatherfront | thin-film interference · converging pressure · spectral ridges |
+| 09 | 6 | Stellar Cocoon | nested membranes · polar slits · inner star |
+| 10 | 6 | Impossible Aqueduct | warped arcades · tiled stone · unending traversal |
+| 11 | 6 | Aurora Labyrinth | volumetric curtains · lateral parallax · charged atmosphere |
+| 12 | 6 | Chromatic Dominion | cyclic cellular competition · spiral fronts · living mosaic |
+| 13 | 6 | Flame Manuscript | nonlinear iterated functions · accumulated density · spectral flame |
+| 14 | 6 | Tectonic Rainbow | folding strata · shaded relief · geological colour flow |
+| 15 | 6 | Elastic Constellation | Verlet membrane · wind forces · constraint network |
+| 16 | 6 | Hyperbolic Hive | recursive cavities · cellular architecture · slow deformation |
+| 17 | 6 | Phase Change | quasicrystal interference · shifting symmetry · moiré depth |
+| 18 | 6 | Staircase Paradox | kinetic stepped loops · impossible return · coloured architecture |
+| 19 | 6 | Clockwork Eclipse | nested orbital shells · moving apertures · obsidian and gold |
+| 20 | 6 | Pressure Bloom | propagating wave packets · caustic ridges · chromatic collision |
+| 21 | 6 | Lorenz Silk | chaotic trajectories · evolving attractor · ribbon projection |
+| 22 | 6 | Velour Singularity | twisted textile shell · rippling folds · saturated velvet |
+| 23 | 6 | Spectral Sandstorm | layered dune flight · analytic heights · impossible horizons |
+| 24 | 6 | Amoeba Theatre | soft silhouettes · ciliated membranes · microscopic choreography |
+| 25 | 6 | Prism Heart | faceted breathing solid · carved chambers · optical seams |
+| 26 | 6 | Ink Between Stars | advected pigment plumes · negative space · luminous edges |
+| 27 | 6 | Chromatic Sandpile | driven toppling lattice · avalanche fronts · granular symmetry |
+| 28 | 6 | Elsewhere Cathedral | gyroid passage · living topology · iridescent depth |
+| 29 | 6 | Impossible Rain | refractive droplets · cellular refraction · falling lenses |
+| 30 | 6 | Riemann Cascade | complex logarithm · connected sheets · spectral helicoid |
+| 31 | 6 | Recursive Monastery | nested box folds · distance-estimated fractal · immense scale |
+| 32 | 6 | Silken Turbulence | anisotropic filaments · nested flow · satin highlights |
+| 33 | 6 | Astral Nautilus | logarithmic shell · expanding ribs · iridescent cross-section |
+| 34 | 6 | Seraphim Machine | articulated concentric wings · rotating union · pearlescence |
+| 35 | 6 | Folded Spectrum | complex-plane tessellation · inversion drift · coloured infinities |
+| 36 | 6 | Magnetic Pendulum | driven magnetic dynamics · chaotic trails · moving attractors |
+| 37 | 6 | Magnetic Rose | dipole sculpture · polar petals · flowing field lines |
+| 38 | 6 | Helium Dream | buoyant volume · thermals · chromatic density |
+| 39 | 6 | Helix Promenade | braided helices · paired bridges · molecular scale |
+| 40 | 6 | Interstellar Loom | crossed braided beams · camera flight · luminous junctions |
+| 41 | 6 | Liquid Stained Glass | moving Voronoi cells · refractive seams · luminous enamel |
+| 42 | 6 | Kaleidocycle Engine | inverting tetrahedral ring · faceted linkage · cyclic transformation |
+| 43 | 6 | Ribbon Worldtree | branched helices · luminous sap · growing sculpture |
+| 44 | 6 | Sunken Contours | bathymetric drift · moving islands · depth-light mapping |
+| 45 | 6 | Orbital Debris | faceted asteroid flight · depth projection · distant suns |
+| 46 | 6 | Antigravity Quarry | levitating cut blocks · moving seams · mineral interiors |
+| 47 | 6 | Infinite Diffraction | curved gratings · spectral orders · moving optical lattice |
+| 48 | 6 | Mercury Organism | coalescing metaballs · capillary necks · liquid chrome |
+| 49 | 6 | Breathing Archaeology | eroding ceremonial rings · carved steps · pulsing voids |
+| 50 | 6 | Neon Protoplasm | cellular thresholds · merging membranes · electrical nuclei |
+| 51 | 6 | Peristaltic Transit | contracting passage · moving cross-sections · spectral depth |
+| 52 | 6 | Aperture Mountain | perforated peaks · spiralling strata · orbital terrain |
+| 53 | 6 | Refracted Memory | anamorphic tiles · chromatic displacement · liquid checkerwork |
+| 54 | 6 | Delaunay Drift | triangular canopy · travelling deformation · low-poly light |
+| 55 | 6 | Gravity Ballet | softened many-body dynamics · luminous trajectories · mutual orbit |
+| 56 | 6 | Chromatic Faultline | sheared domains · melting edges · optical displacement |
+| 57 | 6 | Dragon Kites | articulated aerial creatures · wind ribbons · layered flight |
+| 58 | 6 | Cosmic Siphon | fluted funnel · endless fall · rotating chamber walls |
+| 59 | 6 | Living Hologram | phase-wrapped relief · spectral scan planes · shifting normals |
+| 60 | 6 | Lichen Observatory | differential growth · elastic boundary · self-avoiding folds |
+| 61 | 6 | Corona Assembly | radial mechanisms · variable teeth · nested rotation |
+| 62 | 6 | Afterimage Ocean | long-wave refraction · phase currents · changing horizon |
+| 63 | 6 | Solar Centipede | segmented locomotion · procedural legs · radiant exoskeleton |
+| 64 | 6 | Afterlight Archive | slit-scan accumulation · temporal painting · chromatic histories |
+| 65 | 5 | Chromatic Expanse | volumetric flight · incandescent dust · stellar parallax |
+| 66 | 5 | Leviathan Gate | monumental distance fields · atmospheric perspective · portal light |
+| 67 | 5 | Thousand Suns | orbital light fields · stellar nurseries · radiant depth |
+| 68 | 5 | Nebular Migration | 3D spiral arms · luminous star populations · orbital drift |
+| 69 | 5 | Jade Maelstrom | submerged spiral · caustic shafts · abyssal scale |
+| 70 | 5 | Iridescent Megastructure | repeated city SDF · spectral facades · orbital camera |
+| 71 | 5 | Tidal Ribbons | woven sheet waves · depth-sorted strips · satin gradients |
+| 72 | 5 | Plasma Anemone | polar-folded sculpture · soft glow · living filaments |
+| 73 | 5 | Impossible Ocean | folded wave relief · metallic tides · impossible horizon |
+| 74 | 5 | Chromatic Reef | coral branching · polychrome skeletons · underwater drift |
+| 75 | 5 | Heliosphere | stellar plasma · limb scattering · chromatic prominences |
+| 76 | 5 | Crystal Dunes | faceted terrain · cyan reflections · fractured crests |
+| 77 | 5 | Firefly Citadel | spherical habitat · radiant towers · orbital fireflies |
+| 78 | 5 | Velvet Vortex | anisotropic folds · logarithmic drapery · luminous dye |
+| 79 | 5 | Lanternfish Ocean | layered shoals · translucent fins · bioluminescent wake |
+| 80 | 5 | Prismatic Koi | steering shoal · articulated bodies · reflected ripples |
+| 81 | 5 | Electric Glacier | traced ice canyon · subsurface seams · polar radiance |
+| 82 | 5 | Bubble Cathedral | spherical vaults · spectral shells · deep perspective |
+| 83 | 5 | Aerial Archipelago | floating islands · layered silhouettes · atmospheric vastness |
+| 84 | 5 | Endless Causeway | infinite steps · floating treads · vanishing light |
+| 85 | 5 | Spore Universe | fractal mist · emissive density · cosmic spores |
+| 86 | 5 | Infinite Origami | unfolding octahedra · nested solids · crystalline choreography |
+| 87 | 5 | Mosaic Mirage | warped tessellation · metallic relief · chromatic phase |
+| 88 | 5 | Polar Roses | lobed porcelain · spectral lacquer · orbiting sculpture |
+| 89 | 5 | Velvet Mandala | layered petals · spectral ink · slow radial counterpoint |
+| 90 | 5 | Solar Sails | ray-plane facets · translucent membranes · celestial rigging |
+| 91 | 5 | Liquid Spectrum | domain advection · pigment boundaries · marbled radiance |
+| 92 | 5 | Ribbon Torus | woven toroidal surface · depth-sorted facets · chromatic weaving |
+| 93 | 5 | Desert of Glass | pyramid field · mirrored facets · alien sunset |
+| 94 | 5 | Fire Opal | internal mineral fire · spherical volume · chromatic inclusions |
+| 95 | 5 | Bismuth Temple | stepped mineral terraces · isometric spirals · oxide colour |
+| 96 | 5 | Laser Aviary | swept light planes · spectral rigging · haze depth |
+| 97 | 5 | Painted Cosmos | painted gas veils · additive atmospheres · drifting pigments |
+| 98 | 5 | Neon Topology | torus-knot tubes · depth ordering · luminous crossings |
+| 99 | 5 | Chromatic Weather | billowing density · polar illumination · vast cloud strata |
+| 100 | 5 | Auric Swarm | coupled orbital drift · additive particles · gravity theatre |
+| 101 | 5 | Chromatic Rain | perspective light rain · spectral trails · deep falling field |
+| 102 | 5 | Golden Abyss | logarithmic architecture · gilded ribs · falling perspective |
+| 103 | 5 | Luminous Archways | nested polygon portals · perspective phases · colour procession |
+| 104 | 5 | Opaline Petals | translucent bloom · layered bezier membranes · pearlescent light |
+| 105 | 5 | Ember Dunes | layered terrain · drifting embers · incandescent twilight |
+| 106 | 5 | Spectrum Choreography | 3D phase lattice · chromatic nodes · collective motion |
+| 107 | 4 | Glass Meridian | convex optics · internal reflection · spectral dispersion |
+| 108 | 4 | Dune Nocturne | height-field tracing · wind combs · blue-hour sand |
+| 109 | 4 | Rain on Elsewhere | curved droplets · refracted bokeh · night glass |
+| 110 | 4 | Cloisonné Sky | rose-window geometry · enamel cells · transmitted light |
+| 111 | 4 | Ribbon Ballet | depth-sorted silk · parametric surfaces · folded light |
+| 112 | 4 | Amber Reliquary | ellipsoid volume · suspended filaments · warm extinction |
+| 113 | 4 | Folding Atlas | creased sheet · triangular mesh · travelling deformation |
+| 114 | 4 | Silicate Reef | silica shells · radial pores · microscopic light |
+| 115 | 4 | Chromatic Abacus | Verlet chains · distance constraints · pointer forces |
+| 116 | 4 | Peacock Protocol | barb filaments · ocellar eyes · structural colour |
+| 117 | 4 | Cyanotype Garden | botanical silhouettes · venation · photographic blue |
+| 118 | 4 | Schlieren Atlas | density-gradient optics · thermal plumes · knife-edge light |
+| 119 | 4 | Luminous Mycelium | branching growth · tip competition · luminous transport |
+| 120 | 4 | Hyperbolic Bloom | Poincaré disk · circle inversions · infinite boundary |
+| 121 | 4 | Prism Parade | isometric solids · phased extrusion · candy architecture |
+| 122 | 4 | Circuit Dream | etched copper · routed pulses · soldermask relief |
+| 123 | 4 | Kinetic Letterpress | invented glyphs · phase-driven typesetting · warm paper |
+| 124 | 4 | Polar Porcelain | twisted ceramic · fluted silhouette · studio reflections |
+| 125 | 4 | Oculus Automata | elementary cellular automata · spacetime quilting · rule 110 |
+| 126 | 4 | Solar Organ | cylindrical light pipes · phase sequencing · radial depth |
+| 127 | 3 | Prismatic Monolith | black crystal · spectral seams · sphere tracing |
+| 128 | 3 | Orbital Garden | ringed planet · ray intersections · orbital shadows |
+| 129 | 3 | Abyssal Medusa | bioluminescent anatomy · translucent filaments |
+| 130 | 3 | Cathedral of Echoes | repeated vaults · distance-field architecture |
+| 131 | 3 | Tidal Satin | ocean microfacets · rose-gold horizon |
+| 132 | 3 | Kintsugi Earth | porcelain plates · gilded voronoi fractures |
+| 133 | 3 | Newton Garden | complex dynamics · cubic basins of attraction |
+| 134 | 3 | Murmuration | collective motion · local steering · dusk |
+| 135 | 3 | Pyrotechnic Bloom | ballistic sparks · gravity · afterglow |
+| 136 | 3 | Entropy Loom | woven light · anisotropic thread shading |
+| 137 | 3 | Clockwork Orrery | brass gearing · mechanical harmonics · engraved circles |
+| 138 | 3 | Polar Vortex | gas giant · spiral advection · cloud relief |
+| 139 | 3 | Ink Calligraphy | brush ribbons · paper grain · negative space |
+| 140 | 3 | Quasicrystal | aperiodic order · seven interfering lattices |
+| 141 | 3 | Paper Lanterns | translucent rice paper · rising emissive forms |
+| 142 | 3 | Tensegrity Swarm | icosahedral cages · depth-sorted projection |
+| 143 | 3 | Topographic Dream | contour cartography · mineral pigments |
+| 144 | 3 | Pendulum Tides | phase drift · pendulum waves · specular beads |
+| 145 | 3 | Eclipse Observatory | occultation · polar streamers · diamond ring |
+| 146 | 3 | Lenticular Orchard | optical ribs · interference lacquer · grazing light |
+| 147 | 2 | Living Coral | gray–scott · reaction diffusion |
+| 148 | 2 | Menger Cathedral | recursive solids · infinite subdivision |
+| 149 | 2 | Caustic Abyss | underwater optics · bioluminescence |
+| 150 | 2 | Indra's Pearls | circle inversion · kleinian group |
+| 151 | 2 | Crystal Prison | refraction · chromatic dispersion |
+| 152 | 2 | Infinite Regress | video feedback · self-similar optics |
+| 153 | 2 | Cloudsea | volumetric scattering · flight |
+| 154 | 2 | Phyllotaxis | golden angle · 137.5 degrees |
+| 155 | 2 | Liquid Crystal | birefringence · crossed polarisers |
+| 156 | 2 | Ferrofluid | magnetic potential · iron filings |
+| 157 | 2 | Coronal Loops | solar magnetism · trapped plasma |
+| 158 | 2 | Chladni Resonance | eigenmodes · singing plate |
+| 159 | 2 | Diffraction Array | fraunhofer interference · phased emitters |
+| 160 | 2 | Frost Dendrite | hexagonal symmetry · crystal growth |
+| 161 | 2 | Harmonograph | three pendulums · long exposure |
+| 162 | 2 | Fourier Epicycles | discrete transform · drawing with circles |
+| 163 | 2 | Möbius Bloom | non-orientable surface · projection |
+| 164 | 2 | Fractal Canopy | recursive growth · wind |
+| 165 | 2 | Truchet Loops | stochastic tiling · travelling light |
+| 166 | 2 | Sandfall | cellular automaton · granular physics |
+| 167 | 2 | Ripple Tank | wave superposition · interference |
+| 168 | 2 | Spirograph | hypotrochoid · rolling circles |
+| 169 | 1 | Singular Bloom | volumetric nebula · gravitational lens |
+| 170 | 1 | Chroma Flux | navier–stokes · live gpu fluid |
+| 171 | 1 | Event Horizon | schwarzschild geodesics · accretion disk |
+| 172 | 1 | Hyperspace | warp tunnel · chromatic aberration |
+| 173 | 1 | Aurora Cathedral | volumetric curtains · ice water |
+| 174 | 1 | Silk Currents | 65k gpu particles · curl noise · feedback |
+| 175 | 1 | Liquid Chrome | metaballs · thin-film dispersion |
+| 176 | 1 | Mandelbulb Infinite | power-8 fractal · orbit-trap colour |
+| 177 | 1 | Strange Attractor | aizawa system · 60k points |
+| 178 | 1 | Iridescence | gyroid lattice · thin-film interference |
+| 179 | 1 | Supernova | shock front · lensed starfield |
+| 180 | 1 | Hypnotic Moiré | op-art interference · do not stare too long |
+| 181 | 1 | Infinite Frontier | procedural range · still water |
+| 182 | 1 | Electric Storm | fractal lightning · wet city light |
+| 183 | 1 | Quantum Foam | worley cells · soap-film interference |
+| 184 | 1 | Cosmic Web | filamentary structure · depth parallax |
+| 185 | 1 | Stained Cosmos | kaleidoscopic voronoi · leaded glass |
+| 186 | 1 | Neon Horizon | retrowave grid · dying sun |
+| 187 | 1 | Ink Bloom | metaball diffusion · gold on black |
+| 188 | 1 | Silken Plasma | domain-warped fractal noise |
+| 189 | 1 | Firefly Deep | bokeh depth of field · warm dusk |
+| 190 | 1 | Digital Rain | glyph cascade · depth & bleed |
+| 191 | 1 | Particle Morph | shape interpolation · your name in points |
+| 192 | 1 | Silk Drape | layered gradient cloth · specular sheen |
 
 ## Architecture
 
 - `index.html`: stage, title card, controls, gallery and direct-entry stage.
 - `assets/css/style.css`: glass interface, responsive rail, technique filters.
+- `assets/js/designs/collection-vi*.js`: the 64 Collection VI constructions.
 - `assets/js/glsl-prelude.js`: noise, SDFs, palettes, camera and film finish.
 - `assets/js/gl.js`: cached programs, targets, ping-pong buffers and uniforms.
 - `assets/js/designs/*.js`: each room's metadata and renderer.
@@ -285,12 +387,14 @@ npx playwright-core install --with-deps chromium
 npm run test:browser
 ```
 
-The catalogue test checks all 128 unique IDs, contiguous ranks, newest-first ordering and within-collection editorial ranking,
+The catalogue test checks all 192 unique IDs, contiguous ranks, newest-first ordering and within-collection editorial ranking,
 renderer contracts, script syntax, relative asset paths and script load order.
 The browser test uses **real WebGL2**, not mocked contexts: it visits and draws
 every room, checks GL errors, exercises filters, two-digit jumps, numeric entry,
 automatic wraparound, collection boundaries, paper theme reset, stateful hold, immersion focus/exit, idle/wake interaction and mobile resize.
-It also checks three-digit jumps, nonblank new-world frames, decoded first/last
+It also checks meaningful temporal change in all 64 new worlds, held redraws
+without simulation advancement in all 22 new Canvas rooms, keyboard/touch Linger,
+320px control bounds, three-digit jumps, nonblank new-world frames, decoded first/last
 filmstrip images and the broken-image fallback. It serves the page under `/micks.win/`
 to catch GitHub project-Pages path regressions. To use a custom Chromium binary,
 set `CHROMIUM_PATH`. CI runs both suites for pull requests and pushes to main.
