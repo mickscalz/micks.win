@@ -326,7 +326,7 @@ body.is-paused .ctl__btn--play .i-pause{ display:none; }
 .gal__jump input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
 .gal__jump input::placeholder{ color:var(--ink-faint); }
 
-/* technique filters — essential once the cabinet holds 46 rooms */
+/* Technique filters and a rolling latest-collection view. */
 .gal__filters{
   display:flex; flex-wrap:wrap; gap:8px; margin:-8px 0 clamp(20px,2.6vw,34px);
   padding-bottom:16px; border-bottom:1px solid var(--line-soft);
@@ -490,3 +490,26 @@ body.is-paused .ctl__btn--play .i-pause{ display:none; }
   .stage.reveal[data-kind="gl"] #gl,
   .stage.reveal[data-kind="2d"] #c2d{ animation:none; }
 }
+
+/* Collection provenance is separate from the editorial score: newest wins the
+   collection order, the score decides the order only within that collection. */
+.card__collection{font-family:var(--mono);font-size:9px;letter-spacing:.19em;text-transform:uppercase;color:var(--accent);margin:0 0 12px;opacity:.75;}
+.tile__edition{position:absolute;top:14px;left:14px;z-index:1;font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#d6e9f2;background:rgba(3,9,18,.65);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 8px;}
+.chip:focus-visible,.tile:focus-visible,.ctl__btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px;}
+
+/* Paper is intentionally a different luminance world. Don't put white type on
+   ivory, and don't change the always-dark gallery when this room is active. */
+body[data-world-theme="paper"] .card{--ink:#122a35;--ink-dim:rgba(12,35,48,.75);--ink-faint:rgba(12,35,48,.6);--accent:#235368;color:var(--ink);}
+body[data-world-theme="paper"] .card__name{text-shadow:0 2px 24px rgba(235,225,203,.65);}
+body[data-world-theme="paper"] .card__blurb{color:rgba(12,35,48,.8);}
+body[data-world-theme="paper"] .brand,body[data-world-theme="paper"] .hint{color:#193b4a;}
+body[data-world-theme="paper"] .brand__word{color:#193b4a;}
+body[data-world-theme="paper"] .fx-vignette{opacity:.12;}
+body[data-world-theme="paper"] .rail{--ink-faint:rgba(15,42,58,.4);}
+body[data-world-theme="paper"] .rail__item.is-on{color:#143c4d;}
+@media(max-width:560px){.card__collection{font-size:8px;letter-spacing:.12em;}}
+body[data-world-theme="paper"] .card::before{content:'';position:absolute;inset:-14px -24px;z-index:-1;pointer-events:none;border-radius:20px;background:linear-gradient(90deg,rgba(235,225,204,.82),rgba(235,225,204,.42) 72%,transparent);filter:blur(14px);}
+
+body[data-world-theme="paper"] .ctl{background:rgba(8,20,30,.82);}
+body[data-world-theme="paper"] .hint kbd{color:#193b4a;border-color:rgba(15,40,50,.28);background:rgba(15,40,50,.06);}
+body[data-world-theme="paper"] .brand__stat{color:rgba(15,40,50,.6);}

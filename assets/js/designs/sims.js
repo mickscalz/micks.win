@@ -103,6 +103,7 @@
 
   D({
     id: 'living-coral',
+    edition: 2,
     preview: 'assets/previews/living-coral.webp',
     rank: 2,
     name: 'Living Coral',
@@ -224,6 +225,7 @@
 
   D({
     id: 'infinite-regress',
+    edition: 2,
     preview: 'assets/previews/infinite-regress.webp',
     rank: 12,
     name: 'Infinite Regress',

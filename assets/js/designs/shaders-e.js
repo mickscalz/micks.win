@@ -11,6 +11,7 @@
   /* ────────────────────────  31 · LIQUID CRYSTAL  ──────────────────────── */
   D({
     id: 'liquid-crystal',
+    edition: 2,
     preview: 'assets/previews/liquid-crystal.webp',
     rank: 18,
     name: 'Liquid Crystal',
@@ -64,6 +65,7 @@
   /* ────────────────────────  32 · INDRA'S PEARLS  ──────────────────────── */
   D({
     id: 'indras-pearls',
+    edition: 2,
     preview: 'assets/previews/indras-pearls.webp',
     rank: 8,
     name: "Indra's Pearls",
@@ -119,6 +121,7 @@
   /* ────────────────────────────  33 · CLOUDSEA  ────────────────────────── */
   D({
     id: 'cloudsea',
+    edition: 2,
     preview: 'assets/previews/cloudsea.webp',
     rank: 14,
     name: 'Cloudsea',
@@ -190,6 +193,7 @@
   /* ────────────────────────  34 · CORONAL LOOPS  ───────────────────────── */
   D({
     id: 'coronal-loops',
+    edition: 2,
     preview: 'assets/previews/coronal-loops.webp',
     rank: 25,
     name: 'Coronal Loops',
@@ -254,6 +258,7 @@
   /* ──────────────────────  35 · DIFFRACTION ARRAY  ─────────────────────── */
   D({
     id: 'diffraction-array',
+    edition: 2,
     preview: 'assets/previews/diffraction-array.webp',
     rank: 31,
     name: 'Diffraction Array',
@@ -312,6 +317,7 @@
   /* ─────────────────────────  36 · FROST DENDRITE  ─────────────────────── */
   D({
     id: 'frost-dendrite',
+    edition: 2,
     preview: 'assets/previews/frost-dendrite.webp',
     rank: 34,
     name: 'Frost Dendrite',

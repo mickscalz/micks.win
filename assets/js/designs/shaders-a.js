@@ -15,6 +15,7 @@
   /* ─────────────────────────────  01 · SINGULAR BLOOM  ─────────────────── */
   D({
     id: 'singular-bloom',
+    edition: 1,
     preview: 'assets/previews/singular-bloom.webp',
     rank: 1,
     name: 'Singular Bloom',
@@ -199,6 +200,7 @@
 
   D({
     id: 'chroma-flux',
+    edition: 1,
     preview: 'assets/previews/chroma-flux.webp',
     rank: 3,
     name: 'Chroma Flux',
@@ -316,6 +318,7 @@
   /* ───────────────────────────────  03 · HYPERSPACE  ───────────────────── */
   D({
     id: 'hyperspace',
+    edition: 1,
     preview: 'assets/previews/hyperspace.webp',
     rank: 7,
     name: 'Hyperspace',
@@ -384,6 +387,7 @@
   /* ──────────────────────────────  04 · EVENT HORIZON  ─────────────────── */
   D({
     id: 'event-horizon',
+    edition: 1,
     preview: 'assets/previews/event-horizon.webp',
     rank: 5,
     name: 'Event Horizon',
@@ -481,6 +485,7 @@
   /* ────────────────────────────  05 · AURORA CATHEDRAL  ────────────────── */
   D({
     id: 'aurora-cathedral',
+    edition: 1,
     preview: 'assets/previews/aurora-cathedral.webp',
     rank: 9,
     name: 'Aurora Cathedral',
@@ -682,6 +687,7 @@
 
   D({
     id: 'silk-currents',
+    edition: 1,
     preview: 'assets/previews/silk-currents.webp',
     rank: 11,
     name: 'Silk Currents',
