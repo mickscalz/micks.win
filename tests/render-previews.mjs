@@ -32,7 +32,7 @@ try {
        pointer:{active:false,x:.5,y:.5},fade:1,energy:.5,seed:.37,dpr:1};
      if(d.kind==='gl'){
        const p=R.shader(d.frag,d.id);if(!p)throw Error('Compile failed: '+id);
-       R.blit(p,null,{uRes:[384,240],uTime:8,uFade:1,uMouse:[0,0],uDt:1/60,uEnergy:.5,uRand:.37,uPulse:.5,uIntensity:.65,uDetail:.85,uDensity:.75,uNovelty:.7,uColorRange:1,uColorSafe:0,uBass:.3,uMid:.3,uTreble:.2,uOnset:0,uStereo:0});
+       R.blit(p,null,{uRes:[384,240],uTime:8,uFade:1,uMouse:[0,0],uDt:1/60,uEnergy:.5,uRand:.37,uPulse:.5,uIntensity:.65,uDetail:.85,uDensity:.75,uNovelty:.7,uColorRange:1,uColorSafe:0,uGrowth:.65,uMutation:.5,uCoupling:.6,uLife:.55,uAtmosphere:.65,uSymmetry:.5,uDrift:.45,uAfterglow:.55,uBass:.3,uMid:.3,uTreble:.2,uOnset:0,uStereo:0});
      }else{
        d.init(is2d?S:R);
        let frames=is2d?(d.previewFrames||1):200;

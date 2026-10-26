@@ -7,6 +7,22 @@
   };
   var defaults = {
     mode: "guided",
+    worldDuration: 36,
+    transitionDuration: 5,
+    transitionStyle: "auto",
+    transitionEase: "smooth",
+    transitionWarp: 0.6,
+    growth: 0.65,
+    mutation: 0.5,
+    coupling: 0.6,
+    lifecycle: 0.55,
+    atmosphere: 0.65,
+    symmetry: 0.5,
+    drift: 0.45,
+    afterglow: 0.55,
+    audioAttack: 0.12,
+    audioRelease: 1.4,
+    audioSensitivity: 0.6,
     novelty: 0.7,
     intensity: 0.65,
     motion: 1,
@@ -71,8 +87,28 @@
         if (typeof v === "number" && Number.isFinite(v))
           out[k] = clamp(
             v,
-            k === "brightness" ? 0.15 : 0,
-            k === "motion" ? 1.5 : k === "brightness" ? 1.35 : 1,
+            k === "brightness"
+              ? 0.15
+              : k === "worldDuration"
+                ? 5
+                : k === "audioAttack"
+                  ? 0.02
+                  : k === "audioRelease"
+                    ? 0.1
+                    : 0,
+            k === "motion"
+              ? 1.5
+              : k === "brightness"
+                ? 1.35
+                : k === "worldDuration"
+                  ? 600
+                  : k === "transitionDuration"
+                    ? 30
+                    : k === "audioAttack"
+                      ? 1
+                      : k === "audioRelease"
+                        ? 6
+                        : 1,
           );
       }
     });
@@ -80,6 +116,16 @@
       out.mode = input.mode;
     if (["auto", "high", "balanced", "economy"].includes(input.quality))
       out.quality = input.quality;
+    if (
+      input.transitionStyle === "auto" ||
+      (w.CabinetTransitions &&
+        w.CabinetTransitions.styles.some(function (s) {
+          return s.id === input.transitionStyle;
+        }))
+    )
+      out.transitionStyle = input.transitionStyle;
+    if (["smooth", "sine", "linear"].includes(input.transitionEase))
+      out.transitionEase = input.transitionEase;
     return out;
   }
   try {
@@ -98,7 +144,7 @@
     var out = {};
     if (v && typeof v === "object")
       Object.keys(v)
-        .slice(0, 256)
+        .slice(0, 2048)
         .forEach(function (k) {
           if (
             /^[a-z0-9-]+$/.test(k) &&
@@ -133,6 +179,7 @@
     if (key === "quality" && settings.quality !== "auto")
       quality = { high: 1, balanced: 0.72, economy: 0.45 }[settings.quality];
     if (engine) {
+      engine.dwell = settings.worldDuration;
       engine.needsDraw = true;
       if ((key === "quality" || key === "detail") && engine.resize) {
         if (key === "quality" && settings.quality !== "auto")
@@ -161,6 +208,14 @@
       density: settings.density * (settings.calm ? 0.45 : 1),
       detail: Math.min(settings.detail, quality),
       color: settings.color,
+      growth: settings.growth,
+      mutation: settings.mutation,
+      coupling: settings.coupling,
+      lifecycle: settings.lifecycle,
+      atmosphere: settings.atmosphere,
+      symmetry: settings.symmetry,
+      drift: settings.drift,
+      afterglow: settings.afterglow,
       pulse: 0,
     };
   }
@@ -282,7 +337,7 @@
         Math.abs((d.vigor === undefined ? 0.6 : d.vigor) - target) * 0.6 +
         (0.5 + 0.5 * Math.sin(i * 12.989 + clock * 0.013)) * 0.22;
       if (seen >= 0) score -= 2;
-      if (d.edition === 7) score += 0.3;
+      if (d.edition >= 7) score += 0.3;
       if (score > best) {
         best = score;
         next = i;
@@ -339,10 +394,37 @@
     e.onset =
       audioWeight *
       (settings.reducedFlashes ? Math.min(0.3, signal.onset) : signal.onset);
-    e.stereo = signal.stereoReliable ? signal.balance * audioWeight : 0;
+    e.stereo =
+      signal.stereoReliable && audioWeight > 0
+        ? signal.balance * audioWeight
+        : 0;
     e.colorSafe = settings.colorSafe;
     e.quality = quality;
     e.mode = settings.mode;
+    // Independent, sustained response routes. Manual traits remain the base;
+    // zero reactivity bypasses all musical trait modulation.
+    if (measured && settings.reactivity > 0) {
+      e.growth = clamp(
+        e.growth * (1 + (signal.bass - 0.3) * 0.35 * audioWeight),
+        0,
+        1,
+      );
+      e.coupling = clamp(
+        e.coupling * (1 + (signal.mid - 0.25) * 0.3 * audioWeight),
+        0,
+        1,
+      );
+      e.atmosphere = clamp(
+        e.atmosphere * (1 + (signal.energy - 0.4) * 0.3 * audioWeight),
+        0,
+        1,
+      );
+      e.afterglow = clamp(
+        e.afterglow * (1 + (signal.treble - 0.2) * 0.45 * audioWeight),
+        0,
+        1,
+      );
+    }
     if (settings.mode === "autonomous") {
       e.density *= 0.65 + 0.35 * arc;
       e.intensity *= 0.7 + 0.3 * arc;
@@ -477,7 +559,14 @@
         elapsed: 0,
         lastAudioTime: ctx.currentTime,
       };
-      signal.source = kind;
+      // New measured envelopes must not inherit the free-running internal rhythm.
+      Object.assign(signal, {
+        source: kind,
+        energy: 0,
+        bass: 0,
+        mid: 0,
+        treble: 0,
+      });
       notice =
         kind === "file"
           ? "Local audio · not uploaded or retained"
@@ -582,10 +671,29 @@
     if (a.levels.length > 240) a.levels.shift();
     signal.dynamics =
       Math.max.apply(null, a.levels) - Math.min.apply(null, a.levels);
-    var rate = 1 - Math.exp(-dt * 2.8);
-    signal.energy += (clamp(energy * 4, 0, 1) - signal.energy) * rate;
+    var targetEnergy = clamp(
+      energy * (2 + settings.audioSensitivity * 6),
+      0,
+      1,
+    );
+    var rate =
+      1 -
+      Math.exp(
+        -dt /
+          (targetEnergy > signal.energy
+            ? settings.audioAttack
+            : settings.audioRelease),
+      );
+    signal.energy += (targetEnergy - signal.energy) * rate;
     ["bass", "mid", "treble"].forEach(function (k, i) {
-      signal[k] += (bands[i] / Math.max(1, counts[i]) - signal[k]) * rate;
+      var target = bands[i] / Math.max(1, counts[i]);
+      var bandRate =
+        1 -
+        Math.exp(
+          -dt /
+            (target > signal[k] ? settings.audioAttack : settings.audioRelease),
+        );
+      signal[k] += (target - signal[k]) * bandRate;
     });
     var L = rms(a.left),
       R = rms(a.right);
@@ -618,6 +726,7 @@
     if (engine) {
       engine.needsDraw = true;
       engine.scale = 1;
+      engine.dwell = settings.worldDuration;
       if (engine.resize) engine.resize();
     }
     apply();
@@ -643,6 +752,22 @@
         if (el) el.textContent = text;
       };
     put("experienceStatus", lastAction);
+    var tr = engine.transitions && engine.transitions.getState();
+    put(
+      "transitionReadout",
+      "World interval " +
+        settings.worldDuration +
+        "s (includes arrival) · transition " +
+        Math.min(
+          settings.transitionDuration,
+          settings.worldDuration * 0.8,
+        ).toFixed(1) +
+        "s" +
+        (tr && tr.active
+          ? " · " + tr.style
+          : " · " + settings.transitionStyle) +
+        " · reduced motion / calm uses a plain dissolve",
+    );
     put("audioStatus", notice);
     put(
       "signalReadout",
@@ -698,7 +823,14 @@
       if (output)
         output.textContent =
           typeof settings[k] === "number"
-            ? Math.round(settings[k] * 100) + "%"
+            ? [
+                "worldDuration",
+                "transitionDuration",
+                "audioAttack",
+                "audioRelease",
+              ].includes(k)
+              ? settings[k].toFixed(k === "worldDuration" ? 0 : 2) + "s"
+              : Math.round(settings[k] * 100) + "%"
             : settings[k];
     });
     var remember = d.getElementById("rememberExperience");
@@ -706,6 +838,22 @@
     var room = engine.designs[engine.index];
     if (room) {
       var tuning = effective();
+      put(
+        "organismReadout",
+        room.edition === 8
+          ? room.lifeMechanism +
+              (room.L && room.lifeMechanism.indexOf("Nutrient") === 0
+                ? " Population " +
+                  room.L.agents.length +
+                  " · births " +
+                  room.L.births +
+                  " · renewals " +
+                  room.L.deaths +
+                  " · generation " +
+                  room.L.maxGeneration
+                : "")
+          : "",
+      );
       put(
         "compositionReadout",
         room.name +
@@ -795,7 +943,22 @@
   }
   function mount(E) {
     engine = E;
+    engine.dwell = settings.worldDuration;
     var d = w.document;
+    var styleSelect = d.querySelector('[data-setting="transitionStyle"]');
+    if (styleSelect && w.CabinetTransitions)
+      w.CabinetTransitions.styles.forEach(function (s) {
+        var o = d.createElement("option");
+        o.value = s.id;
+        o.textContent = s.name;
+        styleSelect.append(o);
+      });
+    d.getElementById("previewTransition").addEventListener(
+      "click",
+      function () {
+        engine.show((engine.index + 1) % engine.designs.length);
+      },
+    );
     d.getElementById("experienceToggle").addEventListener("click", function () {
       open(!panelOpen);
     });

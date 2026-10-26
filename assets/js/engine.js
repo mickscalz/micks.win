@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, 256
+   One shared WebGL2 context, one 2D context, one crossfade layer, 320
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -12,7 +12,7 @@
   var E = {
     designs: DESIGNS,
     index: 0,
-    dwell: 21,          // seconds a world holds the stage before the next
+    dwell: 36,          // seconds a world holds the stage before the next
     artT: 0,
     t: 0,               // time inside the current world
     gt: 0,              // global clock
@@ -50,6 +50,7 @@
   }
   var ctx2 = c2D.getContext('2d', { alpha: false, desynchronized: true });
   var ctxF = cFade.getContext('2d', { alpha: true });
+  var transitions=w.CabinetTransitions.create($('#transition'),cFade);E.transitions=transitions;
 
   /* ----------------------------------------------------------------- state */
   var S = {
@@ -121,13 +122,8 @@
     try {
       ctxF.clearRect(0, 0, cFade.width, cFade.height);
       ctxF.drawImage(src, 0, 0, cFade.width, cFade.height);
-      cFade.style.transition = 'none';
-      cFade.style.opacity = '1';
-      // next frame, let it dissolve
-      requestAnimationFrame(function () {
-        cFade.style.transition = 'opacity 3.6s cubic-bezier(.16,1,.3,1)';
-        cFade.style.opacity = '0';
-      });
+      transitions.capture(ctxF);
+      transitions.begin(cFade,w.Experience.getSettings());
     } catch (e) { /* ignore */ }
   }
 
@@ -136,7 +132,7 @@
     var n = E.designs.length;
     i = ((i % n) + n) % n;
     var prev = E.designs[E.index];
-    if (opts.snapshot !== false && prev && E.playing) snapshot();
+    if (opts.snapshot !== false && prev && E.playing && !E.paused) snapshot();else transitions.end();
 
     E.index = i;
     var design = E.designs[i];
@@ -447,6 +443,7 @@
     var dt = Math.min(realDt,1/20);
     last = now;
     if (d.hidden) return;
+    if(E.pendingResize){E.pendingResize=false;resize();}
     if (E.paused && !E.needsDraw) return;
     E.needsDraw = false;
     draw(E.paused ? 0 : dt, now);
@@ -465,7 +462,7 @@
     S.mouse.y += (target.y - S.mouse.y) * Math.min(1, dt * 3.2);
 
     if (!E.paused) {
-      E.t += dt;
+      E.t += Math.min(realDt,1);
       E.artT += S.dt*(.85+.3*S.energy);
       sinceSwitch += dt;
     }
@@ -492,6 +489,8 @@
           uEnergy: S.energy, uRand: S.seed,
           uPulse:ex?ex.pulse:.5,uIntensity:ex?ex.intensity:.65,uDetail:S.detail,uDensity:S.density,
           uNovelty:ex?ex.novelty:.7,uColorRange:ex?ex.color:1,uColorSafe:ex&&ex.colorSafe?1:0,
+          uGrowth:ex?ex.growth:.65,uMutation:ex?ex.mutation:.5,uCoupling:ex?ex.coupling:.6,uLife:ex?ex.lifecycle:.55,
+          uAtmosphere:ex?ex.atmosphere:.65,uSymmetry:ex?ex.symmetry:.5,uDrift:ex?ex.drift:.45,uAfterglow:ex?ex.afterglow:.55,
           uBass:ex?ex.bass:0,uMid:ex?ex.mid:0,uTreble:ex?ex.treble:0,uOnset:ex?ex.onset:0,uStereo:ex?ex.stereo:0
         });
       } else if (design.kind === 'glx') {
@@ -504,6 +503,8 @@
       E.broken[design.id] = true;
       show(E.index + 1);
     }
+
+    transitions.render(design.kind==='2d'?c2D:cGL,E.paused?0:Math.min(realDt,1),w.Experience.getSettings());
 
     // cycle
     if (!E.paused && !E.lingering && (!ex || ex.mode !== 'manual') && E.t - E.cycleOffset > E.dwell) {
@@ -521,11 +522,11 @@
       if(w.Experience) w.Experience.performanceSample(fps,1000/fps);
       if (statFps) statFps.textContent = fps.toFixed(0) + ' fps';
       var qualityMode=w.Experience?w.Experience.getSettings().quality:'auto';
-      if(qualityMode!=='auto'){E.scale={high:1,balanced:.8,economy:.6}[qualityMode];resize();}
-      else if (fps < 40 && E.scale > 0.52) { E.scale = Math.max(0.5, E.scale - 0.12); resize(); fast = 0; }
-      else if (fps > 57 && E.scale < 1) { fast++; E.scale = Math.min(1, E.scale + (fast > 1 ? 0.12 : 0.05)); resize(); }
+      if(qualityMode!=='auto'){E.scale={high:1,balanced:.8,economy:.6}[qualityMode];E.pendingResize=true;}
+      else if (fps < 40 && E.scale > 0.52) { E.scale = Math.max(0.5, E.scale - 0.12); E.pendingResize=true; fast = 0; }
+      else if (fps > 57 && E.scale < 1) { fast++; E.scale = Math.min(1, E.scale + (fast > 1 ? 0.12 : 0.05)); E.pendingResize=true; }
       else fast = 0;
-      if(w.Experience && qualityMode==='auto') resize();
+      if(w.Experience && qualityMode==='auto') E.pendingResize=true;
       frames = 0; acc = 0;
     }
   }

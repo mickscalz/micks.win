@@ -150,7 +150,7 @@ try {
   assert.equal(await page.evaluate(() => localStorage.length), 0);
   await page.locator('[data-setting="mode"]').selectOption("manual");
   await page.evaluate(() => {
-    Cabinet.t = 30;
+    Cabinet.t = 60;
     testFrames(3);
   });
   assert.equal(await page.evaluate(() => Cabinet.index), 0);
@@ -187,7 +187,7 @@ try {
   assert.ok(await page.evaluate(() => Experience.frame().brightness <= 0.65));
   await page.locator('[data-setting="mode"]').selectOption("adaptive");
   await page.evaluate(() => {
-    Cabinet.t = 22;
+    Cabinet.t = 37;
     testFrames(1);
   });
   assert.notEqual(await page.evaluate(() => Cabinet.index), 0);
@@ -257,7 +257,11 @@ try {
   await page.waitForFunction(
     () => {
       Experience.advance(0.05);
-      return Experience.signal.energy > 0.05;
+      return (
+        Experience.signal.energy > 0.05 &&
+        Experience.signal.stereoReliable &&
+        document.querySelector("#audioPlayer audio").currentTime > 0.05
+      );
     },
     null,
     { polling: 50, timeout: 15000 },

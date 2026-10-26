@@ -23,6 +23,13 @@ function setup(initial = {}, reduced = false) {
       removeItem: (k) => store.delete(k),
     },
   };
+  vm.runInNewContext(
+    fs.readFileSync(
+      require("node:path").join(__dirname, "../assets/js/transitions.js"),
+      "utf8",
+    ),
+    { window: w },
+  );
   vm.runInNewContext(source, { window: w });
   return { w, e: w.Experience, store, writes };
 }
@@ -143,7 +150,7 @@ function audioSetup() {
     revokeObjectURL: () => stats.revoked++,
   };
   s.w.document = {
-    getElementById: () => ({ replaceChildren() {} }),
+    getElementById: (id) => (id === "stage" ? null : { replaceChildren() {} }),
     createElement: () => ({
       setAttribute() {},
       removeAttribute() {},
@@ -314,4 +321,63 @@ test("recent compositions are bounded, inspectable copies, and never persisted",
   );
   e.reset();
   assert.equal(e.getRecent().length, 0);
+});
+
+test("timing and living/audio controls are bounded, consent-gated and restored", () => {
+  const { e, store } = setup();
+  e.set("worldDuration", 900);
+  e.set("transitionDuration", 99);
+  e.set("audioAttack", -1);
+  e.set("audioRelease", 99);
+  e.set("growth", 9);
+  e.set("transitionStyle", "petals");
+  e.set("transitionEase", "sine");
+  assert.equal(e.settings.worldDuration, 600);
+  assert.equal(e.settings.transitionDuration, 30);
+  assert.equal(e.settings.audioAttack, 0.02);
+  assert.equal(e.settings.audioRelease, 6);
+  assert.equal(e.settings.growth, 1);
+  assert.equal(e.settings.transitionStyle, "petals");
+  e.set("transitionStyle", "untrusted-style");
+  assert.equal(e.settings.transitionStyle, "petals");
+  assert.equal(store.size, 0);
+  e.setConsent(true);
+  const restored = setup(Object.fromEntries(store)).e;
+  assert.equal(restored.settings.transitionStyle, "petals");
+  assert.equal(restored.settings.transitionEase, "sine");
+  assert.equal(restored.settings.worldDuration, 600);
+  e.reset();
+  assert.equal(e.settings.worldDuration, 36);
+  assert.equal(e.settings.transitionDuration, 5);
+});
+
+test("attack/release shape independent sustained routes; zero reactivity bypasses traits", async () => {
+  const slow = audioSetup(),
+    fast = audioSetup();
+  slow.e.set("audioAttack", 1);
+  slow.e.set("audioRelease", 2);
+  fast.e.set("audioAttack", 0.02);
+  slow.e.advance(0.1);
+  assert.ok(slow.e.signal.energy > 0);
+  await slow.e.startAudio("file", {});
+  for (const k of ["energy", "bass", "mid", "treble"])
+    assert.equal(slow.e.signal[k], 0, "new audio inherited internal rhythm");
+  await fast.e.startAudio("file", {});
+  slow.e.advance(0.1);
+  fast.e.advance(0.1);
+  assert.ok(fast.e.signal.energy > slow.e.signal.energy * 3);
+  slow.stats.loud = false;
+  const before = slow.e.signal.energy;
+  slow.e.advance(0.1);
+  assert.ok(slow.e.signal.energy > before * 0.85);
+  fast.e.set("reactivity", 1);
+  for (const k of ["growth", "coupling", "atmosphere", "afterglow"])
+    assert.ok(fast.e.frame()[k] >= 0 && fast.e.frame()[k] <= 1);
+  fast.e.set("reactivity", 0);
+  assert.equal(fast.e.frame().growth, fast.e.settings.growth);
+  assert.equal(fast.e.frame().coupling, fast.e.settings.coupling);
+  assert.equal(fast.e.frame().stereo, 0);
+  assert.equal(fast.e.frame().onset, 0);
+  slow.e.stopAudio();
+  fast.e.stopAudio();
 });
