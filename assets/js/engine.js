@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, 128
+   One shared WebGL2 context, one 2D context, one crossfade layer, 192
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -17,6 +17,8 @@
     gt: 0,              // global clock
     fade: 0,
     paused: false,
+    lingering: false,   // keep the current world moving without automatic travel
+    cycleOffset: 0,
     playing: false,
     seed: 0.37,
     scale: 0.78,         // adaptive render scale (climbs to 1 when there is headroom)
@@ -147,6 +149,7 @@
     resize();
 
     E.t = 0;
+    E.cycleOffset = 0;
     E.revealComplete = E.paused;
     E.fade = E.paused ? 1 : 0;
     sinceSwitch = 0;
@@ -319,6 +322,7 @@
     if (a === 'next') { E.playing = true; next(); }
     else if (a === 'prev') { E.playing = true; prev(); }
     else if (a === 'play') { togglePause(); }
+    else if (a === 'linger') { toggleLinger(); }
     else if (a === 'shuffle') { E.playing = true; show((Math.random() * E.designs.length) | 0); }
     else if (a === 'gallery') { openGal(); }
     else if (a === 'close-gal') { closeGal(); }
@@ -340,6 +344,14 @@
     E.paused = !E.paused;
     d.body.classList.toggle('is-paused', E.paused);
     $('#ctl [data-act="play"]').setAttribute('aria-pressed', String(E.paused));
+  }
+
+  function toggleLinger() {
+    E.lingering = !E.lingering;
+    E.cycleOffset = E.t; // resume a full dwell without rewinding the artwork
+    sinceSwitch = 0;
+    d.body.classList.toggle('is-lingering', E.lingering);
+    $('#ctl [data-act="linger"]').setAttribute('aria-pressed', String(E.lingering));
   }
 
   var immersionFocus = null;
@@ -390,6 +402,7 @@
       case 'g': case 'G': gal.classList.contains('on') ? closeGal() : openGal(); break;
       case 'f': case 'F': toggleFull(); break;
       case 'h': case 'H': setImmersive(!E.immersive); break;
+      case 'l': case 'L': toggleLinger(); break;
       case 's': case 'S': E.playing = true; show((Math.random() * E.designs.length) | 0); break;
       case 'Escape': digitBuf = ''; E.immersive ? setImmersive(false) : closeGal(); break;
       default:
@@ -456,7 +469,7 @@
     if (!design) return;
 
     // warm the next world before it is needed, so the cut never stutters
-    if (!E.paused && sinceSwitch > E.dwell * 0.55 && warmAt !== E.index) {
+    if (!E.paused && !E.lingering && sinceSwitch > E.dwell * 0.55 && warmAt !== E.index) {
       warmAt = E.index;
       var nx = E.designs[(E.index + 1) % E.designs.length];
       if (nx) setTimeout(function () { ensure(nx); }, 30);
@@ -481,13 +494,13 @@
     }
 
     // cycle
-    if (!E.paused && E.t > E.dwell) {
+    if (!E.paused && !E.lingering && E.t - E.cycleOffset > E.dwell) {
       show(E.index + 1);
       sinceSwitch = 0;
       warmAt = -1;
     }
-    var prog = Math.max(0, Math.min(1, E.t / E.dwell));
-    cycleBar.style.width = (E.paused ? prog : prog) * 100 + '%';
+    var prog = Math.max(0, Math.min(1, (E.t - E.cycleOffset) / E.dwell));
+    cycleBar.style.width = (E.lingering ? 0 : prog) * 100 + '%';
 
     // adaptive resolution
     frames++; acc += dt;

@@ -491,3 +491,7 @@ body:has(.gal.on) .gal{cursor:auto;}
 
 .ctl{background:rgba(5,11,23,.72);}
 body:not([data-world-theme="paper"]) .card::before{content:'';position:absolute;inset:-16px -24px;z-index:-1;pointer-events:none;border-radius:20px;background:linear-gradient(90deg,rgba(2,5,15,.42),rgba(2,5,15,.08) 75%,transparent);filter:blur(20px);}
+
+/* Linger keeps animation alive while suspending automatic travel. */
+.ctl__btn[data-act="linger"][aria-pressed="true"]{background:rgba(95,208,205,.23);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(95,208,205,.4);}
+@media(max-width:560px){.ctl{gap:3px;}.ctl__btn--txt{padding:0 7px;font-size:9px;letter-spacing:.08em;}}
