@@ -41,10 +41,11 @@ try {
  await waitUntil(()=>window.Cabinet && Cabinet.playing);
  assert.equal(await page.locator('#enter, #curtain').count(),0);
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 07.*latest.*rank 01/);
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,256);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 08.*latest.*rank 01/);
+ await page.evaluate(()=>Experience.set('transitionDuration',0)); // The dedicated transition suite tests the compositor separately.
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,320);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'living-elsewhere');
+ assert.equal(ordering[0].id,'unwritten-biosphere');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  // The interface fades on real inactivity, never covers a gallery, and wakes
  // before keyboard focus or a touch can land on invisible controls.
@@ -67,11 +68,11 @@ try {
    const gl=document.querySelector('#gl').getContext('webgl2');
    gl.finish();
    let pixels=null;
-   if(d.edition>=5){const thumb=document.createElement('canvas');thumb.width=40;thumb.height=25;const ctx=thumb.getContext('2d');ctx.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,40,25);const raw=ctx.getImageData(0,0,40,25).data;let lo=255,hi=0;for(let k=0;k<raw.length;k++)if(k%4!==3){lo=Math.min(lo,raw[k]);hi=Math.max(hi,raw[k]);}pixels={lo,hi};}
+   if(d.edition>=5){const thumb=document.createElement('canvas');thumb.width=40;thumb.height=25;const ctx=thumb.getContext('2d');ctx.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,40,25);const raw=ctx.getImageData(0,0,40,25).data;let lo=319,hi=0;for(let k=0;k<raw.length;k++)if(k%4!==3){lo=Math.min(lo,raw[k]);hi=Math.max(hi,raw[k]);}pixels={lo,hi};}
    let motion=null,frozen=true;
    if(d.edition>=6){
      const sample=()=>{const cv=document.createElement('canvas');cv.width=48;cv.height=30;const c=cv.getContext('2d');c.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,48,30);return c.getImageData(0,0,48,30).data;};
-     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;Cabinet.artT=38;testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
+     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;Cabinet.artT=38;/* Advance the real bounded simulator for two seconds; paint endpoints only. Stateful pigment/diffusion updates still run on every tick. */if(d.edition===8&&d.kind==='2d'){for(let k=0;k<120;k++){const ex=Experience.advance(1/60);d.advance({dt:ex.motion/60,experience:ex});}}testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
      let sum=0,moved=0;for(let k=0;k<before.length;k+=4){const delta=Math.abs(before[k]-after[k])+Math.abs(before[k+1]-after[k+1])+Math.abs(before[k+2]-after[k+2]);sum+=delta;if(delta>25)moved++;}motion={mean:sum/(48*30*3),moved};
      if(d.kind==='2d'){Cabinet.paused=true;const state=JSON.stringify(d);Cabinet.needsDraw=true;testFrames(1);frozen=state===JSON.stringify(d);Cabinet.paused=false;}
      Cabinet.lingering=pin;
@@ -85,22 +86,25 @@ try {
   if(result.motion){assert.ok(result.motion.mean>1&&result.motion.moved>8,`no meaningful evolution: ${result.id} ${JSON.stringify(result.motion)}`);assert.ok(result.frozen,`held redraw advanced state: ${result.id}`);}
   results.push(result);console.log(`✓ ${String(i+1).padStart(2,'0')} ${result.id} (${result.kind})${result.motion?' · evolution '+result.motion.moved+' pixels · hold '+result.frozen:''}`);
  }
+ // A quality adjustment must resize before drawing, never erase the frame just painted.
+ const resized=await page.evaluate(()=>{Cabinet.show(0);testFrames(3);Cabinet.paused=true;Cabinet.scale=.58;Cabinet.pendingResize=true;testFrames(1);const cv=document.querySelector('#gl'),gl=cv.getContext('webgl2');gl.finish();const px=new Uint8Array(cv.width*cv.height*4);gl.readPixels(0,0,cv.width,cv.height,gl.RGBA,gl.UNSIGNED_BYTE,px);let bright=0;for(let i=0;i<px.length;i+=4)bright=Math.max(bright,px[i],px[i+1],px[i+2]);Cabinet.paused=false;return {bright,pending:Cabinet.pendingResize};});
+ assert.ok(resized.bright>45,'quality resize erased the held frame');assert.equal(resized.pending,false);
  await page.evaluate(()=>Cabinet.wakeUI());
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),256);
- for(const [family,count] of [['latest',64],['gl',150],['glx',4],['2d',102],['all',256]]){
+ assert.equal(await page.locator('.tile').count(),320);
+ for(const [family,count] of [['latest',64],['gl',182],['glx',4],['2d',134],['all',320]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['7']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['8']);
  }
- await page.locator('#galJump').fill('256');
+ await page.locator('#galJump').fill('320');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),255);
+ assert.equal(await page.evaluate(()=>Cabinet.index),319);
  await page.keyboard.press('Escape');
  await page.keyboard.press('Escape');
- await typeRank('256');
- assert.equal(await page.evaluate(()=>Cabinet.index),255);
+ await typeRank('320');
+ assert.equal(await page.evaluate(()=>Cabinet.index),319);
  await page.keyboard.press('Escape');
  await typeRank('12');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -108,8 +112,8 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),true);
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
- await page.evaluate(()=>{Cabinet.show(63);Cabinet.t=20.99;Cabinet.artT=20.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),6);
+ await page.evaluate(()=>{Cabinet.show(63);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),7);
  // Linger is NOT pause: geometry keeps evolving past the dwell, manual travel
  // remains available, and leaving it starts a full dwell without a time reset.
  await page.evaluate(()=>Cabinet.show(0));
@@ -159,7 +163,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
  await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(255);Cabinet.t=20.99;Cabinet.artT=20.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(319);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
@@ -189,16 +193,16 @@ try {
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  // Bottom rail must contain actual decoded pictures, at both ends of the
  // horizontally scrolling list, not blank CSS ticks or broken relative paths.
- assert.equal(await page.locator('#rail img').count(),256);
+ assert.equal(await page.locator('#rail img').count(),320);
  await page.evaluate(()=>{Cabinet.show(0);Cabinet.wakeUI();});
  await waitUntil(()=>{const im=document.querySelector('#rail img');return im.complete&&im.naturalWidth>0;});
- await page.evaluate(()=>Cabinet.show(255));
+ await page.evaluate(()=>Cabinet.show(319));
  await waitUntil(()=>{const im=document.querySelector('#rail button:last-child img');return im.complete&&im.naturalWidth>0;});
  await page.evaluate(()=>{document.querySelector('#rail img').src='data:image/webp;base64,broken';});
  await page.locator('.rail__item--fallback .rail__fallback').waitFor({state:'attached'});
- assert.match(await page.locator('.rail__fallback').first().textContent(),/The Living Elsewhere/);
+ assert.match(await page.locator('.rail__fallback').first().textContent(),/The Unwritten Biosphere/);
  assert.deepEqual(errors,[]);
- console.log('\n256 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n320 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));

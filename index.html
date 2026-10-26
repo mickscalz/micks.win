@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
 <meta property="og:description" content="256 living worlds rendered in real time." />
-<link rel="stylesheet" href="assets/css/style.css?v=7" />
+<link rel="stylesheet" href="assets/css/style.css?v=8" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -20,6 +20,7 @@
     <canvas id="gl"></canvas>
     <canvas id="c2d"></canvas>
     <canvas id="fade"></canvas>
+    <canvas id="transition" aria-hidden="true"></canvas>
     <div class="fx-grain" aria-hidden="true"></div>
     <div class="fx-vignette" aria-hidden="true"></div>
     <div class="fx-bloom" aria-hidden="true"></div>
@@ -43,7 +44,7 @@
 
   <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
   <section class="card" id="card" aria-live="polite">
-    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 256</em></div>
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 320</em></div>
     <div class="card__collection" id="cardCollection"></div>
     <h1 class="card__name" id="cardName"></h1>
     <p class="card__tag" id="cardTag"></p>
@@ -83,7 +84,7 @@
   <button class="immerse-return" id="immerseReturn" data-act="immerse" aria-label="Show interface (H)" hidden>return · H</button>
 
   <div class="hint" id="hint">
-    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>L</kbd> linger &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>256</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>L</kbd> linger &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>320</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
   </div>
 
   <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
@@ -91,7 +92,7 @@
     <div class="gal__head">
       <div>
         <h2 id="galTitle">The Cabinet</h2>
-        <p><b id="galCount">256</b> rooms. Newest collection first, ranked within each collection.</p>
+        <p><b id="galCount">320</b> rooms. Newest collection first, ranked within each collection.</p>
       </div>
       <div class="gal__tools">
         <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="256" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
@@ -119,7 +120,7 @@
   <section id="experiencePanel" class="experience-panel" role="dialog" aria-modal="true" aria-labelledby="experienceTitle" hidden inert>
     <header><div><p>THE LIVING CONDUCTOR</p><h2 id="experienceTitle">Shape the experience</h2></div><button id="experienceClose" aria-label="Close experience controls">close ×</button></header>
     <p id="experienceStatus" class="tune-status" role="status">Guided · newest first</p>
-    <p id="compositionReadout" class="tune-help"></p>
+    <p id="compositionReadout" class="tune-help"></p><p id="organismReadout" class="tune-help"></p>
     <div class="tune-selects"><label>Automation<select data-setting="mode"><option value="manual">Manual · stay in this world</option><option value="guided" selected>Guided · ranked travel</option><option value="adaptive">Adaptive · signals + preferences</option><option value="autonomous">Autonomous · evolving visual arc</option></select></label>
     <label>Quality<select data-setting="quality"><option value="auto">Automatic</option><option value="high">High</option><option value="balanced">Balanced</option><option value="economy">Economy</option></select></label></div>
     <p class="tune-help">Manual keeps the world moving without automatic travel. Guided follows the catalogue. Adaptive chooses fresh families using available signals and your explicit feedback. Autonomous also develops density and intensity through an internal arc. Every override is immediate.</p>
@@ -132,6 +133,10 @@
 <label class="tune-range">Visual density<output data-value="density"></output><input aria-label="Visual density" data-setting="density" type="range" min="0" max="1" step="0.01" value="0.75" /></label>
 <label class="tune-range">Audio reactivity<output data-value="reactivity"></output><input aria-label="Audio reactivity" data-setting="reactivity" type="range" min="0" max="1" step="0.01" value="0.65" /></label>
 </div>
+    <fieldset><legend>Time &amp; metamorphosis</legend>
+<p class="tune-help">World interval includes arrival. Transitions are capped at 80% of that interval, leaving time to inhabit the world. Changes apply to the next transition; interval changes apply immediately. Linger stays indefinitely. A frozen world also freezes its transition.</p>
+<div class="tune-ranges"><label class="tune-range">World interval<output data-value="worldDuration"></output><input aria-label="World interval" data-setting="worldDuration" type="range" min="5" max="600" step="1" value="36" /></label><label class="tune-range">Transition length<output data-value="transitionDuration"></output><input aria-label="Transition length" data-setting="transitionDuration" type="range" min="0" max="30" step="0.1" value="5" /></label><label class="tune-range">Transition refraction<output data-value="transitionWarp"></output><input aria-label="Transition refraction" data-setting="transitionWarp" type="range" min="0" max="1" step="0.01" value="0.6" /></label></div><div class="tune-selects"><label>Transition style<select data-setting="transitionStyle"><option value="auto">Curated shuffle · 24 passages</option></select></label><label>Transition easing<select data-setting="transitionEase"><option value="smooth">Organic</option><option value="sine">Tidal</option><option value="linear">Linear</option></select></label></div><p id="transitionReadout" class="tune-help"></p><button id="previewTransition" type="button">Try passage to next world</button></fieldset>
+<fieldset><legend>Living systems · Collection VIII</legend><p class="tune-help">Growth, reproduction and mutation are bounded procedural rules—not sentience or a trained intelligence. Each ecosystem has its own laws. These controls shape the newest collection; older worlds keep their own algorithms.</p><div class="tune-ranges"><label class="tune-range">Growth & reproduction<output data-value="growth"></output><input aria-label="Growth & reproduction" data-setting="growth" type="range" min="0" max="1" step=".01" value="0.65" /></label><label class="tune-range">Genetic variation<output data-value="mutation"></output><input aria-label="Genetic variation" data-setting="mutation" type="range" min="0" max="1" step=".01" value="0.5" /></label><label class="tune-range">Ecological coupling<output data-value="coupling"></output><input aria-label="Ecological coupling" data-setting="coupling" type="range" min="0" max="1" step=".01" value="0.6" /></label><label class="tune-range">Lifecycle pace<output data-value="lifecycle"></output><input aria-label="Lifecycle pace" data-setting="lifecycle" type="range" min="0" max="1" step=".01" value="0.55" /></label><label class="tune-range">Atmospheric depth<output data-value="atmosphere"></output><input aria-label="Atmospheric depth" data-setting="atmosphere" type="range" min="0" max="1" step=".01" value="0.65" /></label><label class="tune-range">Order / asymmetry<output data-value="symmetry"></output><input aria-label="Order / asymmetry" data-setting="symmetry" type="range" min="0" max="1" step=".01" value="0.5" /></label><label class="tune-range">Camera & habitat drift<output data-value="drift"></output><input aria-label="Camera & habitat drift" data-setting="drift" type="range" min="0" max="1" step=".01" value="0.45" /></label><label class="tune-range">Light persistence<output data-value="afterglow"></output><input aria-label="Light persistence" data-setting="afterglow" type="range" min="0" max="1" step=".01" value="0.55" /></label></div></fieldset>
     <fieldset><legend>Accessibility · always in your control</legend>
       <label><input type="checkbox" data-setting="reducedMotion" /> Reduced motion</label>
       <label><input type="checkbox" data-setting="reducedFlashes" checked /> Reduced flashes / lower peaks</label>
@@ -144,6 +149,7 @@
     <p class="tune-help">Liked worlds</p><div id="likedWorlds" class="world-list">No liked worlds</div>
     <fieldset><legend>Optional audio · off until you choose</legend>
       <p class="tune-help">Use a local audio file or explicitly allow your microphone. Nothing is uploaded or recorded. Microphone sound is not played back. No audio? The scene makes its own drifting rhythm.</p>
+<div class="tune-ranges"><label class="tune-range">Audio attack<output data-value="audioAttack"></output><input aria-label="Audio attack" data-setting="audioAttack" type="range" min="0.02" max="1" step="0.01" value="0.12" /></label><label class="tune-range">Audio release<output data-value="audioRelease"></output><input aria-label="Audio release" data-setting="audioRelease" type="range" min="0.1" max="6" step="0.1" value="1.4" /></label><label class="tune-range">Audio sensitivity<output data-value="audioSensitivity"></output><input aria-label="Audio sensitivity" data-setting="audioSensitivity" type="range" min="0" max="1" step="0.01" value="0.6" /></label></div><p class="tune-help">Use longer release for sustained musical breathing, shorter attack for articulation. In new living systems, bass shapes growth pressure, mids shape coupling, sustained energy shapes haze, and highs shape light persistence. Zero reactivity bypasses these routes. No genre, emotion, harmony or track sections are claimed.</p>
       <label class="audio-file">Local audio file<input id="audioFile" type="file" accept="audio/*" /></label>
       <div class="audio-actions"><button id="microphoneStart">allow microphone</button><button id="audioStop">stop audio &amp; release mic</button></div>
       <div id="audioPlayer"></div><p id="audioStatus" role="status">Internal rhythm · no audio access</p><p id="signalReadout" class="tune-help"></p>
@@ -158,29 +164,32 @@
   <div class="fatal" id="fatal" hidden></div>
 </div>
 
-<script src="assets/js/glsl-prelude.js?v=7"></script>
-<script src="assets/js/gl.js?v=7"></script>
-<script src="assets/js/designs/shaders-a.js?v=7"></script>
-<script src="assets/js/designs/shaders-b.js?v=7"></script>
-<script src="assets/js/designs/shaders-c.js?v=7"></script>
-<script src="assets/js/designs/canvas.js?v=7"></script>
-<script src="assets/js/designs/shaders-d.js?v=7"></script>
-<script src="assets/js/designs/shaders-e.js?v=7"></script>
-<script src="assets/js/designs/sims.js?v=7"></script>
-<script src="assets/js/designs/canvas-b.js?v=7"></script>
-<script src="assets/js/designs/collection-iii.js?v=7"></script>
-<script src="assets/js/designs/collection-iii-canvas.js?v=7"></script>
-<script src="assets/js/designs/collection-iv.js?v=7"></script>
-<script src="assets/js/designs/collection-iv-canvas.js?v=7"></script>
-<script src="assets/js/designs/collection-v.js?v=7"></script>
-<script src="assets/js/designs/collection-v-canvas.js?v=7"></script>
-<script src="assets/js/designs/collection-vi.js?v=7"></script>
-<script src="assets/js/designs/collection-vi-canvas.js?v=7"></script>
-<script src="assets/js/designs/collection-vii.js?v=7"></script>
-<script src="assets/js/designs/collection-vii-canvas.js?v=7"></script>
-<script src="assets/js/catalogue.js?v=7"></script>
-<script src="assets/js/experience.js?v=7"></script>
-<script src="assets/js/engine.js?v=7"></script>
-<script src="assets/js/main.js?v=7"></script>
+<script src="assets/js/glsl-prelude.js?v=8"></script>
+<script src="assets/js/gl.js?v=8"></script>
+<script src="assets/js/designs/shaders-a.js?v=8"></script>
+<script src="assets/js/designs/shaders-b.js?v=8"></script>
+<script src="assets/js/designs/shaders-c.js?v=8"></script>
+<script src="assets/js/designs/canvas.js?v=8"></script>
+<script src="assets/js/designs/shaders-d.js?v=8"></script>
+<script src="assets/js/designs/shaders-e.js?v=8"></script>
+<script src="assets/js/designs/sims.js?v=8"></script>
+<script src="assets/js/designs/canvas-b.js?v=8"></script>
+<script src="assets/js/designs/collection-iii.js?v=8"></script>
+<script src="assets/js/designs/collection-iii-canvas.js?v=8"></script>
+<script src="assets/js/designs/collection-iv.js?v=8"></script>
+<script src="assets/js/designs/collection-iv-canvas.js?v=8"></script>
+<script src="assets/js/designs/collection-v.js?v=8"></script>
+<script src="assets/js/designs/collection-v-canvas.js?v=8"></script>
+<script src="assets/js/designs/collection-vi.js?v=8"></script>
+<script src="assets/js/designs/collection-vi-canvas.js?v=8"></script>
+<script src="assets/js/designs/collection-vii.js?v=8"></script>
+<script src="assets/js/designs/collection-vii-canvas.js?v=8"></script>
+<script src="assets/js/designs/collection-viii.js?v=8"></script>
+<script src="assets/js/designs/collection-viii-canvas.js?v=8"></script>
+<script src="assets/js/transitions.js?v=8"></script>
+<script src="assets/js/catalogue.js?v=8"></script>
+<script src="assets/js/experience.js?v=8"></script>
+<script src="assets/js/engine.js?v=8"></script>
+<script src="assets/js/main.js?v=8"></script>
 </body>
 </html>
