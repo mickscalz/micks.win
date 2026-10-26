@@ -25,11 +25,12 @@
   /* ────────────────────────────  09 · STRANGE ATTRACTOR  ───────────────── */
   D({
     id: 'strange-attractor',
-    rank: 9,
+    preview: 'assets/previews/strange-attractor.webp',
+    rank: 17,
     name: 'Strange Attractor',
     tag: 'aizawa system · 60k points',
     blurb: 'One equation, iterated sixty thousand times, that never repeats and never leaves. A shape that is only a path.',
-    captivation: 91,
+    captivation: 81,
     art: 'radial-gradient(80% 80% at 50% 45%, #c9f7ff 0%, #4fd6ff 22%, #7a5bff 48%, #1b0a3a 76%, #04040c 100%)',
     kind: '2d',
     init: function (S) {
@@ -134,11 +135,12 @@
   /* ──────────────────────────────  14 · ELECTRIC STORM  ────────────────── */
   D({
     id: 'electric-storm',
-    rank: 14,
+    preview: 'assets/previews/electric-storm.webp',
+    rank: 24,
     name: 'Electric Storm',
     tag: 'fractal lightning · wet city light',
     blurb: 'Every bolt is generated, not played back — a line broken against itself until it looks like the sky deciding where to fall.',
-    captivation: 86,
+    captivation: 72,
     art: 'linear-gradient(180deg, #05070f 0%, #16203a 34%, #33406b 56%, #6f7fb5 68%, #dfe9ff 76%, #0a0d18 100%)',
     kind: '2d',
     init: function (S) {
@@ -321,11 +323,12 @@
   /* ───────────────────────────────  16 · COSMIC WEB  ───────────────────── */
   D({
     id: 'cosmic-web',
-    rank: 16,
+    preview: 'assets/previews/cosmic-web.webp',
+    rank: 27,
     name: 'Cosmic Web',
     tag: 'filamentary structure · depth parallax',
     blurb: 'The largest structure there is: galaxies threaded on filaments, and the filaments are only the seen part of the dark.',
-    captivation: 83,
+    captivation: 69,
     art: 'radial-gradient(90% 90% at 60% 40%, #1b2f6b 0%, #2b1a5c 30%, #6a2b8f 52%, #120a2e 78%, #04040c 100%)',
     kind: '2d',
     init: function (S) {
@@ -445,11 +448,12 @@
   /* ────────────────────────────────  19 · INK BLOOM  ───────────────────── */
   D({
     id: 'ink-bloom',
-    rank: 19,
+    preview: 'assets/previews/ink-bloom.webp',
+    rank: 32,
     name: 'Ink Bloom',
     tag: 'metaball diffusion · gold on black',
     blurb: 'Drop ink into still water and it does not mix — it unfolds. This is that first second, held open indefinitely.',
-    captivation: 79,
+    captivation: 63,
     art: 'radial-gradient(70% 70% at 40% 45%, #ffe6a8 0%, #e8a13c 18%, #b83a6b 42%, #3a1240 70%, #06030c 100%)',
     kind: '2d',
     init: function (S) {
@@ -529,11 +533,12 @@
   /* ──────────────────────────────  21 · FIREFLY DEEP  ──────────────────── */
   D({
     id: 'firefly-deep',
-    rank: 21,
+    preview: 'assets/previews/firefly-deep.webp',
+    rank: 35,
     name: 'Firefly Deep',
     tag: 'bokeh depth of field · warm dusk',
     blurb: 'Ninety points of light, none of them in focus. The eye keeps trying anyway, which is the whole trick.',
-    captivation: 76,
+    captivation: 60,
     art: 'radial-gradient(80% 80% at 50% 60%, #ffd88a 0%, #ff9e4d 16%, #6a3b8f 46%, #16123a 74%, #05040c 100%)',
     kind: '2d',
     init: function (S) {
@@ -620,11 +625,12 @@
   /* ───────────────────────────────  22 · DIGITAL RAIN  ─────────────────── */
   D({
     id: 'digital-rain',
-    rank: 22,
+    preview: 'assets/previews/digital-rain.webp',
+    rank: 36,
     name: 'Digital Rain',
     tag: 'glyph cascade · depth & bleed',
     blurb: 'It is not code and it never was. It is the feeling of reading something that is reading you back.',
-    captivation: 74,
+    captivation: 59,
     art: 'linear-gradient(180deg, #00110a 0%, #00331f 30%, #00d46a 62%, #b8ffe0 78%, #01120a 100%)',
     kind: '2d',
     GLYPHS: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン0123456789<>=+*#$%&@',
@@ -717,11 +723,12 @@
   /* ──────────────────────────────  23 · PARTICLE MORPH  ────────────────── */
   D({
     id: 'particle-morph',
-    rank: 23,
+    preview: 'assets/previews/particle-morph.webp',
+    rank: 38,
     name: 'Particle Morph',
     tag: 'shape interpolation · your name in points',
     blurb: 'Three thousand points that cannot decide what they are. Every few seconds they agree on something new.',
-    captivation: 72,
+    captivation: 56,
     art: 'radial-gradient(75% 75% at 50% 45%, #ffffff 0%, #8fd8ff 18%, #4d7bff 40%, #7a2bff 66%, #10052e 100%)',
     kind: '2d',
     init: function (S) {
@@ -871,11 +878,12 @@
   /* ────────────────────────────────  24 · SILK DRAPE  ──────────────────── */
   D({
     id: 'silk-drape',
-    rank: 24,
+    preview: 'assets/previews/silk-drape.webp',
+    rank: 39,
     name: 'Silk Drape',
     tag: 'layered gradient cloth · specular sheen',
     blurb: 'Seven sheets of colour falling through each other. The light does not reflect off them so much as get caught.',
-    captivation: 70,
+    captivation: 55,
     art: 'linear-gradient(115deg, #1a0b3a 0%, #4b1c8f 22%, #b6369e 44%, #ff6b6b 62%, #ffd08a 80%, #2a0f3a 100%)',
     kind: '2d',
     init: function (S) {

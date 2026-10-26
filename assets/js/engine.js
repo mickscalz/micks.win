@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, twenty-four
+   One shared WebGL2 context, one 2D context, one crossfade layer, forty-six
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -30,6 +30,7 @@
     elTag = $('#cardTag'), elBlurb = $('#cardBlurb'), elMeter = $('#cardMeter'),
     elMeterVal = $('#cardMeterVal');
   var rail = $('#rail'), gal = $('#gal'), galGrid = $('#galGrid'), curtain = $('#curtain');
+  var galFilters = $('#galFilters'), galJump = $('#galJump'), galCount = $('#galCount');
   var cycleBar = $('#cycleBar'), statFps = $('#statFps'), statRes = $('#statRes'), hint = $('#hint');
   var tip = d.createElement('div');
   tip.className = 'rail__tip';
@@ -143,6 +144,8 @@
 
     E.t = 0;
     E.fade = 0;
+    sinceSwitch = 0;
+    warmAt = -1;
     E.seed = Math.random() * 100;
     S.seed = E.seed;
 
@@ -176,6 +179,16 @@
     }
     var tiles = galGrid.children;
     for (var q = 0; q < tiles.length; q++) tiles[q].classList.toggle('is-on', q === E.index);
+
+    // keep the active tick visible when the rail is wider than the screen
+    var active = kids[E.index];
+    if (active) {
+      active.setAttribute('aria-current', 'true');
+      for (var ri = 0; ri < kids.length; ri++) { if (ri !== E.index) kids[ri].removeAttribute('aria-current'); }
+      var want = active.offsetLeft - (rail.clientWidth || 0) * 0.5 + active.offsetWidth * 0.5;
+      if (rail.scrollTo) { try { rail.scrollTo({ left: Math.max(0, want), behavior: w.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { } }
+      else rail.scrollLeft = Math.max(0, want);
+    }
   }
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -216,7 +229,10 @@
       var b = d.createElement('button');
       b.className = 'tile';
       b.type = 'button';
-      b.style.setProperty('--art', ds.art || 'linear-gradient(135deg,#222,#000)');
+      b.setAttribute('data-family', ds.kind || 'gl');
+      // URLs inside custom properties resolve against the CSS file, not the
+      // document. Make the preview URL absolute so project Pages works too.
+      b.style.setProperty('--art', ds.preview ? 'url("' + new w.URL(ds.preview, d.baseURI).href + '")' : (ds.art || 'linear-gradient(135deg,#222,#000)'));
       b.style.setProperty('--glow', 'rgba(143,227,255,.45)');
       b.innerHTML =
         '<span class="tile__art"></span>' +
@@ -233,10 +249,48 @@
       });
       galGrid.appendChild(b);
     });
+
+    // counts on the filter chips, and a live count in the header
+    if (galCount) galCount.textContent = E.designs.length;
+    if (galJump) { galJump.max = E.designs.length; galJump.placeholder = '1–' + E.designs.length; }
+    if (galFilters) {
+      var chips = galFilters.querySelectorAll('.chip');
+      for (var c = 0; c < chips.length; c++) {
+        var f = chips[c].getAttribute('data-filter');
+        chips[c].setAttribute('aria-pressed', f === 'all' ? 'true' : 'false');
+        var n = f === 'all' ? E.designs.length : E.designs.filter(function (x) { return (x.kind || 'gl') === f; }).length;
+        var badge = chips[c].querySelector('i');
+        if (badge) badge.textContent = n;
+      }
+    }
   }
 
-  function openGal() { gal.classList.add('on'); gal.setAttribute('aria-hidden', 'false'); }
-  function closeGal() { gal.classList.remove('on'); gal.setAttribute('aria-hidden', 'true'); }
+  function applyFilter(f) {
+    if (!galFilters) return;
+    var chips = galFilters.querySelectorAll('.chip');
+    for (var c = 0; c < chips.length; c++) {
+      var chosen = chips[c].getAttribute('data-filter') === f;
+      chips[c].classList.toggle('is-on', chosen);
+      chips[c].setAttribute('aria-pressed', chosen ? 'true' : 'false');
+    }
+    var tiles = galGrid.children;
+    for (var i = 0; i < tiles.length; i++) {
+      tiles[i].hidden = !(f === 'all' || tiles[i].getAttribute('data-family') === f);
+    }
+  }
+
+  var galReturnFocus = null;
+  function openGal() {
+    galReturnFocus = d.activeElement;
+    gal.inert = false;
+    gal.classList.add('on'); gal.setAttribute('aria-hidden', 'false');
+    gal.querySelector('.gal__close').focus();
+  }
+  function closeGal() {
+    gal.classList.remove('on'); gal.setAttribute('aria-hidden', 'true');
+    gal.inert = true;
+    if (galReturnFocus && galReturnFocus.focus) galReturnFocus.focus();
+  }
 
   /* --------------------------------------------------------------- controls */
   d.addEventListener('click', function (e) {
@@ -252,6 +306,16 @@
     else if (a === 'full') { toggleFull(); }
   });
 
+  // number box in the gallery head
+  if (galJump) {
+    galJump.addEventListener('change', function () {
+      var n = parseInt(galJump.value, 10);
+      if (n >= 1 && n <= E.designs.length) { E.playing = true; show(n - 1); closeGal(); }
+      galJump.value = '';
+    });
+    galJump.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+
   function togglePause() {
     E.paused = !E.paused;
     d.body.classList.toggle('is-paused', E.paused);
@@ -263,9 +327,21 @@
     } else if (d.exitFullscreen) d.exitFullscreen();
   }
 
+  var digitBuf = '', digitAt = 0;
   w.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab' && e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
+      if (e.key === 'Escape') closeGal();
+      return;
+    }
     if (gal.classList.contains('on') && e.key !== 'g' && e.key !== 'G') {
       if (e.key === 'Escape') closeGal();
+      if (e.key === 'Tab') {
+        var focusable = gal.querySelectorAll('button:not([hidden]), input');
+        var list = Array.prototype.filter.call(focusable, function (el) { return !el.hidden && el.offsetParent !== null; });
+        var first = list[0], lastFocus = list[list.length - 1];
+        if (e.shiftKey && d.activeElement === first) { e.preventDefault(); lastFocus.focus(); }
+        else if (!e.shiftKey && d.activeElement === lastFocus) { e.preventDefault(); first.focus(); }
+      }
       return;
     }
     switch (e.key) {
@@ -278,9 +354,13 @@
       case 'Escape': closeGal(); break;
       default:
         if (e.key >= '0' && e.key <= '9') {
-          var n = parseInt(e.key, 10);
-          if (n === 0) n = 10;
-          if (n <= E.designs.length) { E.playing = true; show(n - 1); }
+          // two digits typed within a second reach worlds 11–46 directly
+          var now = Date.now();
+          digitBuf = (now - digitAt < 1000 && digitBuf.length < 2 && digitBuf !== '0') ? digitBuf + e.key : e.key;
+          digitAt = now;
+          var n = digitBuf === '0' ? 10 : parseInt(digitBuf, 10);
+          if (n < 1 || n > E.designs.length) { digitBuf = e.key; n = parseInt(digitBuf, 10); }
+          if (n >= 1 && n <= E.designs.length) { E.playing = true; show(n - 1); }
         }
     }
   });
@@ -380,6 +460,7 @@
 
   /* ----------------------------------------------------------------- boot */
   function start() {
+    if (E.playing) return;
     E.playing = true;
     resize();
     show(0, { snapshot: false });
@@ -387,6 +468,13 @@
     curtain.classList.add('gone');
     d.body.classList.remove('is-entering');
     setTimeout(function () { hint.classList.add('gone'); }, 11000);
+  }
+
+  if (galFilters) {
+    galFilters.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.chip') : null;
+      if (b) applyFilter(b.getAttribute('data-filter'));
+    });
   }
 
   buildRail();

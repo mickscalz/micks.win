@@ -13,11 +13,12 @@
   /* ──────────────────────────────  15 · QUANTUM FOAM  ──────────────────── */
   D({
     id: 'quantum-foam',
-    rank: 15,
+    preview: 'assets/previews/quantum-foam.webp',
+    rank: 26,
     name: 'Quantum Foam',
     tag: 'worley cells · soap-film interference',
     blurb: 'Boil space down far enough and it stops being smooth. What is left is bubbles, and the bubbles are rainbows.',
-    captivation: 84,
+    captivation: 70,
     art: 'radial-gradient(90% 90% at 30% 25%, #d8fff4 0%, #62e8d0 18%, #3aa6ff 40%, #a55cff 62%, #22103f 100%)',
     kind: 'gl',
     frag: [
@@ -76,11 +77,12 @@
   /* ────────────────────────────  17 · STAINED COSMOS  ──────────────────── */
   D({
     id: 'stained-cosmos',
-    rank: 17,
+    preview: 'assets/previews/stained-cosmos.webp',
+    rank: 29,
     name: 'Stained Cosmos',
     tag: 'kaleidoscopic voronoi · leaded glass',
     blurb: 'A cathedral window built from geometry instead of glass, folding into itself forever while the light moves behind it.',
-    captivation: 82,
+    captivation: 67,
     art: 'conic-gradient(from 210deg at 50% 50%, #ff4d9d, #ffb547, #46e8c0, #4d7bff, #a44dff, #ff4d9d)',
     kind: 'gl',
     frag: [
@@ -139,11 +141,12 @@
   /* ──────────────────────────────  18 · NEON HORIZON  ──────────────────── */
   D({
     id: 'neon-horizon',
-    rank: 18,
+    preview: 'assets/previews/neon-horizon.webp',
+    rank: 30,
     name: 'Neon Horizon',
     tag: 'retrowave grid · dying sun',
     blurb: 'The last drive of the night. The grid runs out in front of you forever and the sun has been setting for thirty years.',
-    captivation: 80,
+    captivation: 65,
     art: 'linear-gradient(180deg, #12043a 0%, #5b1a8f 30%, #ff2e88 52%, #ff7a3d 60%, #160a2e 62%, #06030f 100%)',
     kind: 'gl',
     frag: [
@@ -217,11 +220,12 @@
   /* ──────────────────────────────  20 · SILKEN PLASMA  ─────────────────── */
   D({
     id: 'silken-plasma',
-    rank: 20,
+    preview: 'assets/previews/silken-plasma.webp',
+    rank: 33,
     name: 'Silken Plasma',
     tag: 'domain-warped fractal noise',
     blurb: 'Nothing here is drawn. Three fields of noise are folded through each other until something that looks like weather appears.',
-    captivation: 77,
+    captivation: 62,
     art: 'linear-gradient(115deg, #0a0620 0%, #2a1a6b 22%, #7a3bd6 44%, #ff6ba8 66%, #ffd39a 84%, #140a2c 100%)',
     kind: 'gl',
     frag: [
