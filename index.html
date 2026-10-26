@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>micks.win — A Cabinet of Infinite Rooms</title>
-<meta name="description" content="micks.win — eighty-six living, breathing worlds rendered in real time. An endless gallery of light." />
+<meta name="description" content="micks.win — 128 living, breathing worlds rendered in real time. An endless gallery of light." />
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
-<meta property="og:description" content="Eighty-six living worlds rendered in real time." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" />
+<meta property="og:description" content="128 living worlds rendered in real time." />
 <link rel="stylesheet" href="assets/css/style.css" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
 </head>
@@ -46,7 +43,7 @@
 
   <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
   <section class="card" id="card" aria-live="polite">
-    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 86</em></div>
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 128</em></div>
     <div class="card__collection" id="cardCollection"></div>
     <h1 class="card__name" id="cardName"></h1>
     <p class="card__tag" id="cardTag"></p>
@@ -83,7 +80,7 @@
   <button class="immerse-return" id="immerseReturn" data-act="immerse" aria-label="Show interface (H)" hidden>return · H</button>
 
   <div class="hint" id="hint">
-    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>86</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>128</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
   </div>
 
   <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
@@ -91,10 +88,10 @@
     <div class="gal__head">
       <div>
         <h2 id="galTitle">The Cabinet</h2>
-        <p><b id="galCount">86</b> rooms. Newest collection first, ranked within each collection.</p>
+        <p><b id="galCount">128</b> rooms. Newest collection first, ranked within each collection.</p>
       </div>
       <div class="gal__tools">
-        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="86" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
+        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="128" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
         <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
@@ -108,17 +105,6 @@
       <button type="button" class="chip" data-filter="2d">drawn <i></i></button>
     </div>
     <div class="gal__grid" id="galGrid"></div>
-  </div>
-
-  <!-- ─────────────────────────────  CURTAIN  ─────────────────────────────── -->
-  <div class="curtain" id="curtain">
-    <div class="curtain__inner">
-      <div class="curtain__orb"></div>
-      <div class="curtain__title">micks<span>.</span>win</div>
-      <div class="curtain__sub">eighty-six worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
-      <button class="curtain__enter" id="enter">enter</button>
-      <div class="curtain__note">headphones optional · a fast GPU recommended</div>
-    </div>
   </div>
 
   <noscript><div class="noscript">This cabinet is built from live mathematics — please enable JavaScript.</div></noscript>
@@ -139,6 +125,8 @@
 <script src="assets/js/designs/collection-iii-canvas.js"></script>
 <script src="assets/js/designs/collection-iv.js"></script>
 <script src="assets/js/designs/collection-iv-canvas.js"></script>
+<script src="assets/js/designs/collection-v.js"></script>
+<script src="assets/js/designs/collection-v-canvas.js"></script>
 <script src="assets/js/catalogue.js"></script>
 <script src="assets/js/engine.js"></script>
 <script src="assets/js/main.js"></script>

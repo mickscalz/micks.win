@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, eighty-six
+   One shared WebGL2 context, one 2D context, one crossfade layer, 128
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -30,7 +30,7 @@
   var card = $('#card'), elRank = $('#cardRank'), elTotal = $('#cardTotal'), elName = $('#cardName'),
     elTag = $('#cardTag'), elBlurb = $('#cardBlurb'), elMeter = $('#cardMeter'),
     elMeterVal = $('#cardMeterVal');
-  var rail = $('#rail'), gal = $('#gal'), galGrid = $('#galGrid'), curtain = $('#curtain');
+  var rail = $('#rail'), gal = $('#gal'), galGrid = $('#galGrid');
   var galFilters = $('#galFilters'), galJump = $('#galJump'), galCount = $('#galCount');
   var cycleBar = $('#cycleBar'), statFps = $('#statFps'), statRes = $('#statRes'), hint = $('#hint');
   var tip = d.createElement('div');
@@ -211,7 +211,15 @@
       var b = d.createElement('button');
       b.className = 'rail__item';
       b.type = 'button';
-      b.style.setProperty('--h', (8 + (ds.captivation || 60) / 100 * 30).toFixed(1) + 'px');
+      var img = d.createElement('img');
+      img.src = new w.URL(ds.preview, d.baseURI).href;
+      img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+      img.width = 96; img.height = 60;
+      img.addEventListener('error', function(){
+        img.remove(); b.classList.add('rail__item--fallback');
+        var label = d.createElement('span'); label.className = 'rail__fallback'; label.textContent = ds.name; b.appendChild(label);
+      }, {once:true});
+      b.appendChild(img);
       b.setAttribute('aria-label', ds.rank + '. ' + ds.name);
       var num = d.createElement('span');
       num.className = 'rail__num';
@@ -383,11 +391,11 @@
       case 'f': case 'F': toggleFull(); break;
       case 'h': case 'H': setImmersive(!E.immersive); break;
       case 's': case 'S': E.playing = true; show((Math.random() * E.designs.length) | 0); break;
-      case 'Escape': E.immersive ? setImmersive(false) : closeGal(); break;
+      case 'Escape': digitBuf = ''; E.immersive ? setImmersive(false) : closeGal(); break;
       default:
         if (e.key >= '0' && e.key <= '9') {
           // Rank entry grows with the catalogue; successive digits arrive within a second.
-          var now = Date.now();
+          var now = e.timeStamp || performance.now();
           digitBuf = (now - digitAt < 1000 && digitBuf.length < String(E.designs.length).length && digitBuf !== '0') ? digitBuf + e.key : e.key;
           digitAt = now;
           var n = digitBuf === '0' ? 10 : parseInt(digitBuf, 10);
@@ -493,16 +501,32 @@
     }
   }
 
+  /* --------------------------------------------------------- ambient interface */
+  var idleTimer = 0, keyboardUI = false;
+  E.idleDelay = 3500;
+  function wakeUI() {
+    d.body.classList.remove('is-idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function(){
+      if (gal.classList.contains('on') || keyboardUI) { wakeUI(); return; }
+      d.body.classList.add('is-idle');
+      tip.classList.remove('on');
+    }, E.idleDelay);
+  }
+  w.addEventListener('pointermove', function(){keyboardUI=false;wakeUI();}, {passive:true});
+  w.addEventListener('pointerdown', function(){keyboardUI=false;wakeUI();}, {passive:true});
+  w.addEventListener('wheel', wakeUI, {passive:true});
+  w.addEventListener('keydown', function(e){if(!e.ctrlKey&&!e.metaKey&&!e.altKey){keyboardUI=e.key==='Tab';wakeUI();}});
+  d.addEventListener('focusin', wakeUI);
+
   /* ----------------------------------------------------------------- boot */
   function start() {
     if (E.playing) return;
     E.playing = true;
     resize();
     show(0, { snapshot: false });
-    draw(1 / 60, performance.now());      // one frame painted behind the curtain
-    curtain.classList.add('gone');
-    d.body.classList.remove('is-entering');
-    setTimeout(function () { hint.classList.add('gone'); }, 11000);
+    draw(1 / 60, performance.now());      // paint immediately; no entry screen or user gesture
+    wakeUI();
   }
 
   if (galFilters) {
@@ -514,15 +538,11 @@
 
   buildRail();
   buildGallery();
-  resize();
-  show(0, { snapshot: false });
+  start();
   requestAnimationFrame(tick);
-
-  $('#enter').addEventListener('click', start);
-  curtain.addEventListener('click', function (e) { if (e.target === curtain) start(); });
-  setTimeout(function () { if (!E.playing) start(); }, 7000);   // the door opens itself
 
   // expose for tweaking from the console
   w.Cabinet = E;
   w.Cabinet.show = show;
+  w.Cabinet.wakeUI = wakeUI;
 })(window, document);
