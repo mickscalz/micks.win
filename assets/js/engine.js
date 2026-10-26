@@ -222,7 +222,7 @@
         '<span class="tile__art"></span>' +
         '<span class="tile__heat">' + (ds.captivation || 0) + '</span>' +
         '<span class="tile__body">' +
-        '<span class="tile__no">' + pad(ds.rank) + ' / 24</span>' +
+        '<span class="tile__no">' + pad(ds.rank) + ' / ' + pad(E.designs.length) + '</span>' +
         '<span class="tile__name">' + ds.name + '</span>' +
         '<span class="tile__tag">' + ds.tag + '</span>' +
         '</span>';

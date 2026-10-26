@@ -158,7 +158,35 @@
         this.skyline.push({ x: x, w: wd, h: 0.10 + r() * 0.34, lit: r() });
         x += wd + r() * 0.02;
       }
+      this.buildSkyline(S);
     },
+    buildSkyline: function (S) {
+      // one off-screen render: the city never changes, only the light on it
+      var W = S.w, H = S.h, skyH = Math.max(40, Math.round(H * 0.46));
+      var c = document.createElement('canvas');
+      c.width = Math.max(2, Math.round(W));
+      c.height = skyH;
+      var g = c.getContext('2d');
+      if (!g) { this.sky = null; return; }
+      var i, b2, baseY = skyH;
+      for (i = 0; i < this.skyline.length; i++) {
+        b2 = this.skyline[i];
+        var bx = b2.x * W, bw = Math.max(2, b2.w * W), bh = b2.h * H;
+        g.fillStyle = '#04060d';
+        g.fillRect(bx, baseY - bh, bw, bh);
+        var cols = Math.max(1, (bw / 9) | 0), rows = Math.max(1, (bh / 13) | 0);
+        g.fillStyle = 'rgba(255,206,140,' + (0.10 + 0.5 * b2.lit).toFixed(2) + ')';
+        for (var cc = 0; cc < cols; cc++) {
+          for (var rw = 0; rw < rows; rw++) {
+            var hv = ((cc * 7 + rw * 13 + i * 31) % 23) / 23;
+            if (hv > 0.62) continue;
+            g.fillRect(bx + 3 + cc * 9, baseY - bh + 5 + rw * 13, 3, 5);
+          }
+        }
+      }
+      this.sky = c; this.skyH = skyH;
+    },
+    resize: function (S) { this.buildSkyline(S); },
     makeBolt: function (S, x0, y0, x1, y1, depth) {
       var pts = [{ x: x0, y: y0 }, { x: x1, y: y1 }];
       var iter = depth || 6, disp = 0.16;
@@ -262,22 +290,16 @@
       }
       ctx.stroke();
 
-      // skyline
+      // skyline (pre-rendered; the flash re-lights it)
       var baseY = H * 0.86;
-      for (i = 0; i < this.skyline.length; i++) {
-        var b2 = this.skyline[i];
-        var bx2 = b2.x * W, bw = b2.w * W, bh = b2.h * H;
-        ctx.fillStyle = '#04060d';
-        ctx.fillRect(bx2, baseY - bh, bw, bh);
-        // windows
-        var cols = Math.max(1, (bw / 9) | 0), rows = Math.max(1, (bh / 13) | 0);
-        ctx.fillStyle = 'rgba(255,206,140,' + (0.10 + 0.5 * b2.lit).toFixed(2) + ')';
-        for (var cc = 0; cc < cols; cc++) {
-          for (var rw = 0; rw < rows; rw++) {
-            var hv = ((cc * 7 + rw * 13 + i * 31) % 23) / 23;
-            if (hv > 0.62) continue;
-            ctx.fillRect(bx2 + 3 + cc * 9, baseY - bh + 5 + rw * 13, 3, 5);
-          }
+      if (this.sky) {
+        ctx.drawImage(this.sky, 0, baseY - this.skyH);
+        if (this.flash > 0.02) {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = Math.min(0.5, 0.30 * this.flash);
+          ctx.drawImage(this.sky, 0, baseY - this.skyH);
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = 'source-over';
         }
       }
       // wet street reflection
@@ -309,7 +331,7 @@
     init: function (S) {
       var r = rng(7), i;
       this.nodes = [];
-      var N = 190;
+      var N = 150;
       for (i = 0; i < N; i++) {
         // clustered: half in a few blob centres, half uniform
         var x, y, z;
@@ -327,7 +349,7 @@
         for (var j = i + 1; j < N; j++) {
           var a = this.nodes[i], b = this.nodes[j];
           var dd = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
-          if (dd < 1.15) this.edges.push({ a: i, b: j, d: Math.sqrt(dd), ph: r() * 6.28 });
+          if (dd < 0.92) this.edges.push({ a: i, b: j, d: Math.sqrt(dd), ph: r() * 6.28 });
         }
       }
       this.pulses = [];
@@ -369,11 +391,15 @@
         if (p1.z < 1 || p2.z < 1) continue;
         var dep = clamp(1 - (p1.z + p2.z) * 0.5 / 14, 0, 1);
         var a = 0.030 + 0.16 * Math.pow(dep, 2.2) * (0.55 + 0.45 * Math.sin(t * 0.5 + e.ph));
-        var lg = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-        lg.addColorStop(0, 'rgba(120,150,255,' + (a * 1.4).toFixed(3) + ')');
-        lg.addColorStop(0.5, 'rgba(180,140,255,' + a.toFixed(3) + ')');
-        lg.addColorStop(1, 'rgba(255,150,200,' + (a * 1.2).toFixed(3) + ')');
-        ctx.strokeStyle = lg;
+        if (a < 0.045) {
+          ctx.strokeStyle = 'rgba(170,150,255,' + a.toFixed(3) + ')';   // cheap flat stroke
+        } else {
+          var lg = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+          lg.addColorStop(0, 'rgba(120,150,255,' + (a * 1.4).toFixed(3) + ')');
+          lg.addColorStop(0.5, 'rgba(180,140,255,' + a.toFixed(3) + ')');
+          lg.addColorStop(1, 'rgba(255,150,200,' + (a * 1.2).toFixed(3) + ')');
+          ctx.strokeStyle = lg;
+        }
         ctx.lineWidth = Math.max(0.4, dep * 1.9);
         ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
       }
