@@ -513,3 +513,13 @@ body[data-world-theme="paper"] .card::before{content:'';position:absolute;inset:
 body[data-world-theme="paper"] .ctl{background:rgba(8,20,30,.82);}
 body[data-world-theme="paper"] .hint kbd{color:#193b4a;border-color:rgba(15,40,50,.28);background:rgba(15,40,50,.06);}
 body[data-world-theme="paper"] .brand__stat{color:rgba(15,40,50,.6);}
+
+/* A genuinely quiet view: hidden controls are also inert in the engine, not
+   merely transparent keyboard traps. The return control remains reachable. */
+.immerse-return{position:fixed;z-index:25;right:var(--pad);bottom:var(--pad);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:11px 17px;background:rgba(4,14,25,.75);color:#e1eff4;font-family:var(--mono);font-size:10px;letter-spacing:.14em;cursor:pointer;opacity:.55;transition:opacity .2s;}
+.immerse-return[hidden]{display:none!important;}
+.immerse-return:hover,.immerse-return:focus-visible{opacity:1;outline:2px solid var(--accent);outline-offset:4px;}
+body.is-immersive .brand,body.is-immersive .card,body.is-immersive .rail,body.is-immersive .ctl,body.is-immersive .hint,body.is-immersive .cycle,body.is-immersive .rail__tip{visibility:hidden;pointer-events:none;}
+@media(min-width:861px){.rail{right:calc(var(--pad) + 540px);}}
+@media(max-width:860px){.ctl__btn[data-act="immerse"]{display:inline-flex;}}
+@media(prefers-reduced-motion:reduce){.immerse-return{transition:none;}}

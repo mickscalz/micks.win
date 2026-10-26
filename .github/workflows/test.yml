@@ -18,5 +18,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npx playwright-core install --with-deps chromium
+      - name: Select a real Chromium browser
+        shell: bash
+        run: |
+          # Hosted runners usually include Chrome and its native dependencies.
+          # Avoid an unnecessary browser/apt download; retain the Playwright
+          # installation path for runners that do not have Chrome installed.
+          if command -v google-chrome >/dev/null 2>&1; then
+            echo "CHROMIUM_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright-core install --with-deps chromium
+          fi
       - run: npm run test:browser

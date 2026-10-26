@@ -4,10 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>micks.win — A Cabinet of Infinite Rooms</title>
-<meta name="description" content="micks.win — sixty-six living, breathing worlds rendered in real time. An endless gallery of light." />
+<meta name="description" content="micks.win — eighty-six living, breathing worlds rendered in real time. An endless gallery of light." />
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
-<meta property="og:description" content="Sixty-six living worlds rendered in real time." />
+<meta property="og:description" content="Eighty-six living worlds rendered in real time." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" />
@@ -46,7 +46,7 @@
 
   <!-- ─────────────────────────────  TITLE CARD  ──────────────────────────── -->
   <section class="card" id="card" aria-live="polite">
-    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 66</em></div>
+    <div class="card__rank"><span id="cardRank">01</span><em id="cardTotal">/ 86</em></div>
     <div class="card__collection" id="cardCollection"></div>
     <h1 class="card__name" id="cardName"></h1>
     <p class="card__tag" id="cardTag"></p>
@@ -66,7 +66,7 @@
     <button class="ctl__btn" data-act="prev" title="Previous world (←)" aria-label="Previous world">
       <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg>
     </button>
-    <button class="ctl__btn ctl__btn--play" data-act="play" title="Pause / resume the cycle (Space)" aria-label="Pause or resume">
+    <button class="ctl__btn ctl__btn--play" data-act="play" title="Pause / resume the cycle (Space)" aria-label="Hold world motion" aria-pressed="false">
       <svg class="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
       <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
     </button>
@@ -76,11 +76,14 @@
     <span class="ctl__div"></span>
     <button class="ctl__btn ctl__btn--txt" data-act="shuffle" title="Shuffle (S)">shuffle</button>
     <button class="ctl__btn ctl__btn--txt" data-act="gallery" title="Gallery (G)">gallery</button>
+    <button class="ctl__btn ctl__btn--txt" data-act="immerse" title="Hide interface (H)" aria-pressed="false">immerse</button>
     <button class="ctl__btn ctl__btn--txt" data-act="full" title="Fullscreen (F)">full</button>
   </div>
 
+  <button class="immerse-return" id="immerseReturn" data-act="immerse" aria-label="Show interface (H)" hidden>return · H</button>
+
   <div class="hint" id="hint">
-    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>66</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
+    <kbd>←</kbd><kbd>→</kbd> travel &nbsp;·&nbsp; <kbd>space</kbd> hold &nbsp;·&nbsp; <kbd>G</kbd> gallery &nbsp;·&nbsp; <kbd>H</kbd> immerse &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>86</kbd> jump &nbsp;·&nbsp; move the cursor to touch the world
   </div>
 
   <!-- ─────────────────────────────  GALLERY  ─────────────────────────────── -->
@@ -88,10 +91,10 @@
     <div class="gal__head">
       <div>
         <h2 id="galTitle">The Cabinet</h2>
-        <p><b id="galCount">66</b> rooms. Newest collection first, ranked within each collection.</p>
+        <p><b id="galCount">86</b> rooms. Newest collection first, ranked within each collection.</p>
       </div>
       <div class="gal__tools">
-        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="66" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
+        <label class="gal__jump"><span>go to</span><input id="galJump" type="number" min="1" max="86" placeholder="##" inputmode="numeric" aria-label="Jump to a world by number" /></label>
         <button class="gal__close" data-act="close-gal" aria-label="Close gallery">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
@@ -112,7 +115,7 @@
     <div class="curtain__inner">
       <div class="curtain__orb"></div>
       <div class="curtain__title">micks<span>.</span>win</div>
-      <div class="curtain__sub">sixty-six worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
+      <div class="curtain__sub">eighty-six worlds &nbsp;·&nbsp; rendered live &nbsp;·&nbsp; nothing recorded</div>
       <button class="curtain__enter" id="enter">enter</button>
       <div class="curtain__note">headphones optional · a fast GPU recommended</div>
     </div>
@@ -134,6 +137,8 @@
 <script src="assets/js/designs/canvas-b.js"></script>
 <script src="assets/js/designs/collection-iii.js"></script>
 <script src="assets/js/designs/collection-iii-canvas.js"></script>
+<script src="assets/js/designs/collection-iv.js"></script>
+<script src="assets/js/designs/collection-iv-canvas.js"></script>
 <script src="assets/js/catalogue.js"></script>
 <script src="assets/js/engine.js"></script>
 <script src="assets/js/main.js"></script>
