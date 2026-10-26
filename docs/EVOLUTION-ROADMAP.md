@@ -1,5 +1,20 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Working first-stage nursery and music tools
+
+The [new delivery notes](NURSERY-AND-MUSIC-LAB.md) document what now works:
+2–4 weighted compatible eco-v1 adapters, inherited geometry/behaviour recipes,
+twin auditions, a separate opt-in local library, offspring-as-parents, ancestry,
+trait provenance, validated JSON import/export; editable global/per-world causal
+routes; and an optional bounded local PCM-WAV spectral/chroma/energy timeline with
+look-ahead, tempo/marker corrections and cancellation.
+
+These are a constrained first implementation, not every phase below. Full original
+renderer genetics, runtime checkpoints, all-codec look-ahead, HPSS, learned features,
+autonomous quality-diversity search and 32-parent composition remain future work.
+The authored catalogue remains 320 worlds. The design programme below is retained
+as context rather than a claim that all its acceptance goals are complete.
+
 ## Delivered in Collection VIII
 
 320 authored worlds: all 256 ancestors plus 64 new constructions. Thirty-two
@@ -32,7 +47,8 @@ Audio now has user-tunable attack, release and sensitivity. Smooth envelopes
 shape visual energy and band response, avoiding a hard loudness-to-flash mapping.
 Four small, bounded routes connect bass to growth pressure, mids to coupling,
 energy to atmosphere and highs to light persistence. Zero reactivity bypasses
-these routes. They are fixed mappings, not an editable route matrix.
+these routes. The new music editor now makes four routes editable and bypassable,
+with global fallback and per-world profiles.
 This remains limited real-time analysis, not full musical understanding.
 
 ## Priority 1 — the lineage nursery
@@ -96,9 +112,11 @@ compose *compatible modules* with sparse dominance, not average 32 complete
 worlds into mud. Preserve parent contributions and let the user inspect them.
 Lineages should diversify rather than produce an indiscriminate light soup.
 
-**Not delivered yet:** persistent offspring nursery, cross-world recipe breeding,
-import/export, ancestry browser, autonomous breeding or a 32-parent solver. The
-current within-world inherited agent variation is a foundation, not this library.
+**Current status:** two-to-four-parent compatible recipe breeding, a separate opt-in
+nursery, ancestry/provenance, twins and JSON transfer now work. Authored founders are
+explicit adapters into a small shared phenotype vocabulary, not exact original
+renderers. Missing ancestor IDs are shown; no runtime checkpoints, autonomous
+breeding or 32-parent solver are shipped.
 
 ## Priority 2 — music and world as one organism
 
@@ -163,10 +181,10 @@ hardware FPS or low audio latency.
 
 ## Practical order
 
-1. Stabilise these 64 systems and transitions through visual/listening review.
-2. Make per-world musical response profiles, then implement causal route editing.
-3. Build the explicit two-parent nursery with local export and provenance.
-4. Add optional local-file look-ahead analysis and correction tools.
+1. Review the first nursery phenotypes and music routes visually and by listening.
+2. Expand compatible modules without losing per-trait provenance or finite budgets.
+3. Add runtime checkpoints and richer ancestry navigation after recipe stability.
+4. Broaden codecs and improve musical timing/features beyond the initial WAV worker.
 5. Expand diversity-preserving automated lineage search only after resource and
    safety limits are proven; revisit 32-parent compositions after 2–4 work well.
 

@@ -69,7 +69,8 @@
     lastAuto = 0,
     notice = "Internal rhythm · no audio access",
     lastAction = "Guided: newest-first travel",
-    panelOpen = false;
+    panelOpen = false,
+    panelReturnFocus = null;
   try {
     if (
       w.matchMedia &&
@@ -138,6 +139,7 @@
       settings = sanitize(raw.settings || {});
       likes = cleanMap(raw.likes);
       saved = cleanMap(raw.saved);
+      if (w.MusicLab) w.MusicLab.restore(raw.routes);
     }
   } catch (e) {}
   function cleanMap(v) {
@@ -161,7 +163,12 @@
       w.localStorage.setItem(storageKey + "-consent", "yes");
       w.localStorage.setItem(
         storageKey,
-        JSON.stringify({ settings: settings, likes: likes, saved: saved }),
+        JSON.stringify({
+          settings: settings,
+          likes: likes,
+          saved: saved,
+          routes: w.MusicLab ? w.MusicLab.serialize() : undefined,
+        }),
       );
     } catch (e) {
       notice = "Storage unavailable · session controls still work";
@@ -263,15 +270,21 @@
     if (recent.length > 16) recent.shift();
     history.push(d.id);
     if (history.length > 32) history.shift();
+    if (w.MusicLab) w.MusicLab.renderRoutes();
     paint(true);
   }
   function feedback(action) {
     if (!engine) return;
     var d = engine.designs[engine.index];
+    if (d.nursery && ["like", "save"].includes(action)) {
+      notice = "Save offspring separately in the nursery panel";
+      paint(true);
+      return;
+    }
     if (action === "like") likes[d.id] = (likes[d.id] || 0) > 0 ? 0 : 1;
     else if (action === "save") saved[d.id] = saved[d.id] ? 0 : 1;
     else if (action === "skip") {
-      likes[d.id] = clamp((likes[d.id] || 0) - 1, -3, 3);
+      if (!d.nursery) likes[d.id] = clamp((likes[d.id] || 0) - 1, -3, 3);
       engine.show((engine.index + 1) % engine.designs.length);
     } else if (action === "calmer") {
       settings.intensity = clamp(settings.intensity - 0.15, 0, 1);
@@ -373,6 +386,7 @@
             ? "low-density breathing room"
             : "gradual spatial recomposition");
     }
+    if (w.MusicLab) w.MusicLab.tick();
     paint(false);
     return frame();
   }
@@ -401,29 +415,31 @@
     e.colorSafe = settings.colorSafe;
     e.quality = quality;
     e.mode = settings.mode;
-    // Independent, sustained response routes. Manual traits remain the base;
-    // zero reactivity bypasses all musical trait modulation.
+    // Fixed legacy routes remain the fallback for embedders without the editor.
     if (measured && settings.reactivity > 0) {
-      e.growth = clamp(
-        e.growth * (1 + (signal.bass - 0.3) * 0.35 * audioWeight),
-        0,
-        1,
-      );
-      e.coupling = clamp(
-        e.coupling * (1 + (signal.mid - 0.25) * 0.3 * audioWeight),
-        0,
-        1,
-      );
-      e.atmosphere = clamp(
-        e.atmosphere * (1 + (signal.energy - 0.4) * 0.3 * audioWeight),
-        0,
-        1,
-      );
-      e.afterglow = clamp(
-        e.afterglow * (1 + (signal.treble - 0.2) * 0.45 * audioWeight),
-        0,
-        1,
-      );
+      if (w.MusicLab) w.MusicLab.apply(e, signal, audioWeight, settings);
+      else {
+        e.growth = clamp(
+          e.growth * (1 + (signal.bass - 0.3) * 0.35 * audioWeight),
+          0,
+          1,
+        );
+        e.coupling = clamp(
+          e.coupling * (1 + (signal.mid - 0.25) * 0.3 * audioWeight),
+          0,
+          1,
+        );
+        e.atmosphere = clamp(
+          e.atmosphere * (1 + (signal.energy - 0.4) * 0.3 * audioWeight),
+          0,
+          1,
+        );
+        e.afterglow = clamp(
+          e.afterglow * (1 + (signal.treble - 0.2) * 0.45 * audioWeight),
+          0,
+          1,
+        );
+      }
     }
     if (settings.mode === "autonomous") {
       e.density *= 0.65 + 0.35 * arc;
@@ -447,6 +463,9 @@
     paint(false);
   }
   function stopAudio() {
+    if (w.MusicLab) w.MusicLab.release();
+    var picker = w.document && w.document.getElementById("audioFile");
+    if (picker && "value" in picker) picker.value = "";
     audioEpoch++;
     if (audio) {
       if (audio.stream)
@@ -571,7 +590,10 @@
         kind === "file"
           ? "Local audio · not uploaded or retained"
           : "Microphone active · analysis only, not recorded";
-      if (media) await media.play();
+      if (media) {
+        await media.play();
+        if (w.MusicLab) w.MusicLab.setFile(file, media);
+      }
       paint(true);
     } catch (error) {
       if (stream)
@@ -707,6 +729,7 @@
     signal.balance = signal.stereoReliable ? (R - L) / (R + L + 0.0001) : 0;
   }
   function reset() {
+    if (w.MusicLab) w.MusicLab.reset();
     stopAudio();
     consent = false;
     likes = {};
@@ -877,9 +900,14 @@
       );
       var like = d.querySelector('[data-feedback="like"]'),
         save = d.querySelector('[data-feedback="save"]');
-      if (like)
+      if (like) {
+        like.disabled = !!room.nursery;
         like.setAttribute("aria-pressed", String((likes[room.id] || 0) > 0));
-      if (save) save.setAttribute("aria-pressed", String(!!saved[room.id]));
+      }
+      if (save) {
+        save.disabled = !!room.nursery;
+        save.setAttribute("aria-pressed", String(!!saved[room.id]));
+      }
       drawWorldList("savedWorlds", saved, "No saved worlds");
       drawWorldList("likedWorlds", likes, "No liked worlds");
     }
@@ -920,6 +948,7 @@
     var d = w.document,
       p = d.getElementById("experiencePanel");
     if (on) {
+      if (!panelOpen) panelReturnFocus = d.activeElement;
       if (engine.immersive) engine.setImmersive(false);
       engine.closeGallery();
     }
@@ -939,7 +968,11 @@
     if (on) {
       engine.wakeUI();
       p.querySelector("button").focus();
-    } else d.getElementById("experienceToggle").focus();
+    } else
+      (panelReturnFocus && panelReturnFocus.isConnected
+        ? panelReturnFocus
+        : d.getElementById("experienceToggle")
+      ).focus();
   }
   function mount(E) {
     engine = E;
@@ -1051,6 +1084,7 @@
       return Object.assign({}, settings);
     },
     defaults: defaults,
+    savePreferences: persist,
     set: set,
     effective: effective,
     frame: frame,

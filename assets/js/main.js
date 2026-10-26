@@ -3,6 +3,7 @@
    ========================================================================== */
 (function (w, d) {
   'use strict';
+  if(w.Cabinet&&w.Cabinet.playing){w.MusicLab.mount();w.NurseryUI.mount();}
 
   /* one visible failure is better than a silent black screen */
   var fatal = d.getElementById('fatal');

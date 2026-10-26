@@ -22,6 +22,27 @@ Use a current browser with WebGL2 and hardware acceleration. npm is only needed
 for development tests. Microphone access requires HTTPS or localhost and explicit
 browser permission; local audio files do not require a microphone.
 
+## New: lineage nursery & music laboratory
+
+Open **breed · nursery** to recombine **2–4 compatible parent genomes**, audition
+and name twins, save offspring, re-parent them and inspect ancestry/trait provenance.
+The separate library is session-only unless you explicitly load/enable IndexedDB
+persistence; JSON export/import is available. Authored founders are clearly labelled
+eco-v1 adapters, not exact clones or arbitrary blends of all 320 original renderers.
+The catalogue itself is unchanged.
+
+In **tune · audio → Music laboratory**, edit four bounded global/per-world routes.
+Optional, cancellable **local PCM-WAV analysis** adds a spectral/chroma/energy timeline,
+change candidates, look-ahead and manual tempo/marker corrections. No uploads or
+model downloads. Current limits are 32 MiB/10 minutes and PCM16/float32 WAV for
+look-ahead; other browser-playable formats keep real-time analysis. Ordinary route
+profiles persist only with settings consent; audio/features are never saved.
+
+See [usage, limits, storage semantics and verification](docs/NURSERY-AND-MUSIC-LAB.md).
+32-parent/unattended breeding, runtime checkpoints, broad codec look-ahead and learned
+musical understanding are **not** shipped. [The longer roadmap](docs/EVOLUTION-ROADMAP.md)
+now distinguishes these from the working first-stage tools.
+
 ## Collection VIII — The Unwritten Biosphere
 
 **32 new shader fields + 32 new drawn systems.** The opening world is a luminous
@@ -99,17 +120,15 @@ white flashes; this is not a medical/photosensitivity guarantee.
 
 ### Breeding and deeper musical analysis
 
-See **[the living-systems roadmap](docs/EVOLUTION-ROADMAP.md)** for the two major
-next programmes: a versioned offspring/ancestry nursery with compatible trait
-crossover, local save/export and diversity-preserving evolution, and deeper
-on-device musical analysis with editable causal mappings and optional local-file
-look-ahead. It discusses calm/wild children, twins, 2–4 parents before 32, human
-beauty preferences, consent, numerical bounds, uncertainty and acceptance tests.
+The first working tools are described in [the nursery/music delivery notes](docs/NURSERY-AND-MUSIC-LAB.md):
+compatible 2–4-parent recipes, a separate local offspring library and ancestry,
+editable audio routes, and optional PCM-WAV look-ahead now work.
+[The longer roadmap](docs/EVOLUTION-ROADMAP.md) covers their design and next phases.
 
-**Not delivered:** cross-world breeding, an offspring library, persistent ancestry,
-32-parent synthesis, autonomous overnight nursery jobs, full musical structure or
-learned emotional understanding. Within-world inherited agent variation is a
-foundation, not a completed breeding product.
+**Still future:** arbitrary cross-renderer genetics, runtime checkpoints,
+32-parent synthesis, autonomous overnight nursery jobs, broad-codec look-ahead,
+full musical structure and learned emotional understanding. The eco-v1 founders
+are explicit adapters, not exact recombinations of the original painters.
 
 ## Collection VII — The Living Elsewhere
 
@@ -217,6 +236,8 @@ on a held redraw. Software-rendered test FPS is not a hardware performance promi
 - `assets/js/designs/collection-viii*.js`: the 64 new constructions and bounded
   ecology engine; older files preserve Collections I–VII.
 - `assets/js/transitions.js`: 24 masked/warped passages and a safe dissolve fallback.
+- `assets/js/nursery*.js`: typed recipes, bounded offspring renderer, local library and ancestry.
+- `assets/js/music-lab.js`, `music-analysis.js`: route profiles and optional local WAV worker.
 - `assets/js/experience.js`: local conductor, consent, feedback, audio analysis,
   accessibility settings and performance state.
 - `assets/js/glsl-prelude.js`, `gl.js`: shared shader helpers, uniforms, cached
@@ -236,6 +257,8 @@ npm ci
 npm test
 npx playwright-core install --with-deps chromium
 npm run test:browser
+# Nursery/music integration only:
+npm run test:labs
 ```
 
 Unit tests cover the complete registry, assets/order, independent new shader

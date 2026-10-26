@@ -515,3 +515,26 @@ body.is-idle .experience-dock,body.is-immersive .experience-dock{opacity:0;visib
 /* The compositor owns world changes, including durations below 500ms and off.
    A second native-canvas opacity tween would reveal black after short passages. */
 #gl,#c2d{transition:none;}
+
+/* Local nursery and music laboratory share the existing accessible dialog. */
+.lab-panel{border:1px solid #294153;border-radius:10px;padding:12px;margin:16px 0;min-width:0;}
+.lab-panel summary{cursor:pointer;color:#b8e7e5;font-size:14px;font-weight:600;padding:6px 0;}
+.lab-panel label{font-size:12px;display:block;min-width:0;}
+.lab-panel select,.lab-panel input[type=text],.lab-panel input[type=number]{box-sizing:border-box;max-width:100%;width:100%;color:#cce3e8;background:#0b1928;border:1px solid #365166;border-radius:5px;padding:8px;}
+.nursery-parents{display:grid;grid-template-columns:minmax(0,3fr) minmax(45px,1fr);gap:8px;margin:12px 0;}
+.nursery-item{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border-top:1px solid #294153;padding:10px 0;}
+.nursery-item>span,.nursery-item>input{flex:1 1 100%;overflow-wrap:anywhere;}
+.lab-panel button{background:#102337;color:#c5e2e5;border:1px solid #365166;border-radius:5px;padding:8px;cursor:pointer;font-size:12px;}
+.lab-panel button:disabled{opacity:.5;cursor:wait;}
+#nurseryAncestry{overflow-wrap:anywhere;font-size:12px;max-height:300px;overflow:auto;}
+#nurseryAncestry ul{padding-left:15px;}
+.music-route{display:grid;grid-template-columns:20px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;margin:12px 0;}
+.music-route input[type=range]{grid-column:2;max-width:100%;width:100%;}
+.music-route output{font-size:12px;}
+#analysisTimeline{width:100%;height:130px;border-radius:6px;}
+.lab-panel .audio-actions{flex-wrap:wrap;}
+@media(max-width:480px){.experience-dock{gap:5px;}.experience-dock button{font-size:10px;padding:8px 7px;}.lab-panel{padding:8px;}}
+#nurseryCandidates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+#nurseryCandidates .nursery-item{align-content:start;border:1px solid #294153;padding:10px;border-radius:8px;}
+.nursery-thumbnail{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;}
+@media(max-width:560px){#nurseryCandidates{grid-template-columns:1fr;}}
