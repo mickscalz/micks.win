@@ -36,10 +36,10 @@ try {
  await page.goto(`http://127.0.0.1:${server.address().port}/micks.win/`);
  await page.locator('#enter').click();
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 03.*latest.*rank 01/);
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,66);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 04.*latest.*rank 01/);
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,86);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'prismatic-monolith');
+ assert.equal(ordering[0].id,'glass-meridian');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  const results=[];
  for(let i=0;i<count;i++){
@@ -56,16 +56,16 @@ try {
   results.push(result);console.log(`✓ ${String(i+1).padStart(2,'0')} ${result.id} (${result.kind})`);
  }
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),66);
- for(const [family,count] of [['latest',20],['gl',40],['glx',4],['2d',22],['all',66]]){
+ assert.equal(await page.locator('.tile').count(),86);
+ for(const [family,count] of [['latest',20],['gl',52],['glx',4],['2d',30],['all',86]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['3']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['4']);
  }
- await page.locator('#galJump').fill('66');
+ await page.locator('#galJump').fill('86');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),65);
+ assert.equal(await page.evaluate(()=>Cabinet.index),85);
  await page.keyboard.press('Escape');
  await page.keyboard.press('1');await page.keyboard.press('2');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -74,17 +74,47 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
  await page.evaluate(()=>{Cabinet.show(19);Cabinet.t=20.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),2);
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),3);
  // Bright rooms get dark typography, and leaving them restores the dark-world theme.
  await page.evaluate(()=>Cabinet.show(Cabinet.designs.findIndex(d=>d.id==='ink-calligraphy')));
  assert.equal(await page.locator('body').getAttribute('data-world-theme'),'paper');
  await page.evaluate(()=>Cabinet.show(0));
  assert.equal(await page.locator('body').getAttribute('data-world-theme'),'dark');
+ // Hold must freeze stateful renderers, not only their displayed clock.
+ await page.evaluate(()=>{Cabinet.show(Cabinet.designs.findIndex(d=>d.id==='chromatic-abacus'));testFrames(3);});
+ await page.keyboard.press(' ');
+ assert.equal(await page.locator('#ctl [data-act="play"]').getAttribute('aria-pressed'),'true');
+ const held=await page.evaluate(()=>({t:Cabinet.t,state:JSON.stringify(Cabinet.designs[Cabinet.index].chains)}));
+ await page.evaluate(()=>testFrames(15));
+ assert.deepEqual(await page.evaluate(()=>({t:Cabinet.t,state:JSON.stringify(Cabinet.designs[Cabinet.index].chains)})),held);
+ await page.evaluate(()=>{Cabinet.show(0);testFrames(1);});
+ assert.equal(await page.evaluate(()=>Cabinet.fade),1,'paused navigation still paints a fully revealed world');
+ await page.keyboard.press(' ');
+ await page.evaluate(()=>testFrames(2));
+ assert.equal(await page.evaluate(()=>Cabinet.fade),1,'resuming a paused jump must not flash back to black');
+ await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'h',ctrlKey:true})));
+ assert.equal(await page.evaluate(()=>!!Cabinet.immersive),false,'browser modifier shortcuts are not intercepted');
+ // Immersion has a keyboard/touch exit, no hidden tab targets, and gallery restores UI.
+ await page.keyboard.press('h');
+ assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('is-immersive')),true);
+ assert.equal(await page.locator('#ctl').evaluate(el=>el.inert),true);
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'immerseReturn');
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('#ctl').evaluate(el=>el.inert),false);
+ await page.locator('#ctl [data-act="immerse"]').click();
+ await page.keyboard.press('g');
+ assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('is-immersive')),false);
+ assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
+ await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(65);Cabinet.t=20.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(85);Cabinet.t=20.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
+ assert.ok(await page.locator('#ctl [data-act="immerse"]').isVisible(),'immersion must be reachable on touch screens');
+ await page.locator('#ctl [data-act="immerse"]').click();
+ await page.locator('#immerseReturn').click();
+ assert.equal(await page.locator('#ctl').evaluate(el=>el.inert),false);
  assert.ok(await page.locator('[data-act="gallery"]').isVisible(),'gallery must be reachable on touch screens');
  await page.locator('[data-act="gallery"]').click();
  assert.equal(await page.locator('.chip').count(),5);
@@ -94,7 +124,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'true');
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  assert.deepEqual(errors,[]);
- console.log('\n66 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n86 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));

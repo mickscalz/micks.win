@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, sixty-six
+   One shared WebGL2 context, one 2D context, one crossfade layer, eighty-six
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -66,6 +66,7 @@
 
   var cssW = 0, cssH = 0;
   function resize() {
+    E.needsDraw = true;
     cssW = w.innerWidth; cssH = w.innerHeight;
     E.dpr = Math.min(w.devicePixelRatio || 1, 2);
 
@@ -146,7 +147,8 @@
     resize();
 
     E.t = 0;
-    E.fade = 0;
+    E.revealComplete = E.paused;
+    E.fade = E.paused ? 1 : 0;
     sinceSwitch = 0;
     warmAt = -1;
     E.seed = Math.random() * 100;
@@ -289,6 +291,7 @@
 
   var galReturnFocus = null;
   function openGal() {
+    if (E.immersive) setImmersive(false);
     galReturnFocus = d.activeElement;
     gal.inert = false;
     gal.classList.add('on'); gal.setAttribute('aria-hidden', 'false');
@@ -311,6 +314,7 @@
     else if (a === 'shuffle') { E.playing = true; show((Math.random() * E.designs.length) | 0); }
     else if (a === 'gallery') { openGal(); }
     else if (a === 'close-gal') { closeGal(); }
+    else if (a === 'immerse') { setImmersive(!E.immersive); }
     else if (a === 'full') { toggleFull(); }
   });
 
@@ -327,6 +331,24 @@
   function togglePause() {
     E.paused = !E.paused;
     d.body.classList.toggle('is-paused', E.paused);
+    $('#ctl [data-act="play"]').setAttribute('aria-pressed', String(E.paused));
+  }
+
+  var immersionFocus = null;
+  function setImmersive(on) {
+    var back = $('#immerseReturn');
+    E.immersive = !!on;
+    if (on) immersionFocus = d.activeElement;
+    d.body.classList.toggle('is-immersive', !!on);
+    back.hidden = !on;
+    ['brand','card','rail','ctl','hint'].forEach(function(id){
+      var el = d.getElementById(id);
+      if(el){ el.inert = !!on; if(on)el.setAttribute('aria-hidden','true');else el.removeAttribute('aria-hidden'); }
+    });
+    $('#ctl [data-act="immerse"]').setAttribute('aria-pressed', String(!!on));
+    if(on) back.focus();
+    else if(immersionFocus && immersionFocus !== d.body) immersionFocus.focus();
+    else $('#ctl [data-act="immerse"]').focus();
   }
 
   function toggleFull() {
@@ -337,6 +359,7 @@
 
   var digitBuf = '', digitAt = 0;
   w.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key !== 'Tab' && e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
       if (e.key === 'Escape') closeGal();
       return;
@@ -358,13 +381,14 @@
       case ' ': e.preventDefault(); togglePause(); break;
       case 'g': case 'G': gal.classList.contains('on') ? closeGal() : openGal(); break;
       case 'f': case 'F': toggleFull(); break;
+      case 'h': case 'H': setImmersive(!E.immersive); break;
       case 's': case 'S': E.playing = true; show((Math.random() * E.designs.length) | 0); break;
-      case 'Escape': closeGal(); break;
+      case 'Escape': E.immersive ? setImmersive(false) : closeGal(); break;
       default:
         if (e.key >= '0' && e.key <= '9') {
-          // two digits typed within a second reach worlds 11–46 directly
+          // Rank entry grows with the catalogue; successive digits arrive within a second.
           var now = Date.now();
-          digitBuf = (now - digitAt < 1000 && digitBuf.length < 2 && digitBuf !== '0') ? digitBuf + e.key : e.key;
+          digitBuf = (now - digitAt < 1000 && digitBuf.length < String(E.designs.length).length && digitBuf !== '0') ? digitBuf + e.key : e.key;
           digitAt = now;
           var n = digitBuf === '0' ? 10 : parseInt(digitBuf, 10);
           if (n < 1 || n > E.designs.length) { digitBuf = e.key; n = parseInt(digitBuf, 10); }
@@ -397,7 +421,9 @@
     var dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
     last = now;
     if (d.hidden) return;
-    draw(dt, now);
+    if (E.paused && !E.needsDraw) return;
+    E.needsDraw = false;
+    draw(E.paused ? 0 : dt, now);
   }
 
   function draw(dt, now) {
@@ -413,7 +439,8 @@
       E.t += dt;
       sinceSwitch += dt;
     }
-    E.fade = Math.min(1, E.t / 1.25);
+    if (E.paused) E.revealComplete = true;
+    E.fade = E.revealComplete ? 1 : Math.min(1, E.t / 1.25);
     S.t = E.t;
     S.fade = E.fade;
 

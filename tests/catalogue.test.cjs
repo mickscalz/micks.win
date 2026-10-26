@@ -15,20 +15,22 @@ for (const file of scripts) {
 }
 const designs = window.DESIGNS.slice().sort((a,b) => a.rank-b.rank);
 
-test('66 distinct designs: newest collections first, editorial scores descending within each', () => {
-  assert.equal(designs.length, 66);
-  assert.equal(new Set(designs.map(d => d.id)).size, 66);
-  assert.deepEqual(Array.from(designs, d => d.rank), Array.from({length:66}, (_,i) => i+1));
+test('86 distinct designs: newest collections first, editorial scores descending within each', () => {
+  assert.equal(designs.length, 86);
+  assert.equal(new Set(designs.map(d => d.id)).size, 86);
+  assert.deepEqual(Array.from(designs, d => d.rank), Array.from({length:86}, (_,i) => i+1));
   for (let i=1;i<designs.length;i++) {
     assert.ok(designs[i-1].edition >= designs[i].edition);
     if(designs[i-1].edition===designs[i].edition) assert.ok(designs[i-1].captivation >= designs[i].captivation);
   }
-  assert.equal(designs[0].id,'prismatic-monolith');
-  assert.deepEqual([3,2,1].map(e=>designs.filter(d=>d.edition===e).length),[20,22,24]);
+  assert.equal(designs[0].id,'glass-meridian');
+  assert.deepEqual([4,3,2,1].map(e=>designs.filter(d=>d.edition===e).length),[20,20,22,24]);
 });
 test('every room honours its renderer contract and carries gallery copy', () => {
   for (const d of designs) {
     for (const k of ['id','name','tag','blurb','art']) assert.ok(typeof d[k]==='string' && d[k].length, `${d.id}: ${k}`);
+    assert.ok(Number.isInteger(d.edition) && d.edition >= 1, d.id+': edition');
+    assert.ok(Number.isFinite(d.captivation) && d.captivation >= 0 && d.captivation <= 100, d.id+': score');
     assert.match(d.id, /^[a-z0-9-]+$/);
     assert.ok(d.preview && fs.existsSync(path.join(root, d.preview)), `${d.id}: rendered gallery preview`);
     assert.ok(['gl','glx','2d'].includes(d.kind), d.id);
@@ -38,9 +40,9 @@ test('every room honours its renderer contract and carries gallery copy', () => 
       assert.equal(typeof d.frame, 'function', d.id);
     }
   }
-  assert.equal(designs.filter(d=>d.kind==='gl').length,40);
+  assert.equal(designs.filter(d=>d.kind==='gl').length,52);
   assert.equal(designs.filter(d=>d.kind==='glx').length,4);
-  assert.equal(designs.filter(d=>d.kind==='2d').length,22);
+  assert.equal(designs.filter(d=>d.kind==='2d').length,30);
 });
 test('all local assets exist, use relative paths, and load before the engine', () => {
   for(const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
@@ -51,8 +53,8 @@ test('all local assets exist, use relative paths, and load before the engine', (
   }
   const engine=scripts.indexOf('assets/js/engine.js');
   assert.ok(scripts.filter(f=>f.includes('/designs/')).every(f=>scripts.indexOf(f)<engine));
-  assert.match(html,/id="cardTotal">\/ 66/);
-  assert.match(html,/id="galCount">66/);
+  assert.match(html,/id="cardTotal">\/ 86/);
+  assert.match(html,/id="galCount">86/);
 });
 test('new simulation shader bodies do not redeclare shared uniforms', () => {
   const src=fs.readFileSync(path.join(root,'assets/js/designs/sims.js'),'utf8');
