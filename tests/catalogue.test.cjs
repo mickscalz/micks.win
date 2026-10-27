@@ -15,16 +15,16 @@ for (const file of scripts) {
 }
 const designs = window.DESIGNS.slice().sort((a,b) => a.rank-b.rank);
 
-test('320 distinct designs: newest collections first, editorial scores descending within each', () => {
-  assert.equal(designs.length, 320);
-  assert.equal(new Set(designs.map(d => d.id)).size, 320);
-  assert.deepEqual(Array.from(designs, d => d.rank), Array.from({length:320}, (_,i) => i+1));
+test('328 distinct designs: newest collections first, editorial scores descending within each', () => {
+  assert.equal(designs.length, 328);
+  assert.equal(new Set(designs.map(d => d.id)).size, 328);
+  assert.deepEqual(Array.from(designs, d => d.rank), Array.from({length:328}, (_,i) => i+1));
   for (let i=1;i<designs.length;i++) {
     assert.ok(designs[i-1].edition >= designs[i].edition);
     if(designs[i-1].edition===designs[i].edition) assert.ok(designs[i-1].captivation >= designs[i].captivation);
   }
-  assert.equal(designs[0].id,'unwritten-biosphere');
-  assert.deepEqual([8,7,6,5,4,3,2,1].map(e=>designs.filter(d=>d.edition===e).length),[64,64,64,42,20,20,22,24]);
+  assert.equal(designs[0].id,'tidal-cathedral');
+  assert.deepEqual([9,8,7,6,5,4,3,2,1].map(e=>designs.filter(d=>d.edition===e).length),[8,64,64,64,42,20,20,22,24]);
 });
 test('every room honours its renderer contract and carries gallery copy', () => {
   for (const d of designs) {
@@ -40,7 +40,7 @@ test('every room honours its renderer contract and carries gallery copy', () => 
       assert.equal(typeof d.frame, 'function', d.id);
     }
   }
-  assert.equal(designs.filter(d=>d.kind==='gl').length,182);
+  assert.equal(designs.filter(d=>d.kind==='gl').length,190);
   assert.equal(designs.filter(d=>d.kind==='glx').length,4);
   assert.equal(designs.filter(d=>d.kind==='2d').length,134);
 });
@@ -53,8 +53,8 @@ test('all local assets exist, use relative paths, and load before the engine', (
   }
   const engine=scripts.indexOf('assets/js/engine.js');
   assert.ok(scripts.filter(f=>f.includes('/designs/')).every(f=>scripts.indexOf(f)<engine));
-  assert.match(html,/id="cardTotal">\/ 320/);
-  assert.match(html,/id="galCount">320/);
+  assert.match(html,/id="cardTotal">\/ 328/);
+  assert.match(html,/id="galCount">328/);
 });
 test('new simulation shader bodies do not redeclare shared uniforms', () => {
   const src=fs.readFileSync(path.join(root,'assets/js/designs/sims.js'),'utf8');
@@ -113,7 +113,7 @@ test('conductor uniforms cannot collide with existing shader and GPU helper decl
 
 test('release assets are cache-versioned together',()=>{
  const urls=[...html.matchAll(/(?:src|href)="(assets\/[^"]+\.(?:js|css)\?[^"]+)"/g)].map(m=>m[1]);
- assert.equal(urls.length,scripts.length+1);assert.ok(urls.every(url=>url.endsWith('?v=11')));
+ assert.equal(urls.length,scripts.length+1);assert.ok(urls.every(url=>url.endsWith('?v=12')));
 });
 
 

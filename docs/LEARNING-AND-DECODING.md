@@ -175,3 +175,11 @@ worker termination, MP3/FLAC/Vorbis decoding, no silent native fallback, lazy mo
 loading, actual Basic Pitch note/silence results, 320px layout and no uploads.
 Software-GPU/synthetic-audio tests are not hardware FPS, universal beauty or a
 real-world musical accuracy study.
+
+
+## Collection IX follow-up
+
+The eight new IX worlds now share exact allowlisted landform kernels with the
+world-v3 renderer. Sky, water, weather, camera and scale inherit independently.
+This bounded addition does not splice arbitrary older solver state; the original
+320 worlds still use adapters. See [worlds and soundscapes](WORLDS-AND-SOUNDSCAPES.md).

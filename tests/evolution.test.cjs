@@ -15,9 +15,9 @@ for (const [, src] of html.matchAll(/<script src="([^"]+)"/g)) {
 }
 const all = Array.from(w.DESIGNS, N.founderAny),
   parents = all.slice(0, 32);
-test("all 320 source worlds have deterministic typed, non-executable adapters", () => {
-  assert.equal(all.length, 320);
-  assert.equal(new Set(all.map((p) => p.id)).size, 320);
+test("all 328 source worlds have deterministic typed, non-executable adapters", () => {
+  assert.equal(all.length, 328);
+  assert.equal(new Set(all.map((p) => p.id)).size, 328);
   assert.equal(new Set(all.map((p) => p.genome.shape)).size, 12);
   assert.deepEqual(all, Array.from(w.DESIGNS, N.founderAny));
   all.forEach((p) => {

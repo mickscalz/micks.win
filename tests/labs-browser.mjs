@@ -91,6 +91,7 @@ try {
   );
   await page.locator("#nurseryToggle").click();
   // Explicit legacy adapters exercise the unchanged version-1 renderer/storage path.
+  await page.locator('#nurseryScope').selectOption('habitat');
   await page.locator('#nurseryParent0').selectOption('founder:eden-of-divergence');
   await page.locator('#nurseryParent1').selectOption('founder:glass-moth-migration');
   await page.locator("[data-nursery-action=breed]").click();
@@ -164,7 +165,7 @@ try {
     "true",
   );
   await page.keyboard.press("ArrowRight");
-  assert.equal(await page.evaluate(() => Cabinet.designs.length), 320);
+  assert.equal(await page.evaluate(() => Cabinet.designs.length), 328);
   assert.equal(
     await page.evaluate(() =>
       Cabinet.designs.some((x) => x.id.startsWith("child-")),
@@ -440,7 +441,7 @@ try {
   assert.deepEqual(uploads, []);
   assert.deepEqual(errors, []);
   console.log(
-    "Labs browser PASS: real offspring/evolution/freeze, restored 320 catalogue, twins/generations/ancestry, IndexedDB opt-in/reload/erase/quota, JSON export/import, route consent/reload, real PCM worker/look-ahead, stop cancellation, 320px layout and no uploads.",
+    "Labs browser PASS: real offspring/evolution/freeze, restored 328 catalogue, twins/generations/ancestry, IndexedDB opt-in/reload/erase/quota, JSON export/import, route consent/reload, real PCM worker/look-ahead, stop cancellation, 320px layout and no uploads.",
   );
 } finally {
   if (browser) await browser.close();
