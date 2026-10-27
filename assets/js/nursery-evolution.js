@@ -4,20 +4,33 @@
   const N =
     typeof module !== "undefined" ? require("./nursery.js") : root.Nursery;
   function distance(a, b) {
-    a = N.upgrade(a.genome);
-    b = N.upgrade(b.genome);
+    const world = a.version === 3 || b.version === 3;
+    a = world ? N.upgradeWorld(a.genome) : N.upgrade(a.genome);
+    b = world ? N.upgradeWorld(b.genome) : N.upgrade(b.genome);
+    const keys = N.traits(world ? 3 : 2);
     let sum = 0;
-    for (const k of N.traits(2)) {
+    for (const k of keys) {
       if (k === "hue") {
         const d = Math.abs(a[k] - b[k]);
         sum += Math.min(d, 360 - d) / 180;
       } else if (
-        ["shape", "topology", "material", "rhythm", "force"].includes(k)
+        [
+          "shape",
+          "topology",
+          "material",
+          "rhythm",
+          "force",
+          "landform",
+          "sky",
+          "water",
+          "weather",
+          "camera",
+        ].includes(k)
       )
         sum += a[k] === b[k] ? 0 : 1;
       else sum += Math.abs(a[k] - b[k]) / (k === "lobes" ? 9 : 1);
     }
-    return sum / 17;
+    return sum / keys.length;
   }
   function quality(p) {
     const g = p.genome;
@@ -59,6 +72,7 @@
     weights,
     seed = 1,
     mood = "balanced",
+    scope,
     generations = 6,
     candidates = 48,
     seconds = 15,
@@ -107,13 +121,14 @@
         const child = N.breed(chosen, {
           seed: Math.floor(rng() * 4294967295) || 1,
           mood,
+          scope,
           weights: generation === 0 ? weights : undefined,
         });
         child.name =
           "Generation " +
           child.generation +
           " · " +
-          child.genome.shape +
+          (child.genome.landform || child.genome.shape) +
           " " +
           (made.size + 1);
         if (evaluate) await evaluate(child);

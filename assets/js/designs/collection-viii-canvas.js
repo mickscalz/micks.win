@@ -182,6 +182,14 @@
         );
         L.deaths++;
       }
+      // Display-only envelopes: birth/renewal and nearly-stationary heading
+      // changes must not snap a silhouette. Solver genes/forces are untouched.
+      var smooth = 1 - Math.exp(-dt * 4);
+      p.displayEnergy = (p.displayEnergy ?? p.energy) + (p.energy - (p.displayEnergy ?? p.energy)) * smooth;
+      p.displayAge = (p.displayAge ?? p.age) + (p.age - (p.displayAge ?? p.age)) * smooth;
+      var desired = Math.hypot(p.vx, p.vy) > .0005 ? Math.atan2(p.vy,p.vx) : (p.heading ?? p.a);
+      var heading = p.heading ?? p.a;
+      p.heading = heading + Math.atan2(Math.sin(desired-heading),Math.cos(desired-heading)) * smooth;
       p.trail.push([p.x, p.y]);
       if (p.trail.length > 28) p.trail.shift();
     }
@@ -423,7 +431,7 @@
             flap = 0.3 + 0.7 * Math.sin(t * (0.7 + p.g[1]) + p.a);
           c.save();
           c.translate(x, y);
-          c.rotate(Math.atan2(p.vy, p.vx) + Math.PI / 2);
+          c.rotate((p.heading ?? p.a) + Math.PI / 2);
           [-1, 1].forEach(function (s) {
             polygon(
               c,
@@ -455,7 +463,7 @@
           y = p.y * H,
           r = Math.min(W, H) * (0.012 + p.g[1] * 0.026),
           h = hue(p, K, t),
-          split = Math.max(0, p.energy - 1.1) * 0.6;
+          split = Math.max(0, (p.displayEnergy ?? p.energy) - 1.1) * 0.6;
         glow(c, x, y, r * 2, h, 0.12, e);
         var P = [];
         for (var j = 0; j < 64; j++) {
@@ -632,7 +640,7 @@
           q = o.q,
           r = q[2] * (0.035 + p.g[2] * 0.055),
           h = hue(p, K, t),
-          Hh = r * (2 + p.energy * 0.8);
+          Hh = r * (2 + (p.displayEnergy ?? p.energy) * 0.8);
         polygon(
           c,
           [

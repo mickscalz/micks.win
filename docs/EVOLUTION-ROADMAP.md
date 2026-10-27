@@ -1,5 +1,16 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Collection IX follow-up (328 authored worlds)
+
+Eight landscape-scale worlds, default world-v3 breeding of separate landform,
+sky, water, weather, camera and scale modules, real opt-in atmospheric Web Audio
+output and smoother creature/colony display motion are implemented. IX shares
+exact allowlisted landform fields with offspring. Older 320 solvers remain
+approximate adapters, not arbitrary solver splices. See
+[worlds and soundscapes](WORLDS-AND-SOUNDSCAPES.md). Earlier release sections below
+describe their historical scope.
+
+
 ## Next-stage learning and decoding
 
 [Delivered now](LEARNING-AND-DECODING.md): explicit-comparison personal ranking,

@@ -1,6 +1,10 @@
 /* Versioned numeric recipes, never executable imports. No storage without opt-in. */
 (function (root) {
   "use strict";
+  const WK =
+    typeof module !== "undefined"
+      ? require("./designs/world-kernels.js")
+      : root.WorldKernels;
   const KEYS = [
     "growth",
     "mutation",
@@ -34,7 +38,8 @@
     "lobes",
     "force",
     ...KEYS,
-    ...(v === 2 ? ["topology", "material", "rhythm", "depth", "relief"] : []),
+    ...(v >= 2 ? ["topology", "material", "rhythm", "depth", "relief"] : []),
+    ...(v === 3 ? [...Object.keys(WK.MODULES), "scale"] : []),
   ];
   const clamp = (n, a = 0, b = 1) => Math.max(a, Math.min(b, n));
   function hash(s) {
@@ -61,7 +66,7 @@
   }
   const parentID = (s) =>
     typeof s === "string" &&
-    /^(?:child-[a-f0-9]{16}|(?:source|founder):[a-z0-9-]{1,70})$/.test(s);
+    /^(?:child-[a-f0-9]{16}|(?:source|founder|world):[a-z0-9-]{1,70})$/.test(s);
   function identity(r) {
     const s = JSON.stringify([
       r.version,
@@ -81,18 +86,25 @@
   function validate(r) {
     if (
       !r ||
-      ![1, 2].includes(r.version) ||
-      r.solver !== (r.version === 2 ? "habitat-v2" : "eco-v1") ||
+      ![1, 2, 3].includes(r.version) ||
+      r.solver !==
+        (r.version === 3
+          ? "world-v3"
+          : r.version === 2
+            ? "habitat-v2"
+            : "eco-v1") ||
       !Array.isArray(r.parents) ||
-      r.parents.length > (r.version === 2 ? 32 : 4) ||
+      r.parents.length > (r.version >= 2 ? 32 : 4) ||
       !r.parents.every(parentID)
     )
       throw Error("Unsupported recipe or parent");
     if (
       !r.parents.length &&
-      (!(r.version === 2
-        ? r.id?.startsWith("source:")
-        : r.id?.startsWith("founder:")) ||
+      (!(r.version === 3
+        ? r.id?.startsWith("world:")
+        : r.version === 2
+          ? r.id?.startsWith("source:")
+          : r.id?.startsWith("founder:")) ||
         r.generation !== 0)
     )
       throw Error("Invalid founding recipe");
@@ -111,7 +123,7 @@
     )
       throw Error("Missing trait provenance");
     const g = r.genome;
-    if (!g || !(r.version === 2 ? FORMS : SHAPES).includes(g.shape))
+    if (!g || !(r.version >= 2 ? FORMS : SHAPES).includes(g.shape))
       throw Error("Unsupported geometry grammar");
     const genome = {
       shape: g.shape,
@@ -122,12 +134,19 @@
     if (!Number.isInteger(g.lobes) || !Number.isInteger(g.force))
       throw Error("Discrete genes must be integers");
     KEYS.forEach((k) => (genome[k] = finite(g[k], 0, 1)));
-    if (r.version === 2) {
+    if (r.version >= 2) {
       for (const [k, allowed] of Object.entries(MODULES)) {
         if (!allowed.includes(g[k])) throw Error("Unsupported habitat module");
         genome[k] = g[k];
       }
       for (const k of ["depth", "relief"]) genome[k] = finite(g[k], 0, 1);
+    }
+    if (r.version === 3) {
+      for (const [k, allowed] of Object.entries(WK.MODULES)) {
+        if (!allowed.includes(g[k])) throw Error("Unsupported world module");
+        genome[k] = g[k];
+      }
+      genome.scale = finite(g.scale, 0, 1);
     }
     const out = {
       version: r.version,
@@ -333,7 +352,56 @@
       name: d.name,
     });
   }
-  function breed(parents, { seed = 1, mood = "balanced", weights } = {}) {
+  // Old catalogue worlds remain labelled adapters. IX reuses its exact fields.
+  function upgradeWorld(input, text = "") {
+    const g = upgrade(input);
+    const named = [
+      /ocean|sea|tidal|wave|coral/i,
+      /aurora|mountain|snow|glacier/i,
+      /dune|desert|sand/i,
+      /forest|garden|orchid|branch|tree|mycel/i,
+      /temple|arch|cathedral|vault/i,
+      /orbit|star|galaxy|cosmic/i,
+      /canyon|river|valley|lava/i,
+      /crystal|hex|salt|lattice/i,
+    ].findIndex((re) => re.test(text));
+    const index =
+      named >= 0
+        ? named
+        : ({
+            vault: 0,
+            terrain: 1,
+            ribbon: 2,
+            branch: 3,
+            coral: 3,
+            lattice: 4,
+            orbit: 5,
+            vortex: 6,
+            sponge: 7,
+          }[g.shape] ?? 3);
+    return { ...WK.defaults(index), ...g };
+  }
+  function worldFounder(d) {
+    const prior = founderAny(d);
+    return validate({
+      id: "world:" + d.id,
+      version: 3,
+      solver: "world-v3",
+      seed: hash("world:" + d.id) || 1,
+      parents: [],
+      generation: 0,
+      name: d.name,
+      genome: Number.isInteger(d.worldKernel)
+        ? WK.defaults(d.worldKernel)
+        : upgradeWorld(prior.genome, d.name + " " + d.tag + " " + d.family),
+    });
+  }
+  function breed(
+    parents,
+    { seed = 1, mood = "balanced", weights, scope } = {},
+  ) {
+    if (scope !== undefined && !["world", "habitat"].includes(scope))
+      throw Error("Unsupported breeding scope");
     if (!["balanced", "calm", "wild"].includes(mood))
       throw Error("Unsupported temperament");
     parents = parents.map(validate);
@@ -346,8 +414,14 @@
     seed = finite(seed, 1, 4294967295);
     if (!Number.isInteger(seed)) throw Error("Invalid seed");
     const version =
-      parents.length > 4 || parents.some((p) => p.version === 2) ? 2 : 1;
-    const genomes = parents.map((p) => upgrade(p.genome));
+      scope === "world" || parents.some((p) => p.version === 3)
+        ? 3
+        : parents.length > 4 || parents.some((p) => p.version === 2)
+          ? 2
+          : 1;
+    const genomes = parents.map((p) =>
+      version === 3 ? upgradeWorld(p.genome, p.name) : upgrade(p.genome),
+    );
     const r = random(seed),
       W = weights || parents.map(() => 1 / parents.length);
     if (W.length !== parents.length) throw Error("Invalid weights");
@@ -368,7 +442,14 @@
       variation = mood === "wild" ? 0.22 : mood === "calm" ? 0.035 : 0.09;
     for (const k of traits(version)) {
       if (
-        ["shape", "lobes", "force", "hue", ...Object.keys(MODULES)].includes(k)
+        [
+          "shape",
+          "lobes",
+          "force",
+          "hue",
+          ...Object.keys(MODULES),
+          ...Object.keys(WK.MODULES),
+        ].includes(k)
       ) {
         const i = choose();
         g[k] = genomes[i][k];
@@ -402,7 +483,8 @@
       }
     const child = {
       version,
-      solver: version === 2 ? "habitat-v2" : "eco-v1",
+      solver:
+        version === 3 ? "world-v3" : version === 2 ? "habitat-v2" : "eco-v1",
       seed,
       parents: parents.map((p) => p.id),
       generation: 1 + Math.max(...parents.map((p) => p.generation)),
@@ -472,6 +554,10 @@
 
   function renderer(input) {
     const recipe = validate(input);
+    if (recipe.version === 3) {
+      if (!root.WorldRenderer) throw Error("World renderer unavailable");
+      return root.WorldRenderer.create(recipe);
+    }
     if (recipe.version === 2) {
       if (!root.HabitatRenderer)
         throw Error("GPU habitat renderer unavailable");
@@ -537,12 +623,12 @@
           const p = A[i],
             x = (i === 0 ? 0.5 + (p.x - 0.5) * 0.12 : p.x) * W,
             y = (i === 0 ? 0.5 + (p.y - 0.5) * 0.12 : p.y) * H,
-            age = Math.min(1, (p.age + 1) / 8),
+            age = Math.min(1, ((p.displayAge ?? p.age) + 1) / 8),
             rawSize =
               Math.min(W, H) *
               (0.012 + p.g[1] * 0.018) *
               (0.5 + age * 0.5) *
-              (0.7 + Math.min(1.4, p.energy) * 0.3) *
+              (0.7 + Math.min(1.4, p.displayEnergy ?? p.energy) * 0.3) *
               (i === 0 ? 16 : 0.6 + p.z * 0.7),
             size = i === 0 ? Math.min(rawSize, Math.min(W, H) * 0.24) : rawSize,
             h = e.colorSafe
@@ -690,6 +776,8 @@
     MODULES,
     traits,
     founderAny,
+    worldFounder,
+    upgradeWorld,
     upgrade,
     hash,
     random,

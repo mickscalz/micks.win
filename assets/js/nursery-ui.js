@@ -3,7 +3,8 @@
   "use strict";
   const N = w.Nursery,
     library = new Map(),
-    founders = new Map();
+    founders = new Map(),
+    worlds = new Map();
   let candidates = [],
     remember = false,
     db = null,
@@ -90,10 +91,15 @@
     return o;
   }
   function all() {
-    return [...founders.values(), ...library.values()];
+    return [
+      ...($("nurseryScope").value === "world" ? worlds : founders).values(),
+      ...library.values(),
+    ];
   }
   function recipe(id) {
-    return library.get(id) || founders.get(id) || transient.get(id);
+    return (
+      library.get(id) || founders.get(id) || worlds.get(id) || transient.get(id)
+    );
   }
   function run(job) {
     queue = queue.then(async () => {
@@ -112,7 +118,7 @@
   }
   function controls() {
     d.querySelectorAll(
-      "[data-nursery-action],#nurseryRemember,#nurseryImport,#nurseryLearned,#nurseryRememberTaste",
+      "[data-nursery-action],#nurseryRemember,#nurseryImport,#nurseryLearned,#nurseryRememberTaste,#nurseryScope",
     ).forEach((el) => (el.disabled = busy));
   }
   function render() {
@@ -125,8 +131,12 @@
         s.append(
           option(
             p.id,
-            (founders.has(p.id) ? p.solver + " adapter · " : "Offspring · ") +
-              p.name,
+            (p.parents.length === 0
+              ? p.version === 3 &&
+                w.WorldKernels.specs.some((s) => "world:" + s[0] === p.id)
+                ? "IX exact field · "
+                : p.solver + " adapter · "
+              : "Offspring · ") + p.name,
           ),
         );
       if (all().some((p) => p.id === previous[i])) s.value = previous[i];
@@ -152,7 +162,11 @@
       row.className = "nursery-item";
       const text = d.createElement("span");
       text.textContent =
-        p.name + " · generation " + p.generation + " · " + p.genome.shape;
+        p.name +
+        " · generation " +
+        p.generation +
+        " · " +
+        (p.genome.landform || p.genome.shape);
       row.append(text);
       for (const [label, action] of [
         ["play", "play"],
@@ -259,17 +273,26 @@
   function merge(items) {
     const out = new Map(library);
     for (const p of items) {
-      const prior = out.get(p.id) || founders.get(p.id);
+      const prior = out.get(p.id) || founders.get(p.id) || worlds.get(p.id);
       if (
         prior &&
         JSON.stringify([prior.seed, prior.genome, prior.parents]) !==
           JSON.stringify([p.seed, p.genome, p.parents])
       )
         throw Error("Conflicting recipe identity; import rejected");
-      if (!founders.has(p.id)) out.set(p.id, p);
+      if (!founders.has(p.id) && !worlds.has(p.id)) out.set(p.id, p);
     }
     if (out.size > 100) throw Error("Library limit: 100 saved offspring");
-    N.validateAncestry([...founders.values(), ...out.values()]);
+    // Validate only relevant source ancestry, not two complete catalogues.
+    const graph = new Map(out);
+    function include(p) {
+      for (const id of p.parents) {
+        const source = founders.get(id) || worlds.get(id);
+        if (source && !graph.has(id)) graph.set(id, source);
+      }
+    }
+    out.forEach(include);
+    N.validateAncestry([...graph.values()]);
     return out;
   }
   function exportFile() {
@@ -433,6 +456,20 @@
       name.setAttribute("aria-label", "Offspring " + (i + 1) + " name");
       name.oninput = () => (p.name = name.value);
       row.append(name, preview(p));
+      if (p.version === 3) {
+        const summary = d.createElement("small");
+        summary.className = "tune-help";
+        summary.textContent =
+          "World · " +
+          [
+            p.genome.landform,
+            p.genome.sky,
+            p.genome.water,
+            p.genome.weather,
+            p.genome.camera,
+          ].join(" / ");
+        row.append(summary);
+      }
       for (const [label, action] of [
         ["audition", "audition"],
         ["save", "save"],
@@ -473,14 +510,19 @@
           seed: seed[0] || 1,
           mood: $("nurseryMood").value,
           weights,
+          scope: $("nurseryScope").value,
         }),
       ];
       transient.clear();
-      candidates[0].name = $("nurseryMood").value + " seedling";
+      candidates[0].name =
+        $("nurseryMood").value +
+        (candidates[0].version === 3 ? " world" : " seedling");
       candidates.push(N.twin(candidates[0], (seed[0] ^ 0x7139abcd) >>> 0 || 1));
       await auditions();
       status(
-        "Two twins: same inherited genome, different habitat seeds. Audition before saving.",
+        candidates[0].version === 3
+          ? "Two world twins: independent inherited landform, sky, water, weather and camera modules. Different flow seeds; audition before saving."
+          : "Two twins: same inherited genome, different habitat seeds. Audition before saving.",
       );
     } else if (action === "evolve") {
       const selection = parentSelection(),
@@ -495,6 +537,7 @@
         crypto.getRandomValues(seed);
         const result = await w.NurseryEvolution.run({
           ...selection,
+          scope: $("nurseryScope").value,
           seed: seed[0] || 1,
           mood: $("nurseryMood").value,
           generations: Number($("nurseryGenerations").value),
@@ -594,6 +637,7 @@
           if (
             ancestor &&
             !founders.has(id) &&
+            !worlds.has(id) &&
             !library.has(id) &&
             !items.has(id)
           ) {
@@ -722,6 +766,8 @@
     for (const world of w.Cabinet.designs) {
       const f = N.founderAny(world);
       founders.set(f.id, f);
+      const wf = N.worldFounder(world);
+      worlds.set(wf.id, wf);
     }
     $("nurseryStop").onclick = () => {
       stopped = true;
@@ -735,6 +781,10 @@
         const f = N.founder(world);
         founders.set(f.id, f);
       } catch (_) {}
+    $("nurseryScope").onchange = () => {
+      stopped = true;
+      render();
+    };
     render();
     $("nurseryToggle").onclick = () => {
       w.Experience.open(true);

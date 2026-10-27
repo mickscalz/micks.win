@@ -184,11 +184,12 @@
     stage.setAttribute('data-kind', design.kind === '2d' ? '2d' : 'gl');
     // Crossfade only: no flash or per-world zoom reset.
     if(w.Experience) w.Experience.enter(design);
+    if(w.Soundscape) w.Soundscape.enter(design);
 
     // card
     d.body.setAttribute('data-world-theme', design.theme || 'dark');
     var collection = $('#cardCollection');
-    if (collection) collection.textContent = design.nursery ? 'nursery · eco-v1 · offspring audition' : 'collection ' + pad(design.edition || 1) + ' · ' + (design.edition === latestEdition ? 'latest · ' : '') + 'rank ' + pad(design.collectionRank);
+    if (collection) collection.textContent = design.nursery ? 'nursery · ' + (design.recipeSolver || 'eco-v1') + ' · offspring audition' : 'collection ' + pad(design.edition || 1) + ' · ' + (design.edition === latestEdition ? 'latest · ' : '') + 'rank ' + pad(design.collectionRank);
     elRank.firstChild ? (elRank.firstChild.nodeValue = pad(design.rank)) : (elRank.textContent = pad(design.rank));
     if (elTotal) elTotal.textContent = '/ ' + pad(E.designs.length);
     elName.textContent = design.name;

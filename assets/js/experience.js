@@ -463,6 +463,7 @@
     paint(false);
   }
   function stopAudio() {
+    if(w.Soundscape) w.Soundscape.duck(false);
     if (w.MusicLab) w.MusicLab.release();
     var picker = w.document && w.document.getElementById("audioFile");
     if (picker && "value" in picker) picker.value = "";
@@ -594,6 +595,7 @@
         await media.play();
         if (w.MusicLab) w.MusicLab.setFile(file, media);
       }
+      if(w.Soundscape) w.Soundscape.duck(true);
       paint(true);
     } catch (error) {
       if (stream)

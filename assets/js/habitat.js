@@ -71,6 +71,30 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
     }
     return [ax, ay];
   }
+  // Continuous, bilinear deposition replaces single-cell jumps in the GPU
+  // displacement texture. Frame-rate-independent relaxation removes birth pops.
+  function rasterize(L, previous, dt) {
+    const target = new Float32Array(48 * 30);
+    for (let i = 0; i < target.length; i++) target[i] = clamp(L.field[i]) * 140;
+    for (const p of L.agents) {
+      const x = clamp(p.x) * 47,
+        y = clamp(p.y) * 29,
+        ix = Math.floor(x),
+        iy = Math.floor(y),
+        fx = x - ix,
+        fy = y - iy;
+      for (let dy = 0; dy < 2; dy++)
+        for (let dx = 0; dx < 2; dx++) {
+          const k = Math.min(29, iy + dy) * 48 + Math.min(47, ix + dx);
+          target[k] += 95 * (dx ? fx : 1 - fx) * (dy ? fy : 1 - fy);
+        }
+    }
+    const alpha = previous ? 1 - Math.exp(-Math.max(0, dt) * 12) : 1;
+    const out = previous || new Float32Array(target.length);
+    for (let i = 0; i < out.length; i++)
+      out[i] += (Math.min(255, target[i]) - out[i]) * alpha;
+    return out;
+  }
   function create(input) {
     const recipe = N.validate(input),
       g = recipe.genome;
@@ -78,6 +102,8 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
       id: recipe.id,
       name: recipe.name,
       nursery: true,
+      recipeSolver: "habitat-v2",
+      genome: g,
       kind: "glx",
       edition: 8,
       rank: 0,
@@ -99,6 +125,7 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
       init(R) {
         this.L = w.CabinetVIII.ecology.create(recipe.seed, 65, g.force);
         this.clock = 0;
+        this.density = rasterize(this.L, null, 0);
         this.pixels = new Uint8Array(48 * 30 * 4);
         this.prog = R.shader(body, "nursery-habitat-v2");
         if (!this.prog) throw Error("Habitat shader unavailable");
@@ -134,6 +161,7 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
             p.vy = clamp(p.vy + f[1] * dt * 0.012 * e.coupling, -0.14, 0.14);
           }
           w.CabinetVIII.ecology.advance(this.L, dt, e);
+          rasterize(this.L, this.density, dt);
         }
         return e;
       },
@@ -141,15 +169,9 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
         const e = this.advance(S),
           bytes = this.pixels;
         bytes.fill(0);
-        for (let i = 0; i < this.L.field.length; i++) {
-          bytes[i * 4] = Math.round(clamp(this.L.field[i]) * 140);
+        for (let i = 0; i < this.density.length; i++) {
+          bytes[i * 4] = Math.round(this.density[i]);
           bytes[i * 4 + 3] = 255;
-        }
-        for (const p of this.L.agents) {
-          const ix = Math.min(47, Math.floor(p.x * 48)),
-            iy = Math.min(29, Math.floor(p.y * 30)),
-            i = (iy * 48 + ix) * 4;
-          bytes[i] = Math.min(255, bytes[i] + 95);
         }
         const gl = R.gl;
         gl.activeTexture(gl.TEXTURE0);
@@ -200,5 +222,5 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
       },
     };
   }
-  w.HabitatRenderer = { create, environment };
+  w.HabitatRenderer = { create, environment, rasterize };
 })(window);

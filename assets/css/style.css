@@ -542,3 +542,6 @@ body.is-idle .experience-dock,body.is-immersive .experience-dock{opacity:0;visib
 /* Native multi-select remains usable on small touch screens. */
 #nurseryPool { width:100%; max-width:100%; box-sizing:border-box; }
 #nurseryPoolWeights { width:100%; box-sizing:border-box; }
+
+/* Four dock controls remain reachable without horizontal scroll on phones. */
+@media(max-width:480px){.experience-dock{max-width:calc(100vw - 24px);flex-wrap:wrap;justify-content:flex-end;row-gap:4px;}.experience-dock button{font-size:9px;padding:8px 6px;}}

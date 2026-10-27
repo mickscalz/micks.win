@@ -41,11 +41,11 @@ try {
  await waitUntil(()=>window.Cabinet && Cabinet.playing);
  assert.equal(await page.locator('#enter, #curtain').count(),0);
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 08.*latest.*rank 01/);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 09.*latest.*rank 01/);
  await page.evaluate(()=>Experience.set('transitionDuration',0)); // The dedicated transition suite tests the compositor separately.
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,320);
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,328);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'unwritten-biosphere');
+ assert.equal(ordering[0].id,'tidal-cathedral');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  // The interface fades on real inactivity, never covers a gallery, and wakes
  // before keyboard focus or a touch can land on invisible controls.
@@ -91,20 +91,20 @@ try {
  assert.ok(resized.bright>45,'quality resize erased the held frame');assert.equal(resized.pending,false);
  await page.evaluate(()=>Cabinet.wakeUI());
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),320);
- for(const [family,count] of [['latest',64],['gl',182],['glx',4],['2d',134],['all',320]]){
+ assert.equal(await page.locator('.tile').count(),328);
+ for(const [family,count] of [['latest',8],['gl',190],['glx',4],['2d',134],['all',328]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['8']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['9']);
  }
- await page.locator('#galJump').fill('320');
+ await page.locator('#galJump').fill('328');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),319);
+ assert.equal(await page.evaluate(()=>Cabinet.index),327);
  await page.keyboard.press('Escape');
  await page.keyboard.press('Escape');
- await typeRank('320');
- assert.equal(await page.evaluate(()=>Cabinet.index),319);
+ await typeRank('328');
+ assert.equal(await page.evaluate(()=>Cabinet.index),327);
  await page.keyboard.press('Escape');
  await typeRank('12');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -112,8 +112,8 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),true);
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
- await page.evaluate(()=>{Cabinet.show(63);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),7);
+ await page.evaluate(()=>{Cabinet.show(7);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),8);
  // Linger is NOT pause: geometry keeps evolving past the dwell, manual travel
  // remains available, and leaving it starts a full dwell without a time reset.
  await page.evaluate(()=>Cabinet.show(0));
@@ -163,7 +163,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
  await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(319);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(327);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
@@ -193,16 +193,16 @@ try {
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  // Bottom rail must contain actual decoded pictures, at both ends of the
  // horizontally scrolling list, not blank CSS ticks or broken relative paths.
- assert.equal(await page.locator('#rail img').count(),320);
+ assert.equal(await page.locator('#rail img').count(),328);
  await page.evaluate(()=>{Cabinet.show(0);Cabinet.wakeUI();});
  await waitUntil(()=>{const im=document.querySelector('#rail img');return im.complete&&im.naturalWidth>0;});
- await page.evaluate(()=>Cabinet.show(319));
+ await page.evaluate(()=>Cabinet.show(327));
  await waitUntil(()=>{const im=document.querySelector('#rail button:last-child img');return im.complete&&im.naturalWidth>0;});
  await page.evaluate(()=>{document.querySelector('#rail img').src='data:image/webp;base64,broken';});
  await page.locator('.rail__item--fallback .rail__fallback').waitFor({state:'attached'});
- assert.match(await page.locator('.rail__fallback').first().textContent(),/The Unwritten Biosphere/);
+ assert.match(await page.locator('.rail__fallback').first().textContent(),/Cathedral of the Tides/);
  assert.deepEqual(errors,[]);
- console.log('\n320 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n328 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));
