@@ -107,6 +107,15 @@ try {
     const diff = (a, b) =>
       a.reduce((s, x, i) => s + (i % 4 === 3 ? 0 : Math.abs(x - b[i])), 0) /
       (cv.width * cv.height * 3);
+    // Probe the real GLSL hash rather than assuming every epoch is 13 seconds.
+    // An RGBA8 readback quantises the period by at most 32/255 seconds; the
+    // +/-0.2 s bracket also covers a full code of framebuffer dithering.
+    const epochProbe = R.shader(
+      "void main(){float period=(12.+hash11(8.)*7.)*(1.3-.55*.55);fragColor=vec4(period/32.,0,0,1);}",
+      "x-epoch-probe",
+    );
+    R.blit(epochProbe, null, { uRes: [180, 112] });
+    const epoch = (bytes()[0] / 255) * 32;
     const stats = [];
     for (const d of Cabinet.designs.filter(
       (d) => d.edition === 10 && d.kind === "gl",
@@ -114,10 +123,10 @@ try {
       const recipe = Nursery.worldFounder(d),
         m = Nursery.renderer(recipe);
       m.init(R);
-      m.clock = 12.99;
+      m.clock = epoch - 0.2;
       m.frame(R, { dt: 0, fade: 1 });
       const a = bytes();
-      m.clock += 1 / 60;
+      m.clock = epoch + 0.2;
       m.frame(R, { dt: 0, fade: 1 });
       const b = bytes();
       m.clock = 67;
