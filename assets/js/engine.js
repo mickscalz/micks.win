@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, 344
+   One shared WebGL2 context, one 2D context, one crossfade layer, 360
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -140,6 +140,9 @@
     syncLinger();
   }
   E.playChild = function (child) {
+    // Audition is an explicit Play action, not navigation into an inherited Hold.
+    if (E.paused) togglePause();
+    E.playing = true;
     show(E.index, { child: child });
     E.lingering = true;
     syncLinger();

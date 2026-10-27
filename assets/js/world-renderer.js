@@ -31,9 +31,10 @@
         " / " +
         g.weather,
       blurb:
-        "Whole-world inheritance. IX / X GPU sources reuse their exact environment kernels; other sources use explicit environment adapters.",
+        "Whole-world inheritance. IX / X / XI GPU sources reuse their exact environment kernels; other sources use explicit environment adapters.",
       init(R) {
         this.clock = 0;
+        this.motion = w.OffspringMotion.profile(recipe);
         this.prog = R.shader(K.shader(index), "world-v3-" + index);
         if (!this.prog) throw Error("World shader unavailable");
       },
@@ -47,7 +48,7 @@
         R.blit(this.prog, null, {
           ...K.uniforms(g),
           uRes: [R.canvas.width, R.canvas.height],
-          uTime: this.clock,
+          uTime: w.OffspringMotion.time(this.clock, this.motion),
           uDt: S.dt,
           uIntensity: e.intensity,
           uNovelty: S.experience?.novelty ?? 0.7,

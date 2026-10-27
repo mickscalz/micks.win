@@ -1,5 +1,13 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Collection XI follow-up (360 worlds)
+
+Sixteen new environment bodies extend exact GPU nursery reuse to 36. Real live
+firstborn rendering, deterministic startup motion for all three offspring
+versions and explicit audition-from-Hold fix the frozen-birth experience. Safety
+settings and later Hold still freeze motion. See
+[Impossible Shores](IMPOSSIBLE-SHORES.md) for construction details and limits.
+
 ## Collection X follow-up (344 worlds)
 
 Sixteen diverse environments, four separate living growth/steering systems,

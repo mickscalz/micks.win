@@ -125,6 +125,8 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
       init(R) {
         this.L = w.CabinetVIII.ecology.create(recipe.seed, 65, g.force);
         this.clock = 0;
+        this.motion = w.OffspringMotion.profile(recipe);
+        w.OffspringMotion.awaken(this.L.agents, recipe);
         this.density = rasterize(this.L, null, 0);
         this.pixels = new Uint8Array(48 * 30 * 4);
         this.prog = R.shader(body, "nursery-habitat-v2");
@@ -193,7 +195,7 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
           null,
           {
             uRes: [R.canvas.width, R.canvas.height],
-            uTime: this.clock,
+            uTime: w.OffspringMotion.time(this.clock, this.motion),
             uFade: S.fade ?? 1,
             uGrowth: e.growth,
             uLife: e.lifecycle,

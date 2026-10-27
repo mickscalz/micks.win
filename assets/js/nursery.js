@@ -5,6 +5,10 @@
     typeof module !== "undefined"
       ? require("./designs/world-kernels.js")
       : root.WorldKernels;
+  const Motion =
+    typeof module !== "undefined"
+      ? require("./offspring-motion.js")
+      : root.OffspringMotion;
   const KEYS = [
     "growth",
     "mutation",
@@ -583,6 +587,8 @@
       init() {
         this.L = root.CabinetVIII.ecology.create(recipe.seed, 65, g.force);
         this.clock = 0;
+        this.motion = Motion.profile(recipe);
+        Motion.awaken(this.L.agents, recipe);
       },
       advance(S) {
         const e = root.CabinetVIII.ecology.tune(S);
@@ -598,7 +604,7 @@
         const c = S.ctx,
           W = S.w,
           H = S.h,
-          t = this.clock;
+          t = Motion.time(this.clock, this.motion);
         c.fillStyle = "#030a14";
         c.fillRect(0, 0, W, H);
         c.save();
