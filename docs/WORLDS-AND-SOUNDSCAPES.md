@@ -4,9 +4,12 @@ Historical IX release notes. The current Collection X expansion brings the total
 to 344 and exact GPU kernels to 20; see [Immensities](IMMENSITIES.md).
 Edition XI subsequently brings these to **360 worlds / 36 exact kernels**, with
 a live firstborn and corrected birth motion: [Impossible Shores](IMPOSSIBLE-SHORES.md).
+Edition XII then brings the cabinet to **376 worlds / 52 exact kernels**, and
+replaces the simpler ambience hash with deterministic, world-scored music:
+[Resonant Infinities](RESONANT-INFINITIES.md).
 
 
-328 authored worlds, newest first. IX adds eight independently constructed
+Historical IX release notes: 328 authored worlds, newest first. IX adds eight independently constructed
 landscape-scale fields with actual renderer-generated gallery stills:
 
 1. Cathedral of the Tides — repeated sea arches and tidal causeways.

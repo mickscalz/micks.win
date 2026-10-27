@@ -26,7 +26,7 @@ test("X adds sixteen distinct worlds with twelve GPU kernels and four independen
     new Set(latest.filter((d) => d.frag).map((d) => d.frag)).size,
     12,
   );
-  assert.equal(K.exactSourceIDs.length, 36);
+  assert.equal(K.exactSourceIDs.length, 52);
   for (const d of latest) {
     assert.ok(d.lifeMechanism && d.motionClass && d.paletteGroup);
     if (d.kind === "gl") assert.ok(d.pixelBudget <= 600000);

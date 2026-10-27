@@ -21,7 +21,7 @@ test("XI adds sixteen independent worldscapes and expands exact environment kern
   assert.equal(new Set(sources.map((d) => d.frag)).size, 16);
   assert.equal(new Set(XI.fields).size, 8);
   assert.equal(new Set(XI.optics).size, 8);
-  assert.equal(K.exactSourceIDs.length, 36);
+  assert.equal(K.exactSourceIDs.length, 52);
   assert.ok(new Set(sources.map((d) => d.family)).size >= 9);
   for (const d of sources) {
     assert.equal(d.kind, "gl");

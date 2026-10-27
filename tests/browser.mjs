@@ -41,11 +41,11 @@ try {
  await waitUntil(()=>window.Cabinet && Cabinet.playing);
  assert.equal(await page.locator('#enter, #curtain').count(),0);
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 11.*latest.*rank 01/);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 12.*latest.*rank 01/);
  await page.evaluate(()=>Experience.set('transitionDuration',0)); // The dedicated transition suite tests the compositor separately.
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,360);
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,376);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'oceans-above-the-sky');
+ assert.equal(ordering[0].id,'inverted-pearl-sea');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  // The interface fades on real inactivity, never covers a gallery, and wakes
  // before keyboard focus or a touch can land on invisible controls.
@@ -91,20 +91,20 @@ try {
  assert.ok(resized.bright>45,'quality resize erased the held frame');assert.equal(resized.pending,false);
  await page.evaluate(()=>Cabinet.wakeUI());
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),360);
- for(const [family,count] of [['latest',16],['gl',218],['glx',4],['2d',138],['all',360]]){
+ assert.equal(await page.locator('.tile').count(),376);
+ for(const [family,count] of [['latest',16],['gl',234],['glx',4],['2d',138],['all',376]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['11']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['12']);
  }
- await page.locator('#galJump').fill('360');
+ await page.locator('#galJump').fill('376');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),359);
+ assert.equal(await page.evaluate(()=>Cabinet.index),375);
  await page.keyboard.press('Escape');
  await page.keyboard.press('Escape');
- await typeRank('360');
- assert.equal(await page.evaluate(()=>Cabinet.index),359);
+ await typeRank('376');
+ assert.equal(await page.evaluate(()=>Cabinet.index),375);
  await page.keyboard.press('Escape');
  await typeRank('12');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -113,7 +113,7 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
  await page.evaluate(()=>{Cabinet.show(15);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),10);
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),11);
  // Linger is NOT pause: geometry keeps evolving past the dwell, manual travel
  // remains available, and leaving it starts a full dwell without a time reset.
  await page.evaluate(()=>Cabinet.show(0));
@@ -163,7 +163,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
  await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(359);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(375);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
@@ -193,16 +193,16 @@ try {
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  // Bottom rail must contain actual decoded pictures, at both ends of the
  // horizontally scrolling list, not blank CSS ticks or broken relative paths.
- assert.equal(await page.locator('#rail img').count(),360);
+ assert.equal(await page.locator('#rail img').count(),376);
  await page.evaluate(()=>{Cabinet.show(0);Cabinet.wakeUI();});
  await waitUntil(()=>{const im=document.querySelector('#rail img');return im.complete&&im.naturalWidth>0;});
- await page.evaluate(()=>Cabinet.show(359));
+ await page.evaluate(()=>Cabinet.show(375));
  await waitUntil(()=>{const im=document.querySelector('#rail button:last-child img');return im.complete&&im.naturalWidth>0;});
  await page.evaluate(()=>{document.querySelector('#rail img').src='data:image/webp;base64,broken';});
  await page.locator('.rail__item--fallback .rail__fallback').waitFor({state:'attached'});
- assert.match(await page.locator('.rail__fallback').first().textContent(),/Oceans Above the Sky/);
+ assert.match(await page.locator('.rail__fallback').first().textContent(),/The Inverted Pearl Sea/);
  assert.deepEqual(errors,[]);
- console.log('\n360 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n376 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));

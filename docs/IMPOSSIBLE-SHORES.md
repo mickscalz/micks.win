@@ -1,6 +1,6 @@
 # XI — Impossible Shores
 
-Sixteen new complete environments bring the cabinet to **360 worlds** across
+Sixteen new complete environments brought the cabinet to **360 worlds** at this release across
 11 editions: **218 single-pass WebGL2**, four stateful GPU systems and 138 Canvas
 worlds. The 344 earlier worlds remain. Edition XI is newest first, with editorial
 ordering interleaving architecture, landscapes, volumes and optical fields.
@@ -79,9 +79,10 @@ or a claim of autonomous intelligence.
 - `npm test`: 65 tests, including source/default parity for XI, append-only exact
   kernels, deterministic motion profiles, seeded agent velocity and unchanged IDs.
 - `npm run test:browser`: nine suites. The original regression traverses and
-  compiles all 360 worlds. The new birth suite exercises the live viewport,
+  compiled all 360 worlds at this release. The birth suite exercises the live viewport,
   explicit audition from Hold, later Hold, Motion = 0, and actual first-two-second
-  render differences for v1/v2 plus **all 36** world-v3 environment bodies.
+  render differences for v1/v2 plus every world-v3 environment body (36 at this
+  release, 52 after Collection XII).
 - Motion verification also averages **5×5 pixel blocks**, requiring both a mean
   difference and at least 20 substantially changed spatial blocks, so ordinary
   per-pixel shader grain cannot stand in for structural/light motion. Repainting

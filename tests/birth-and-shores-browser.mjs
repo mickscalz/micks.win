@@ -381,7 +381,7 @@ try {
     assert.equal(s.held, 0, JSON.stringify(s));
     assert.ok(s.clock);
   }
-  assert.equal(motion.result.length, 38);
+  assert.equal(motion.result.length, 54);
   await page.evaluate(() => Cabinet.wakeUI());
   await page.locator("#nurseryToggle").click();
   await page.locator("[data-nursery-action=clear]").click();
@@ -392,7 +392,7 @@ try {
   assert.deepEqual(glErrors, []);
   assert.deepEqual(uploads, []);
   console.log(
-    "Birth + shores browser PASS: real live firstborn viewport, explicit audition resumes Hold, later Hold and motion=0 remain effective; first-two-second motion and exact held redraw for v1/v2 plus all 36 world-v3 kernels. No uploads.",
+    "Birth + shores browser PASS: real live firstborn viewport, explicit audition resumes Hold, later Hold and motion=0 remain effective; first-two-second motion and exact held redraw for v1/v2 plus all 52 world-v3 kernels. No uploads.",
   );
 } finally {
   if (browser) await browser.close();
