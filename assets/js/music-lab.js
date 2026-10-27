@@ -12,6 +12,7 @@
       "beat",
       "spectral",
       "texture",
+      "notes",
     ],
     targets = [
       "growth",
@@ -36,6 +37,9 @@
     worker = null,
     epoch = 0,
     decoding = false,
+    decodeJob = null,
+    modelJob = null,
+    noteAnalysis = null,
     analysis = null,
     markers = [],
     lookahead = false,
@@ -43,7 +47,7 @@
     manualTempo = null,
     taps = [],
     lastDraw = 0;
-  const workerURL = new URL("music-analysis.js?v=10", d.currentScript.src);
+  const workerURL = new URL("music-analysis.js?v=11", d.currentScript.src);
   const $ = (id) => d.getElementById(id),
     clamp = (n, a, b) => Math.max(a, Math.min(b, n));
   function validRoutes(rows) {
@@ -118,30 +122,32 @@
     for (const r of routes) {
       if (!r.enabled) continue;
       let v =
-        r.source === "spectral"
-          ? look?.brightness
-          : r.source === "texture"
-            ? look?.flatness
-            : r.source === "arc"
-              ? look?.energy
-              : r.source === "novelty"
-                ? look?.novelty
-                : r.source === "beat"
-                  ? lookahead &&
-                    media &&
-                    !media.paused &&
-                    (manualTempo || analysis?.bpm)
-                    ? 0.5 -
-                      0.5 *
-                        Math.cos(
-                          (2 *
-                            Math.PI *
-                            (media.currentTime + offset) *
-                            (manualTempo || analysis.bpm)) /
-                            60,
-                        )
-                    : null
-                  : signal[r.source];
+        r.source === "notes"
+          ? noteValue()
+          : r.source === "spectral"
+            ? look?.brightness
+            : r.source === "texture"
+              ? look?.flatness
+              : r.source === "arc"
+                ? look?.energy
+                : r.source === "novelty"
+                  ? look?.novelty
+                  : r.source === "beat"
+                    ? lookahead &&
+                      media &&
+                      !media.paused &&
+                      (manualTempo || analysis?.bpm)
+                      ? 0.5 -
+                        0.5 *
+                          Math.cos(
+                            (2 *
+                              Math.PI *
+                              (media.currentTime + offset) *
+                              (manualTempo || analysis.bpm)) /
+                              60,
+                          )
+                      : null
+                    : signal[r.source];
       if (typeof v !== "number" || !Number.isFinite(v)) continue;
       if (r.source === "onset" && settings.reducedFlashes) v = Math.min(0.3, v);
       const base = {
@@ -155,6 +161,7 @@
         beat: 0.5,
         spectral: 0.3,
         texture: 0.3,
+        notes: 0.3,
       }[r.source];
       mod[r.target] =
         (mod[r.target] || 0) + (clamp(v, 0, 1) - base) * r.amount * weight;
@@ -249,8 +256,68 @@
           " · " +
           (profiles[id] ? "custom profile" : "inherits global until edited");
   }
+  function noteValue() {
+    if (
+      !lookahead ||
+      !noteAnalysis ||
+      !media ||
+      media.paused ||
+      media.currentTime < 0 ||
+      media.currentTime >= noteAnalysis.duration
+    )
+      return null;
+    return (
+      noteAnalysis.rows[
+        Math.min(
+          noteAnalysis.rows.length - 1,
+          Math.floor(media.currentTime / 0.5),
+        )
+      ]?.activity ?? null
+    );
+  }
+  function runNoteModel(excerpt, token) {
+    const job = w.MusicModel.start(excerpt, {
+      progress: (text) => {
+        if (token === epoch) $("musicModelStatus").textContent = text;
+      },
+    });
+    modelJob = job;
+    job.promise.then(
+      (result) => {
+        if (token !== epoch) return;
+        noteAnalysis = result;
+        modelJob = null;
+        $("musicModelStatus").textContent =
+          result.model +
+          " · " +
+          result.duration.toFixed(1) +
+          "s excerpt, strongest-energy channel · mean note activations (not calibrated confidence): " +
+          result.rows[0].notes
+            .map((n) => "MIDI " + n.midi + " " + n.activation.toFixed(2))
+            .join(", ") +
+          ". Not verified notes/key/chords/mood. Optional notes route bypasses beyond this excerpt.";
+      },
+      (error) => {
+        if (token === epoch) {
+          modelJob = null;
+          $("musicModelStatus").textContent = error.message;
+        }
+      },
+    );
+  }
   function cancel(message = "Analysis cancelled") {
+    if (modelJob) {
+      modelJob.cancel();
+      modelJob = null;
+    }
+    noteAnalysis = null;
+    if ($("musicModelStatus"))
+      $("musicModelStatus").textContent = "No note-model data retained";
     epoch++;
+    if (decodeJob) {
+      decodeJob.cancel();
+      decodeJob = null;
+    }
     if (worker) worker.terminate();
     worker = null;
     if ($("analysisStatus")) $("analysisStatus").textContent = message;
@@ -274,7 +341,7 @@
     media = m;
     if ($("analysisStatus"))
       $("analysisStatus").textContent =
-        "Local look-ahead ready: PCM WAV, or browser-supported MP3/AAC/FLAC/Ogg/WebM within decode limits.";
+        "Local look-ahead ready: PCM WAV or interruptible MP3/FLAC/Ogg Vorbis. Other codecs need explicit native-fallback consent.";
   }
   async function analyze() {
     if (decoding) {
@@ -299,7 +366,23 @@
       let buffer = await file.arrayBuffer();
       if (token !== epoch) return;
       const native = !w.AudioDecode.directPCM(buffer);
-      if (native) {
+      if (native && w.AudioDecode.workerCodec(buffer)) {
+        const job = w.AudioDecode.startWorker(buffer, {
+          progress: (text) => {
+            if (token === epoch) $("analysisStatus").textContent = text;
+          },
+        });
+        decodeJob = job;
+        try {
+          buffer = await job.promise;
+        } finally {
+          if (decodeJob === job) decodeJob = null;
+        }
+      } else if (native) {
+        if (!$("nativeDecodeConsent").checked)
+          throw Error(
+            "No interruptible decoder for this format. Optional native fallback requires explicit consent below; real-time playback remains available.",
+          );
         decoding = true;
         try {
           buffer = await w.AudioDecode.decode(buffer, {
@@ -315,6 +398,17 @@
         }
       }
       if (token !== epoch) return;
+      let excerpt = null;
+      if ($("musicModelEnabled").checked) {
+        try {
+          excerpt = w.MusicModel.excerpt(buffer, w.MusicAnalysis);
+        } catch (error) {
+          $("musicModelStatus").textContent =
+            "Note-model preparation unavailable: " +
+            error.message +
+            ". Ordinary DSP continues.";
+        }
+      }
       worker = new Worker(workerURL);
       worker.onerror = () => {
         if (token === epoch)
@@ -346,6 +440,8 @@
               : "unknown") +
             ". No key, mood or chord inference.";
           draw();
+          if (excerpt && $("musicModelEnabled").checked)
+            runNoteModel(excerpt, token);
         }
       };
       worker.postMessage({ buffer }, [buffer]);
@@ -430,12 +526,25 @@
     }
   }
   function reset() {
+    $("nativeDecodeConsent").checked = false;
+    $("musicModelEnabled").checked = false;
     restore(null);
     release();
     renderRoutes();
     changed();
   }
   function mount() {
+    $("musicModelEnabled").onchange = () => {
+      if (!$("musicModelEnabled").checked) {
+        if (modelJob) {
+          modelJob.cancel();
+          modelJob = null;
+        }
+        noteAnalysis = null;
+        $("musicModelStatus").textContent =
+          "Note model disabled; worker terminated, results erased";
+      }
+    };
     renderRoutes();
     $("musicScope").onchange = (e) => {
       scope = e.target.value;
@@ -515,5 +624,6 @@
     tick,
     analyze,
     getAnalysis: () => analysis,
+    getNoteAnalysis: () => noteAnalysis,
   };
 })(window, document);

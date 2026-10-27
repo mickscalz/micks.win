@@ -292,6 +292,7 @@
   }
   if (typeof module !== "undefined")
     module.exports = { parse, sample, spectrum, tempo, analyze };
+  else if(typeof document!=="undefined")root.MusicAnalysis={parse,sample,spectrum,tempo,analyze};
   else
     root.onmessage = (e) => {
       try {

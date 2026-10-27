@@ -12,7 +12,75 @@
     selected = null;
   let previewR = null,
     stopped = false;
-  const transient = new Map();
+  const transient = new Map(),
+    observations = new Map(),
+    tasteKey = "cabinet-pairwise-taste-v1";
+  let ranker = w.PreferenceModel.create(),
+    comparison = null,
+    rememberTaste = false;
+  function tasteStatus() {
+    $("nurseryLearningStatus").textContent =
+      ranker.count +
+      " unique pair comparisons · " +
+      (ranker.ready ? "personal ranker trained" : "3 required before ranking") +
+      " · " +
+      (rememberTaste ? "remembered on this device" : "session only") +
+      ". Learned feature weights: " +
+      ranker
+        .explain()
+        .map((x) => x.feature + " " + x.weight.toFixed(2))
+        .join(", ");
+    $("nurseryComparison").textContent = comparison
+      ? "Reference: " +
+        comparison.name +
+        ". Choose another candidate you prefer."
+      : "Choose a comparison reference, then prefer another candidate. No implicit ratings.";
+    $("nurseryCandidates")
+      .querySelectorAll(".preference-score")
+      .forEach((el, i) => {
+        const obs = observations.get(candidates[i]?.id);
+        el.textContent =
+          ranker.ready && obs
+            ? "Personal rank " +
+              ranker.predict(obs.features).toFixed(2) +
+              " (relative utility, not probability of beauty)"
+            : "";
+      });
+  }
+  function persistTaste() {
+    if (!rememberTaste) return;
+    try {
+      localStorage.setItem(
+        tasteKey,
+        JSON.stringify({ version: 1, pairs: ranker.snapshot() }),
+      );
+    } catch (e) {
+      rememberTaste = false;
+      $("nurseryRememberTaste").checked = false;
+      throw Error("Taste storage unavailable; trained session model retained");
+    }
+  }
+  function resetTaste() {
+    stopped = true;
+    ranker.clear();
+    comparison = null;
+    rememberTaste = false;
+    let erased = true;
+    try {
+      localStorage.removeItem(tasteKey);
+    } catch (_) {
+      erased = false;
+    }
+    $("nurseryRememberTaste").checked = false;
+    $("nurseryLearned").checked = false;
+    tasteStatus();
+    if (!erased)
+      status(
+        "Session preferences erased; device erasure could not be confirmed because browser storage is blocked.",
+      );
+    return erased;
+  }
+
   const $ = (id) => d.getElementById(id),
     status = (s) => ($("nurseryStatus").textContent = s);
   function option(value, text) {
@@ -44,7 +112,7 @@
   }
   function controls() {
     d.querySelectorAll(
-      "[data-nursery-action],#nurseryRemember,#nurseryImport",
+      "[data-nursery-action],#nurseryRemember,#nurseryImport,#nurseryLearned,#nurseryRememberTaste",
     ).forEach((el) => (el.disabled = busy));
   }
   function render() {
@@ -281,6 +349,17 @@
     $("nurseryAncestry").append(info);
   }
   function preview(recipe) {
+    if (observations.has(recipe.id)) {
+      const image = new Image(240, 150),
+        obs = observations.get(recipe.id);
+      image.src = obs.src;
+      image.alt =
+        "Actual " +
+        recipe.solver +
+        " recipe at 2.5 simulated seconds, default tuning";
+      image.className = "nursery-thumbnail";
+      return image;
+    }
     const cv = d.createElement("canvas");
     cv.width = 240;
     cv.height = 150;
@@ -324,6 +403,20 @@
       recipe.solver +
       " recipe at 2.5 simulated seconds, default tuning";
     image.src = output.toDataURL("image/webp", 0.77);
+    const sample = d.createElement("canvas");
+    sample.width = 64;
+    sample.height = 40;
+    const c = sample.getContext("2d", { willReadFrequently: true });
+    c.drawImage(output, 0, 0, 64, 40);
+    observations.set(recipe.id, {
+      src: image.src,
+      features: w.PreferenceModel.features(
+        recipe,
+        w.PreferenceModel.pixels(c.getImageData(0, 0, 64, 40).data, 64, 40),
+      ),
+    });
+    if (observations.size > 128)
+      observations.delete(observations.keys().next().value);
     return image;
   }
   async function auditions() {
@@ -344,6 +437,8 @@
         ["audition", "audition"],
         ["save", "save"],
         ["traits", "traits"],
+        ["compare from here", "compare"],
+        ["prefer over reference", "prefer"],
       ]) {
         const b = d.createElement("button");
         b.textContent = label;
@@ -351,9 +446,13 @@
         b.dataset.candidate = i;
         row.append(b);
       }
+      const score = d.createElement("small");
+      score.className = "preference-score";
+      row.append(score);
       box.append(row);
       await new Promise((r) => setTimeout(r, 0));
     }
+    tasteStatus();
   }
   function play(p) {
     w.Cabinet.playChild(N.renderer(p));
@@ -384,7 +483,11 @@
         "Two twins: same inherited genome, different habitat seeds. Audition before saving.",
       );
     } else if (action === "evolve") {
-      const selection = parentSelection();
+      const selection = parentSelection(),
+        learnedEnabled = $("nurseryLearned").checked && ranker.ready,
+        model = learnedEnabled
+          ? w.PreferenceModel.create(ranker.snapshot())
+          : null;
       stopped = false;
       $("nurseryStop").disabled = false;
       try {
@@ -399,6 +502,22 @@
           seconds: Number($("nurserySeconds").value),
           archive: Number($("nurseryArchive").value),
           taste: recipe($("nurseryTaste").value),
+          evaluate: learnedEnabled
+            ? async (p) => {
+                preview(p);
+              }
+            : null,
+          learned: learnedEnabled
+            ? (p) => {
+                const prediction = model.predict(
+                  observations.get(p.id).features,
+                );
+                return (
+                  (1 - model.strength) * w.NurseryEvolution.quality(p) +
+                  model.strength * prediction
+                );
+              }
+            : null,
           cancelled: () => stopped,
           progress: (p) =>
             status(
@@ -422,11 +541,46 @@
             result.count +
             " evaluated genomes, " +
             candidates.length +
-            " retained. Scores use genome diversity / moderate developmental traits / optional taste distance, not rendered beauty. Saving also keeps available unsaved ancestors (100-record limit).",
+            " retained. Ranking: " +
+            (learnedEnabled
+              ? "locally learned personal preference + diversity"
+              : "moderate traits + diversity") +
+            "; not universal beauty. Saving includes available unsaved ancestry (100-record limit).",
         );
       } finally {
         $("nurseryStop").disabled = true;
       }
+    } else if (action === "compare") {
+      const p = candidates[Number(button.dataset.candidate)];
+      preview(p);
+      comparison = {
+        id: p.id,
+        name: p.name,
+        features: observations.get(p.id).features,
+      };
+      tasteStatus();
+    } else if (action === "prefer") {
+      const p = candidates[Number(button.dataset.candidate)];
+      if (!comparison || comparison.id === p.id)
+        throw Error("Choose a different comparison reference first");
+      preview(p);
+      ranker.add(
+        p.id,
+        comparison.id,
+        observations.get(p.id).features,
+        comparison.features,
+      );
+      try {
+        persistTaste();
+      } finally {
+        tasteStatus();
+      }
+      status(
+        "Personal comparison learned locally. It does not establish universal beauty.",
+      );
+    } else if (action === "resetTaste") {
+      if (resetTaste())
+        status("Personal ranker and stored comparisons erased.");
     } else if (action === "audition")
       play(candidates[Number(button.dataset.candidate)]);
     else if (action === "traits")
@@ -533,6 +687,38 @@
     };
   }
   function mount() {
+    $("nurseryRememberTaste").onchange = () => {
+      const enabled = $("nurseryRememberTaste").checked;
+      run(async () => {
+        try {
+          if (enabled) {
+            const text = localStorage.getItem(tasteKey);
+            if (text) {
+              if (text.length > 300000)
+                throw Error("Stored taste data too large");
+              const obj = JSON.parse(text);
+              if (obj.version !== 1) throw Error("Unsupported taste model");
+              const loaded = w.PreferenceModel.create(obj.pairs);
+              for (const p of ranker.snapshot())
+                loaded.add(p.winner, p.loser, p.a, p.b);
+              ranker = loaded;
+            }
+            rememberTaste = true;
+            persistTaste();
+          } else {
+            localStorage.removeItem(tasteKey);
+            rememberTaste = false;
+          }
+          tasteStatus();
+        } catch (e) {
+          rememberTaste = false;
+          $("nurseryRememberTaste").checked = false;
+          tasteStatus();
+          throw e;
+        }
+      });
+    };
+    tasteStatus();
     for (const world of w.Cabinet.designs) {
       const f = N.founderAny(world);
       founders.set(f.id, f);
@@ -616,6 +802,12 @@
   }
   w.NurseryUI = {
     mount,
+    resetTaste,
+    getTaste: () => ({
+      count: ranker.count,
+      ready: ranker.ready,
+      remember: rememberTaste,
+    }),
     getLibrary: () => [...library.values()].map(N.validate),
   };
 })(window, document);

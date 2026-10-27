@@ -729,6 +729,7 @@
     signal.balance = signal.stereoReliable ? (R - L) / (R + L + 0.0001) : 0;
   }
   function reset() {
+    if(w.NurseryUI)w.NurseryUI.resetTaste();
     if (w.MusicLab) w.MusicLab.reset();
     stopAudio();
     consent = false;

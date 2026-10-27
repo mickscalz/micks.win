@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#04040a" />
 <meta property="og:title" content="micks.win — A Cabinet of Infinite Rooms" />
 <meta property="og:description" content="256 living worlds rendered in real time." />
-<link rel="stylesheet" href="assets/css/style.css?v=10" />
+<link rel="stylesheet" href="assets/css/style.css?v=11" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='45%25'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%237ad7ff'/%3E%3Cstop offset='1' stop-color='%2310052e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%23050509'/%3E%3Ccircle cx='16' cy='16' r='9' fill='url(%23g)'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -166,8 +166,15 @@
           <label>Retain (1–24)<input id="nurseryArchive" type="number" min="1" max="24" value="12" /></label>
         </div>
         <label>Taste reference (optional saved offspring)<select id="nurseryTaste"></select></label>
-        <p class="tune-help">Search uses 55% genome diversity, 30% moderate developmental-trait proxy and 15% similarity to your taste reference (neutral if absent). These are transparent heuristics—not learned beauty or image-quality scores. No audio, ratings or taste history is stored. Yields after each candidate; stops when hidden. Time budget covers genome search, not final thumbnail rendering. Nothing auto-saves; saving a survivor includes its available unsaved ancestry within the 100-record library cap.</p>
+        <p class="tune-help">Search uses 55% genome diversity, 30% moderate developmental-trait proxy and 15% similarity to your taste reference (neutral if absent). Without optional personal training below these are heuristics. With training enabled, the 30% proxy term blends toward your learned preference; diversity remains protected. No universal beauty score is claimed. Comparisons persist only with their separate consent. Yields after each candidate; stops when hidden. Time budget covers genome search, not final thumbnail rendering. Nothing auto-saves; saving a survivor includes its available unsaved ancestry within the 100-record library cap.</p>
         <div class="audio-actions"><button data-nursery-action="evolve">run bounded search</button><button id="nurseryStop" type="button" disabled>stop search</button></div>
+      </details>
+      <details><summary>Learn my visual preferences · optional local training</summary>
+        <p class="tune-help">Choose “compare from here” on one candidate, then “prefer over reference” on another after viewing/auditioning both. A regularized pairwise logistic model learns from your explicit choices using genes and actual thumbnail light/contrast/colour/edge/occupancy measurements. Three distinct pairs enable learned ranking; its influence increases up to 20 pairs. Maximum 128 pairs. This learns your current preferences, not universal beauty or musical understanding. Small training sets can overfit; ranking is not a calibrated probability. No implicit tracking, uploads or images saved to device.</p>
+        <p id="nurseryComparison" class="tune-help"></p><p id="nurseryLearningStatus" role="status" class="tune-help"></p>
+        <label class="remember"><input id="nurseryLearned" type="checkbox" /> Use learned personal ranking in automatic search (rendered evaluation counts toward the time budget)</label>
+        <label class="remember"><input id="nurseryRememberTaste" type="checkbox" /> Load / remember my comparisons on this device (separate opt-in, off each visit)</label>
+        <button data-nursery-action="resetTaste">erase learned preferences</button>
       </details>
       <label>Temperament<select id="nurseryMood"><option value="balanced">Balanced · family resemblance</option><option value="calm">Calm · slower development and drift</option><option value="wild">Wild · wider bounded variation</option></select></label>
       <div class="audio-actions"><button data-nursery-action="breed">breed twins</button><button data-nursery-action="return">return to authored world</button></div>
@@ -188,8 +195,14 @@
       <div class="audio-actions"><button id="musicResetRoutes">reset this profile</button><button id="musicClearProfiles">reset all route profiles</button></div><p id="musicStatus" role="status"></p>
       <p class="tune-help">Profiles persist only with “Remember settings” below (up to 64). Other worlds inherit global routes. Reset preferences clears all profiles. Microphone remains real-time; the analysis below never captures it.</p>
       <h3>Optional local-file analysis</h3>
-      <p class="tune-help">First choose a playback file below, then explicitly analyze it. Look-ahead supports mono/stereo PCM16 or float32 WAV (32 MiB, 10 minutes), plus browser-supported MP3, AAC/M4A, FLAC, Ogg and WebM via native decoding (32 MiB encoded, finite metadata, 3 minutes, 16 kHz mono/stereo output). Codec availability varies. Native decode may allocate extra memory and cannot be interrupted in flight; Stop immediately discards stale results, but native work can finish in the background. Output is bounded, not streamed. Playback and tap tempo remain available if look-ahead is unsupported. A cancellable worker computes two-resolution spectra, RMS, centroid, rolloff, flatness, chroma, novelty and conservative tempo candidates. No audio is uploaded or stored.</p>
+      <p class="tune-help">First choose a playback file below, then explicitly analyze it. Look-ahead supports mono/stereo PCM16 or float32 WAV (32 MiB, 10 minutes), plus locally hosted MP3, FLAC and Ogg Vorbis decoders in a terminable worker (32 MiB encoded / 3 minutes decoded / 45-second time budget / 16 kHz mono/stereo output). Stop terminates that worker, including in-flight WASM work; no native decode is started for those formats. Other browser-playable codecs such as AAC/M4A, Opus or WebM require the separate native-fallback consent below. Native decode cannot be interrupted in flight and can allocate extra memory; Stop discards its result, but native work can finish in the background. Encoded files are held whole; worker PCM is processed in chunks with bounded output, not constant total memory. Playback and tap tempo remain available if look-ahead is unsupported. A cancellable worker computes two-resolution spectra, RMS, centroid, rolloff, flatness, chroma, novelty and conservative tempo candidates. No audio is uploaded or stored.</p>
+      <label class="remember"><input id="nativeDecodeConsent" type="checkbox" /> Allow native fallback for other codecs on this visit (cannot abort its underlying decode; Stop discards results)</label>
       <div class="audio-actions"><button id="analyzeTrack">analyze selected playback file</button><button id="cancelAnalysis">cancel analysis</button></div>
+      <details><summary>Optional learned note model · Spotify Basic Pitch</summary>
+        <label class="remember"><input id="musicModelEnabled" type="checkbox" /> Include the local note model (~2.5 MiB) during file analysis, estimating the first 4 seconds</label>
+        <p class="tune-help">Apache-licensed pretrained Basic Pitch 1.0.1, not heuristic chroma relabelled as AI. Runs in a terminable worker with a 60-second budget, one WASM thread, 22.05 kHz mono from the strongest-energy channel. Model/runtime files load only when requested; no audio upload or persisted predictions. Best on a single pitched instrument; percussion, mixes and unusual timbres can be wrong. These are raw note activations, not calibrated certainty or key/chord/mood/section understanding. Output covers only the first four seconds; optional “notes” route needs look-ahead enabled and bypasses outside that excerpt. Stop/disable terminates inference and clears results; browser HTTP cache may retain public model files.</p>
+        <p id="musicModelStatus" role="status">No note-model data retained</p>
+      </details>
       <p id="analysisStatus" role="status">No local analysis retained</p>
       <canvas id="analysisTimeline" width="800" height="130" role="img" aria-label="Track energy timeline, chroma strip, candidate and manual change markers"></canvas>
       <p id="analysisDetails" class="tune-help">No analyzed track.</p>
@@ -197,7 +210,7 @@
       <label class="tune-range">Arc look-ahead (seconds)<input id="lookaheadSeconds" type="range" min="0" max="10" step="0.5" value="3" /></label>
       <label class="tune-range">Feature / beat alignment offset (seconds)<input id="analysisOffset" type="range" min="-2" max="2" step="0.05" value="0" /></label>
       <div class="audio-actions"><button id="tapMusicTempo">tap tempo</button><button id="halfMusicTempo">half tempo</button><button id="doubleMusicTempo">double tempo</button><button id="addMusicMarker">mark current position</button><button id="clearMusicMarkers">clear manual markers</button></div>
-      <p class="tune-help">Arc = normalized future energy; spectral = high-frequency energy fraction; texture = spectral flatness; novelty = chroma/energy change, not a chorus detector. These four sources require completed local-file analysis and enabled look-ahead. Beat is a continuous phase clock only when tempo has evidence or you tap it; offset corrects alignment, not an inferred downbeat. Pitch-class energy does not prove key or chords. White markers are your annotations (and gentle novelty cues when routed), gold markers are change candidates. Audio stop/replacement/reload discards file references, features and corrections. No models are downloaded.</p>
+      <p class="tune-help">Arc = normalized future energy; spectral = high-frequency energy fraction; texture = spectral flatness; novelty = chroma/energy change, not a chorus detector. These four sources require completed local-file analysis and enabled look-ahead. Beat is a continuous phase clock only when tempo has evidence or you tap it; offset corrects alignment, not an inferred downbeat. Pitch-class energy does not prove key or chords. White markers are your annotations (and gentle novelty cues when routed), gold markers are change candidates. Audio stop/replacement/reload discards file references, features and corrections. No model loads unless its separate opt-in above is checked.</p>
     </details>
     <fieldset><legend>Optional audio · off until you choose</legend>
       <p class="tune-help">Use a local audio file or explicitly allow your microphone. Nothing is uploaded or recorded. Microphone sound is not played back. No audio? The scene makes its own drifting rhythm.</p>
@@ -216,38 +229,42 @@
   <div class="fatal" id="fatal" hidden></div>
 </div>
 
-<script src="assets/js/glsl-prelude.js?v=10"></script>
-<script src="assets/js/gl.js?v=10"></script>
-<script src="assets/js/designs/shaders-a.js?v=10"></script>
-<script src="assets/js/designs/shaders-b.js?v=10"></script>
-<script src="assets/js/designs/shaders-c.js?v=10"></script>
-<script src="assets/js/designs/canvas.js?v=10"></script>
-<script src="assets/js/designs/shaders-d.js?v=10"></script>
-<script src="assets/js/designs/shaders-e.js?v=10"></script>
-<script src="assets/js/designs/sims.js?v=10"></script>
-<script src="assets/js/designs/canvas-b.js?v=10"></script>
-<script src="assets/js/designs/collection-iii.js?v=10"></script>
-<script src="assets/js/designs/collection-iii-canvas.js?v=10"></script>
-<script src="assets/js/designs/collection-iv.js?v=10"></script>
-<script src="assets/js/designs/collection-iv-canvas.js?v=10"></script>
-<script src="assets/js/designs/collection-v.js?v=10"></script>
-<script src="assets/js/designs/collection-v-canvas.js?v=10"></script>
-<script src="assets/js/designs/collection-vi.js?v=10"></script>
-<script src="assets/js/designs/collection-vi-canvas.js?v=10"></script>
-<script src="assets/js/designs/collection-vii.js?v=10"></script>
-<script src="assets/js/designs/collection-vii-canvas.js?v=10"></script>
-<script src="assets/js/designs/collection-viii.js?v=10"></script>
-<script src="assets/js/designs/collection-viii-canvas.js?v=10"></script>
-<script src="assets/js/transitions.js?v=10"></script>
-<script src="assets/js/catalogue.js?v=10"></script>
-<script src="assets/js/audio-decode.js?v=10"></script>
-<script src="assets/js/music-lab.js?v=10"></script>
-<script src="assets/js/nursery.js?v=10"></script>
-<script src="assets/js/habitat.js?v=10"></script>
-<script src="assets/js/experience.js?v=10"></script>
-<script src="assets/js/engine.js?v=10"></script>
-<script src="assets/js/nursery-evolution.js?v=10"></script>
-<script src="assets/js/nursery-ui.js?v=10"></script>
-<script src="assets/js/main.js?v=10"></script>
+<script src="assets/js/glsl-prelude.js?v=11"></script>
+<script src="assets/js/gl.js?v=11"></script>
+<script src="assets/js/designs/shaders-a.js?v=11"></script>
+<script src="assets/js/designs/shaders-b.js?v=11"></script>
+<script src="assets/js/designs/shaders-c.js?v=11"></script>
+<script src="assets/js/designs/canvas.js?v=11"></script>
+<script src="assets/js/designs/shaders-d.js?v=11"></script>
+<script src="assets/js/designs/shaders-e.js?v=11"></script>
+<script src="assets/js/designs/sims.js?v=11"></script>
+<script src="assets/js/designs/canvas-b.js?v=11"></script>
+<script src="assets/js/designs/collection-iii.js?v=11"></script>
+<script src="assets/js/designs/collection-iii-canvas.js?v=11"></script>
+<script src="assets/js/designs/collection-iv.js?v=11"></script>
+<script src="assets/js/designs/collection-iv-canvas.js?v=11"></script>
+<script src="assets/js/designs/collection-v.js?v=11"></script>
+<script src="assets/js/designs/collection-v-canvas.js?v=11"></script>
+<script src="assets/js/designs/collection-vi.js?v=11"></script>
+<script src="assets/js/designs/collection-vi-canvas.js?v=11"></script>
+<script src="assets/js/designs/collection-vii.js?v=11"></script>
+<script src="assets/js/designs/collection-vii-canvas.js?v=11"></script>
+<script src="assets/js/designs/collection-viii.js?v=11"></script>
+<script src="assets/js/designs/collection-viii-canvas.js?v=11"></script>
+<script src="assets/js/transitions.js?v=11"></script>
+<script src="assets/js/catalogue.js?v=11"></script>
+<script src="assets/js/audio-worker-core.js?v=11"></script>
+<script src="assets/js/audio-decode.js?v=11"></script>
+<script src="assets/js/music-analysis.js?v=11"></script>
+<script src="assets/js/music-model.js?v=11"></script>
+<script src="assets/js/music-lab.js?v=11"></script>
+<script src="assets/js/nursery.js?v=11"></script>
+<script src="assets/js/habitat.js?v=11"></script>
+<script src="assets/js/experience.js?v=11"></script>
+<script src="assets/js/engine.js?v=11"></script>
+<script src="assets/js/nursery-evolution.js?v=11"></script>
+<script src="assets/js/preference-model.js?v=11"></script>
+<script src="assets/js/nursery-ui.js?v=11"></script>
+<script src="assets/js/main.js?v=11"></script>
 </body>
 </html>

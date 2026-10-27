@@ -1,0 +1,3 @@
+# Immutable vendored bundles contain encoded WASM and literal string whitespace.
+# Preserve their bytes; tests/vendor.test.cjs checks SHA-256 provenance instead.
+assets/vendor/**/*.min.js -whitespace

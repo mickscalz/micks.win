@@ -1,0 +1,9 @@
+c7c5e35a1b633f0057e6d4e5f21c6c7fcfdaf521689ac1a51b393a2fe58e6f83  assets/vendor/audio-codecs/flac-decoder.min.js
+158dd1bd7c676b3859b3134878b8df5d37e9ebe77e3bcfd57186bdd5d5f6d904  assets/vendor/audio-codecs/ogg-vorbis-decoder.min.js
+b142a95737a52e1e412d5f92e73d8bb80dfe8d04941acc0702f11f4524fb377c  assets/vendor/basic-pitch/group1-shard1of1.bin
+1ed1aaee3409ec1dc098c8b01f430c0911f6fe9412e7af8086750f9e8f302f68  assets/vendor/basic-pitch/model.json
+17f9d3fa5b3044298e135f374ae93719fc50dc3bc07be5963ce3e8fce92d5711  assets/vendor/basic-pitch/runtime.min.js
+77ebb28a6d34f371dbbf2086b7f2de8994acd8ea5a3cf1fa24d2c26c840cac7b  assets/vendor/basic-pitch/tfjs-backend-wasm-simd.wasm
+70a5d516060464e5269f01c74bac1772d6b8ab6cb612acf16b5cdaf61f78d892  assets/vendor/basic-pitch/tfjs-backend-wasm.wasm
+3fea18c86778b24306c9f184cba41df3c7dd0ab8e49e70416ba21ae6e696e55c  assets/vendor/minimp3-wasm/decoder.opt.wasm
+54e5c1a065e40a5b240a989829a5c3f07dd479ec1fc458c9f325cfc91d384cb7  assets/vendor/minimp3-wasm/minimp3-wasm.js
