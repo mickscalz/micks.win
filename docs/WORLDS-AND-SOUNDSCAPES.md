@@ -2,6 +2,8 @@
 
 Historical IX release notes. The current Collection X expansion brings the total
 to 344 and exact GPU kernels to 20; see [Immensities](IMMENSITIES.md).
+Edition XI subsequently brings these to **360 worlds / 36 exact kernels**, with
+a live firstborn and corrected birth motion: [Impossible Shores](IMPOSSIBLE-SHORES.md).
 
 
 328 authored worlds, newest first. IX adds eight independently constructed

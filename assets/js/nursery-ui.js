@@ -444,8 +444,108 @@
       observations.delete(observations.keys().next().value);
     return image;
   }
+  let birthCanvas = null,
+    birthGPU = null,
+    birthModel = null,
+    birthLast = 0,
+    birthRAF = 0,
+    birthID = null,
+    birthLabel = null;
+  function releaseBirth() {
+    if (birthModel?.dispose) birthModel.dispose(birthGPU);
+    birthModel = null;
+    birthID = null;
+    birthLabel = null;
+    birthLast = 0;
+  }
+  function birthTick(now) {
+    birthRAF = w.requestAnimationFrame(birthTick);
+    if (
+      !birthModel ||
+      d.hidden ||
+      !$("nurseryPanel").open ||
+      !w.Experience.isOpen()
+    ) {
+      birthLast = 0;
+      return;
+    }
+    if (w.Cabinet.paused) {
+      if (birthLabel)
+        birthLabel.textContent =
+          "Firstborn is held · Audition explicitly starts playback.";
+      birthLast = 0;
+      return;
+    }
+    if (birthLast && now - birthLast < 80) return;
+    const dt = birthLast ? Math.min(0.1, (now - birthLast) / 1000) : 1 / 60;
+    birthLast = now;
+    // Use effective settings, including motion=0, calm and reduced motion.
+    const e = w.Experience.frame(),
+      step = dt * e.motion;
+    if (birthLabel)
+      birthLabel.textContent =
+        e.motion === 0
+          ? "Firstborn motion is set to zero · raise Motion in the conductor to animate."
+          : "Live firstborn · real simulation · comparison images below are stills.";
+    try {
+      paintBirth(step, e);
+    } catch (error) {
+      releaseBirth();
+      $("nurseryStatus").textContent =
+        "Live birth preview unavailable; static comparisons and full-stage audition remain available.";
+    }
+  }
+  function paintBirth(step, e) {
+    const S = {
+      dt: step,
+      fade: 1,
+      experience: e,
+      w: 240,
+      h: 150,
+      ctx: birthModel.kind === "2d" ? birthCanvas.getContext("2d") : null,
+      mouse: { x: 0, y: 0 },
+    };
+    if (birthModel.kind === "glx") birthModel.frame(birthGPU, S);
+    else birthModel.frame(S);
+  }
+  function birthPreview(recipe, into) {
+    releaseBirth();
+    const wrap = d.createElement("div");
+    wrap.className = "nursery-live";
+    const label = d.createElement("p");
+    birthLabel = label;
+    label.className = "tune-help";
+    label.textContent =
+      "Live firstborn · real simulation · use audition for the full world. Comparison images below are stills.";
+    const gpu = recipe.version >= 2;
+    // A canvas cannot switch context type. Reuse its GPU context between births.
+    if (!birthCanvas || !!birthGPU !== gpu) {
+      if (birthGPU) {
+        birthGPU.gl.getExtension("WEBGL_lose_context")?.loseContext();
+        birthGPU = null;
+      }
+      birthCanvas = d.createElement("canvas");
+      birthCanvas.width = 240;
+      birthCanvas.height = 150;
+      if (gpu) birthGPU = w.GLR.create(birthCanvas);
+    }
+    if (gpu && !birthGPU) return;
+    birthCanvas.className = "nursery-thumbnail";
+    birthCanvas.setAttribute("aria-label", "Live firstborn " + recipe.name);
+    birthCanvas.setAttribute("role", "img");
+    birthModel = N.renderer(recipe);
+    if (gpu) birthModel.init(birthGPU);
+    else birthModel.init();
+    birthID = recipe.id;
+    // Even a held/zero-motion birth must show a real, nonblank first frame.
+    paintBirth(0, w.Experience.frame());
+    wrap.append(label, birthCanvas);
+    into.prepend(wrap);
+    if (!birthRAF) birthRAF = w.requestAnimationFrame(birthTick);
+  }
   async function auditions() {
     const box = $("nurseryCandidates");
+    releaseBirth();
     box.replaceChildren();
     for (let i = 0; i < candidates.length; i++) {
       const p = candidates[i],
@@ -492,6 +592,7 @@
       await new Promise((r) => setTimeout(r, 0));
     }
     tasteStatus();
+    if (candidates.length) birthPreview(candidates[0], box);
   }
   function play(p) {
     w.Cabinet.playChild(N.renderer(p));
@@ -849,12 +950,20 @@
     };
     w.addEventListener("pagehide", () => {
       stopped = true;
+      releaseBirth();
+      if (birthRAF) w.cancelAnimationFrame(birthRAF);
+      if (birthGPU)
+        birthGPU.gl.getExtension("WEBGL_lose_context")?.loseContext();
       if (db) db.close();
     });
   }
   w.NurseryUI = {
     mount,
     resetTaste,
+    getBirthState: () =>
+      birthModel
+        ? { id: birthID, clock: birthModel.clock, kind: birthModel.kind }
+        : null,
     getTaste: () => ({
       count: ranker.count,
       ready: ranker.ready,

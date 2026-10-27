@@ -4,6 +4,10 @@
   "use strict";
   const HX =
     typeof module !== "undefined" ? require("./horizons-x.js") : root.HorizonX;
+  const XI =
+    typeof module !== "undefined"
+      ? require("./worldscapes-xi.js")
+      : root.WorldscapesXI;
   const MODULES = {
     landform: [
       "tidal-arches",
@@ -15,6 +19,7 @@
       "light-canyon",
       "salt-mirrors",
       ...HX.specs.map((s) => s[2]),
+      ...XI.specs.map((s) => s[2]),
     ],
     sky: ["dawn", "aurora", "storm", "night"],
     water: ["tide", "mirror", "river", "dry"],
@@ -112,6 +117,7 @@
     ],
   ];
   function defaults(i) {
+    if (i >= 20) return XI.defaults(i - 20);
     if (i >= 8) return HX.defaults(i - 8);
     const s = specs[i];
     return {
@@ -226,6 +232,7 @@ void main(){vec2 uv=screenUV();float turn=sin(uTime*.018)*.12*uDrift;vec3 ro=vec
  if(uClimate.z>1.5&&uClimate.z<2.5){float dust=pow(.5+.5*sin(uv.x*80.+sin(uv.y*43.+uTime*.07)),35.)*pow(.5+.5*sin(uv.y*95.-uTime*.13),30.);color+=worldTint(.1)*dust*.16;}
  fragColor=vec4(finish(max(vec3(0),color)*(.45+.75*uIntensity)*uFade,uv,.12),1.);}`;
   function shader(index) {
+    if (index >= 20) return XI.shader(index - 20);
     if (index >= 8) return HX.shader(index - 8);
     return "const int WORLDINDEX=" + index + ";\n" + fields[index] + common;
   }
@@ -276,7 +283,7 @@ void main(){vec2 uv=screenUV();float turn=sin(uTime*.018)*.12*uDrift;vec3 ro=vec
     }
     return source;
   }
-  const exactSourceIDs = [...specs, ...HX.specs].map((s) => s[0]);
+  const exactSourceIDs = [...specs, ...HX.specs, ...XI.specs].map((s) => s[0]);
   const api = {
     MODULES,
     specs,

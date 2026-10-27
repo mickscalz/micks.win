@@ -545,3 +545,6 @@ body.is-idle .experience-dock,body.is-immersive .experience-dock{opacity:0;visib
 
 /* Four dock controls remain reachable without horizontal scroll on phones. */
 @media(max-width:480px){.experience-dock{max-width:calc(100vw - 24px);flex-wrap:wrap;justify-content:flex-end;row-gap:4px;}.experience-dock button{font-size:9px;padding:8px 6px;}}
+
+/* A real, bounded-cost firstborn viewport; paired comparison cards stay still. */
+.nursery-live{grid-column:1/-1;max-width:300px;margin:12px 0 18px;}

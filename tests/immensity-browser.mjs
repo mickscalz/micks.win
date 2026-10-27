@@ -221,7 +221,7 @@ try {
   await page.locator("#nurseryToggle").click();
   const labels = await page.locator("#nurseryParent0 option").allTextContents();
   assert.ok(
-    labels.filter((x) => x.startsWith("Exact environment kernel")).length >= 20,
+    labels.filter((x) => x.startsWith("Exact environment kernel")).length >= 36,
   );
   await page.locator("#experienceClose").click();
   await page.evaluate(() => {
@@ -239,7 +239,7 @@ try {
   assert.deepEqual(glErrors, []);
   assert.deepEqual(uploads, []);
   console.log(
-    "Immensity browser PASS: twelve exact v3 GPU kernels remain nonblank and diverge at 67/800 seconds, smooth epoch crossing and held freeze; unchanged resizes preserve live state, real GPU trail history survives resize with no target leak; twenty exact nursery labels and live X population counters.",
+    "Immensity browser PASS: twelve exact v3 GPU kernels remain nonblank and diverge at 67/800 seconds, smooth epoch crossing and held freeze; unchanged resizes preserve live state, real GPU trail history survives resize with no target leak; thirty-six exact nursery labels and live X population counters.",
   );
 } finally {
   if (browser) await browser.close();
