@@ -165,7 +165,7 @@ try {
     "true",
   );
   await page.keyboard.press("ArrowRight");
-  assert.equal(await page.evaluate(() => Cabinet.designs.length), 328);
+  assert.equal(await page.evaluate(() => Cabinet.designs.length), 344);
   assert.equal(
     await page.evaluate(() =>
       Cabinet.designs.some((x) => x.id.startsWith("child-")),
@@ -441,7 +441,7 @@ try {
   assert.deepEqual(uploads, []);
   assert.deepEqual(errors, []);
   console.log(
-    "Labs browser PASS: real offspring/evolution/freeze, restored 328 catalogue, twins/generations/ancestry, IndexedDB opt-in/reload/erase/quota, JSON export/import, route consent/reload, real PCM worker/look-ahead, stop cancellation, 320px layout and no uploads.",
+    "Labs browser PASS: real offspring/evolution/freeze, restored 344 catalogue, twins/generations/ancestry, IndexedDB opt-in/reload/erase/quota, JSON export/import, route consent/reload, real PCM worker/look-ahead, stop cancellation, 320px layout and no uploads.",
   );
 } finally {
   if (browser) await browser.close();

@@ -734,8 +734,23 @@
       gl.bindTexture(gl.TEXTURE_2D, null);
     },
     resize: function (R, w, h) {
-      if (this.trail) this.trail.dispose();
-      this.trail = R.pingpong(Math.max(2, Math.floor(w / 2)), Math.max(2, Math.floor(h / 2)), { float: true });
+      var width = Math.max(2, Math.floor(w / 2)), height = Math.max(2, Math.floor(h / 2));
+      if (this.trail && this.trail.w === width && this.trail.h === height) return;
+      var previous = this.trail;
+      this.trail = R.pingpong(width, height, { float: true });
+      if (previous) {
+        // Keep accumulated light, not just particle positions, through resizing.
+        var copy = R.shader('uniform sampler2D uPrevious; void main(){fragColor=texture(uPrevious,vUv);}', 'particle-trail-resize-copy');
+        if (copy) {
+          var blending = R.gl.isEnabled(R.gl.BLEND);
+          R.gl.disable(R.gl.BLEND);
+          for (var target of [this.trail.read, this.trail.write]) {
+            R.blit(copy, target, { uRes: [width, height] }, [{ name: 'uPrevious', tex: previous.read.tex }]);
+          }
+          if (blending) R.gl.enable(R.gl.BLEND);
+        }
+        previous.dispose();
+      }
     },
     frame: function (R, s) {
       var gl = R.gl;

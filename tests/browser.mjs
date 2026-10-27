@@ -41,11 +41,11 @@ try {
  await waitUntil(()=>window.Cabinet && Cabinet.playing);
  assert.equal(await page.locator('#enter, #curtain').count(),0);
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
- assert.match(await page.locator('#cardCollection').textContent(),/collection 09.*latest.*rank 01/);
+ assert.match(await page.locator('#cardCollection').textContent(),/collection 10.*latest.*rank 01/);
  await page.evaluate(()=>Experience.set('transitionDuration',0)); // The dedicated transition suite tests the compositor separately.
- const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,328);
+ const count=await page.evaluate(()=>Cabinet.designs.length);assert.equal(count,344);
  const ordering=await page.evaluate(()=>Cabinet.designs.map(d=>({id:d.id,edition:d.edition,cap:d.captivation})));
- assert.equal(ordering[0].id,'tidal-cathedral');
+ assert.equal(ordering[0].id,'chromatic-rift-ocean');
  for(let i=1;i<ordering.length;i++){assert.ok(ordering[i-1].edition>=ordering[i].edition);if(ordering[i-1].edition===ordering[i].edition)assert.ok(ordering[i-1].cap>=ordering[i].cap);}
  // The interface fades on real inactivity, never covers a gallery, and wakes
  // before keyboard focus or a touch can land on invisible controls.
@@ -72,7 +72,7 @@ try {
    let motion=null,frozen=true;
    if(d.edition>=6){
      const sample=()=>{const cv=document.createElement('canvas');cv.width=48;cv.height=30;const c=cv.getContext('2d');c.drawImage(document.querySelector(d.kind==='2d'?'#c2d':'#gl'),0,0,48,30);return c.getImageData(0,0,48,30).data;};
-     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;Cabinet.artT=38;/* Advance the real bounded simulator for two seconds; paint endpoints only. Stateful pigment/diffusion updates still run on every tick. */if(d.edition===8&&d.kind==='2d'){for(let k=0;k<120;k++){const ex=Experience.advance(1/60);d.advance({dt:ex.motion/60,experience:ex});}}testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
+     const before=sample(),pin=Cabinet.lingering;Cabinet.lingering=true;Cabinet.t=38;Cabinet.artT=38;/* Advance the real bounded simulator for two seconds; paint endpoints only. Stateful pigment/diffusion updates still run on every tick. */if((d.edition===8||d.edition===10)&&d.kind==='2d'){for(let k=0;k<120;k++){const ex=Experience.advance(1/60);d.advance({dt:ex.motion/60,experience:ex});}}testFrames(dynamicCanvas.includes(d.id)?120:4);gl.finish();const after=sample();
      let sum=0,moved=0;for(let k=0;k<before.length;k+=4){const delta=Math.abs(before[k]-after[k])+Math.abs(before[k+1]-after[k+1])+Math.abs(before[k+2]-after[k+2]);sum+=delta;if(delta>25)moved++;}motion={mean:sum/(48*30*3),moved};
      if(d.kind==='2d'){Cabinet.paused=true;const state=JSON.stringify(d);Cabinet.needsDraw=true;testFrames(1);frozen=state===JSON.stringify(d);Cabinet.paused=false;}
      Cabinet.lingering=pin;
@@ -91,20 +91,20 @@ try {
  assert.ok(resized.bright>45,'quality resize erased the held frame');assert.equal(resized.pending,false);
  await page.evaluate(()=>Cabinet.wakeUI());
  await page.keyboard.press('g');
- assert.equal(await page.locator('.tile').count(),328);
- for(const [family,count] of [['latest',8],['gl',190],['glx',4],['2d',134],['all',328]]){
+ assert.equal(await page.locator('.tile').count(),344);
+ for(const [family,count] of [['latest',16],['gl',202],['glx',4],['2d',138],['all',344]]){
   await page.locator(`[data-filter="${family}"]`).click();
   assert.equal(await page.locator('.tile:not([hidden])').count(),count);
   assert.equal(await page.locator(`[data-filter="${family}"]`).getAttribute('aria-pressed'),'true');
-  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['9']);
+  if(family==='latest')assert.deepEqual(await page.locator('.tile:not([hidden])').evaluateAll(tiles=>[...new Set(tiles.map(t=>t.dataset.edition))]),['10']);
  }
- await page.locator('#galJump').fill('328');
+ await page.locator('#galJump').fill('344');
  await page.locator('#galJump').press('Tab');
- assert.equal(await page.evaluate(()=>Cabinet.index),327);
+ assert.equal(await page.evaluate(()=>Cabinet.index),343);
  await page.keyboard.press('Escape');
  await page.keyboard.press('Escape');
- await typeRank('328');
- assert.equal(await page.evaluate(()=>Cabinet.index),327);
+ await typeRank('344');
+ assert.equal(await page.evaluate(()=>Cabinet.index),343);
  await page.keyboard.press('Escape');
  await typeRank('12');
  assert.equal(await page.evaluate(()=>Cabinet.index),11);
@@ -112,8 +112,8 @@ try {
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),true);
  await page.keyboard.press(' ');assert.equal(await page.evaluate(()=>Cabinet.paused),false);
  // Crossing a release boundary must reach the preceding collection, not mix scores.
- await page.evaluate(()=>{Cabinet.show(7);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
- assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),8);
+ await page.evaluate(()=>{Cabinet.show(15);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ assert.equal(await page.evaluate(()=>Cabinet.designs[Cabinet.index].edition),9);
  // Linger is NOT pause: geometry keeps evolving past the dwell, manual travel
  // remains available, and leaving it starts a full dwell without a time reset.
  await page.evaluate(()=>Cabinet.show(0));
@@ -163,7 +163,7 @@ try {
  assert.equal(await page.locator('#gal').getAttribute('aria-hidden'),'false');
  await page.keyboard.press('Escape');
  // Deterministic clock: cross the dwell threshold and prove automatic cycling.
- await page.evaluate(()=>{Cabinet.show(327);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
+ await page.evaluate(()=>{Cabinet.show(343);Cabinet.t=35.99;Cabinet.artT=35.99;testFrames(2);});
  assert.equal(await page.evaluate(()=>Cabinet.index),0);
  await page.setViewportSize({width:375,height:812});
  await page.evaluate(()=>testFrames(2));
@@ -193,16 +193,16 @@ try {
  assert.equal(await page.evaluate(()=>document.querySelector('#gal').inert),true);
  // Bottom rail must contain actual decoded pictures, at both ends of the
  // horizontally scrolling list, not blank CSS ticks or broken relative paths.
- assert.equal(await page.locator('#rail img').count(),328);
+ assert.equal(await page.locator('#rail img').count(),344);
  await page.evaluate(()=>{Cabinet.show(0);Cabinet.wakeUI();});
  await waitUntil(()=>{const im=document.querySelector('#rail img');return im.complete&&im.naturalWidth>0;});
- await page.evaluate(()=>Cabinet.show(327));
+ await page.evaluate(()=>Cabinet.show(343));
  await waitUntil(()=>{const im=document.querySelector('#rail button:last-child img');return im.complete&&im.naturalWidth>0;});
  await page.evaluate(()=>{document.querySelector('#rail img').src='data:image/webp;base64,broken';});
  await page.locator('.rail__item--fallback .rail__fallback').waitFor({state:'attached'});
- assert.match(await page.locator('.rail__fallback').first().textContent(),/Cathedral of the Tides/);
+ assert.match(await page.locator('.rail__fallback').first().textContent(),/The Chromatic Rift Ocean/);
  assert.deepEqual(errors,[]);
- console.log('\n328 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
+ console.log('\n344 rooms: real WebGL compilation, draw calls, keyboard, filters, jump, wraparound and mobile resize PASS.');
 } finally {
  if(browser)await browser.close();
  await new Promise(r=>server.close(r));

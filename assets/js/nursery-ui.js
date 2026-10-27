@@ -133,8 +133,10 @@
             p.id,
             (p.parents.length === 0
               ? p.version === 3 &&
-                w.WorldKernels.specs.some((s) => "world:" + s[0] === p.id)
-                ? "IX exact field · "
+                w.WorldKernels.exactSourceIDs.some(
+                  (id) => "world:" + id === p.id,
+                )
+                ? "Exact environment kernel · "
                 : p.solver + " adapter · "
               : "Offspring · ") + p.name,
           ),

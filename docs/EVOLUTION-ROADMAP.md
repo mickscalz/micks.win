@@ -1,5 +1,14 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Collection X follow-up (344 worlds)
+
+Sixteen diverse environments, four separate living growth/steering systems,
+continuous developmental channels, twenty exact GPU nursery kernels and shared
+resize/frame/audio continuity improvements are implemented. See
+[Immensities](IMMENSITIES.md) for mappings, verification and limits. Older release
+sections retain their historical counts and solver limitations.
+
+
 ## Collection IX follow-up (328 authored worlds)
 
 Eight landscape-scale worlds, default world-v3 breeding of separate landform,

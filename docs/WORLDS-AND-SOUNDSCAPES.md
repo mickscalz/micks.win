@@ -1,5 +1,9 @@
 # Collection IX: worlds, not isolated silhouettes
 
+Historical IX release notes. The current Collection X expansion brings the total
+to 344 and exact GPU kernels to 20; see [Immensities](IMMENSITIES.md).
+
+
 328 authored worlds, newest first. IX adds eight independently constructed
 landscape-scale fields with actual renderer-generated gallery stills:
 
