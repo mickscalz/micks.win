@@ -297,7 +297,7 @@ try {
   await p.locator("#previewTransition").click();
   assert.equal(await p.evaluate(() => Cabinet.index), old + 1);
   await p.evaluate(() => {
-    Cabinet.show(1);
+    Cabinet.show(Cabinet.designs.findIndex(d=>d.id === "eden-of-divergence"));
     testFrames(30);
   });
   assert.match(
