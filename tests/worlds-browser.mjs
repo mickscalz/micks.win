@@ -149,7 +149,7 @@ try {
   assert.equal(await page.locator("#nurseryScope").inputValue(), "world");
   assert.equal(
     await page.locator('#nurseryPool option[value^="world:"]').count(),
-    328,
+    344,
   );
   await page.locator("[data-nursery-action=breed]").click();
   await wait(

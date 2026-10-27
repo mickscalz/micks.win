@@ -87,7 +87,7 @@ try {
   await page.locator("#nurseryScope").selectOption("habitat");
   assert.equal(
     await page.locator('#nurseryPool option[value^="source:"]').count(),
-    328,
+    344,
   );
   assert.ok(
     (await page.locator('#nurseryPool option[value^="founder:"]').count()) > 0,
@@ -176,7 +176,7 @@ try {
     await page.evaluate(() => {
       const m = Cabinet.designs[Cabinet.index];
       Cabinet.leaveChild();
-      return m.texture === null && Cabinet.designs.length === 328;
+      return m.texture === null && Cabinet.designs.length === 344;
     }),
     true,
   );
@@ -322,7 +322,7 @@ try {
   assert.deepEqual(glErrors, []);
   assert.deepEqual(uploads, []);
   console.log(
-    "Evolution browser PASS: 328 adapters + legacy, 12 distinct real GPU forms/nonblank thumbnails/evolution/freeze/disposal, 32-parent UI, bounded search + stop + complete saved ancestry, real interruptible MP3/FLAC/Vorbis worker analysis, native cancellation/concurrency, 320px layout, no uploads.",
+    "Evolution browser PASS: 344 adapters + legacy, 12 distinct real GPU forms/nonblank thumbnails/evolution/freeze/disposal, 32-parent UI, bounded search + stop + complete saved ancestry, real interruptible MP3/FLAC/Vorbis worker analysis, native cancellation/concurrency, 320px layout, no uploads.",
   );
 } finally {
   if (browser) await browser.close();

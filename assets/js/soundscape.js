@@ -8,6 +8,8 @@
     voices = [],
     filters = [],
     panners = [],
+    timbres = [],
+    calmer = false,
     generation = 0,
     enabled = false,
     pending = false,
@@ -48,7 +50,11 @@
     param.setTargetAtTime(value, ctx.currentTime, seconds);
   }
   function gain() {
-    ramp(master?.gain, enabled ? volume * (ducked ? 0.18 : 1) * 0.7 : 0, 0.12);
+    ramp(
+      master?.gain,
+      enabled ? volume * (ducked ? 0.18 : 1) * (calmer ? 0.5 : 1) * 0.7 : 0,
+      0.12,
+    );
   }
   function profile(input) {
     const h = hash(input?.id),
@@ -82,6 +88,11 @@
     ramp(filters[1].Q, p.wet ? 0.8 : 0.4, 3);
     ramp(voices[4].gain, p.wet ? 0.19 : 0.055, 3);
     ramp(filters[2].frequency, p.bright ? 1800 : 950, 3);
+    timbres.forEach((m, i) => {
+      ramp(m.rate.frequency, 0.009 + (i + 1) * 0.007 + p.phase * 0.011, 4);
+      ramp(m.depth.gain, (i ? 60 : 80) + p.wind * 55, 4);
+      ramp(panners[4 + i].pan, (i ? 1 : -1) * (0.25 + p.phase * 0.35), 4);
+    });
     ui();
   }
   async function stop() {
@@ -95,6 +106,7 @@
     voices = [];
     filters = [];
     panners = [];
+    timbres = [];
     ui();
     if (old && old.state !== "closed")
       try {
@@ -195,7 +207,19 @@
         depth.connect(v.gain);
         noise.connect(f);
         f.connect(v);
-        v.connect(master);
+        const pan = next.createStereoPanner(),
+          sweep = next.createOscillator(),
+          amount = next.createGain();
+        pan.pan.value = i ? 0.4 : -0.4;
+        sweep.frequency.value = i ? 0.023 : 0.011;
+        amount.gain.value = i ? 80 : 100;
+        sweep.connect(amount);
+        amount.connect(f.frequency);
+        sweep.start();
+        timbres.push({ rate: sweep, depth: amount });
+        panners[4 + i] = pan;
+        v.connect(pan);
+        pan.connect(master);
         lfo.start();
         filters[i] = f;
         if (i) voices[4] = v;
@@ -234,6 +258,12 @@
     if (master) gain();
     ui();
   }
+  function safety(value) {
+    const next = !!value;
+    if (next === calmer) return;
+    calmer = next;
+    if (master) gain();
+  }
   function mount() {
     d.getElementById("ambientToggle").onclick = () =>
       enabled || pending ? stop() : start();
@@ -256,6 +286,7 @@
     enter,
     duck,
     profile,
+    safety,
     sample,
     get enabled() {
       return enabled;

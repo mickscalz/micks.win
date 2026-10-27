@@ -770,6 +770,7 @@
     paint(true);
   }
   function paint(force) {
+    if(w.Soundscape)w.Soundscape.safety(settings.calm);
     if (!engine || !w.document || (!force && clock - lastPaint < 0.4)) return;
     lastPaint = clock;
     var d = w.document,
@@ -864,9 +865,10 @@
     var room = engine.designs[engine.index];
     if (room) {
       var tuning = effective();
+      var population = room.populationStats ? room.populationStats() : null;
       put(
         "organismReadout",
-        room.edition === 8
+        population ? room.lifeMechanism + " Population " + population.population + " · births " + population.births + " · renewals " + population.renewals + " · generation " + population.generation : room.edition === 8
           ? room.lifeMechanism +
               (room.L && room.lifeMechanism.indexOf("Nutrient") === 0
                 ? " Population " +
@@ -878,7 +880,7 @@
                   " · generation " +
                   room.L.maxGeneration
                 : "")
-          : "",
+          : room.edition === 10 ? room.lifeMechanism : "",
       );
       put(
         "compositionReadout",

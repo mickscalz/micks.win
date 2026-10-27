@@ -1,6 +1,6 @@
 /* ============================================================================
    THE CABINET — cycling engine, transitions and interface.
-   One shared WebGL2 context, one 2D context, one crossfade layer, 320
+   One shared WebGL2 context, one 2D context, one crossfade layer, 344
    worlds, and a clock that refuses to let any of them sit still for long.
    ========================================================================== */
 (function (w, d) {
@@ -95,8 +95,9 @@
 
     S.w = cssW; S.h = cssH; S.dpr = d2;
     var cur = E.designs[E.index];
-    if (cur && cur.resize) {
-      try { cur.resize(cur.kind === '2d' ? S : R, cur.kind === '2d' ? S.w : cGL.width, cur.kind === '2d' ? S.h : cGL.height); }
+    var surfaceKey = cur && cur.kind === "2d" ? cssW+"x"+cssH : cGL.width+"x"+cGL.height;
+    if (cur && cur.resize && cur._surfaceKey !== surfaceKey) {
+      try { cur.resize(cur.kind === '2d' ? S : R, cur.kind === '2d' ? S.w : cGL.width, cur.kind === '2d' ? S.h : cGL.height); cur._surfaceKey=surfaceKey; }
       catch (e) { /* non-fatal */ }
     }
     if (statRes) statRes.textContent = wantW + '×' + wantH;
@@ -464,6 +465,8 @@
   /* ------------------------------------------------------------ the loop */
   var last = 0, realDt = 1/60, acc = 0, frames = 0, fpsT = 0, warmAt = -1, sinceSwitch = 0, fast = 0;
 
+  d.addEventListener("visibilitychange",function(){last=0;frames=0;acc=0;fast=0;});
+
   function tick(now) {
     requestAnimationFrame(tick);
     if (!E.playing) { last = now; return; }
@@ -486,8 +489,8 @@
     S.energy = ex ? ex.energy : .5+.5*Math.sin(E.gt*.29);
 
     // smoothed pointer
-    S.mouse.x += (target.x - S.mouse.x) * Math.min(1, dt * 3.2);
-    S.mouse.y += (target.y - S.mouse.y) * Math.min(1, dt * 3.2);
+    S.mouse.x += (target.x - S.mouse.x) * (1-Math.exp(-dt*3.2));
+    S.mouse.y += (target.y - S.mouse.y) * (1-Math.exp(-dt*3.2));
 
     if (!E.paused) {
       E.t += Math.min(realDt,1);

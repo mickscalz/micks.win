@@ -31,7 +31,7 @@
         " / " +
         g.weather,
       blurb:
-        "Whole-world inheritance. IX uses its exact source landform field; older sources use explicit environment adapters.",
+        "Whole-world inheritance. IX / X GPU sources reuse their exact environment kernels; other sources use explicit environment adapters.",
       init(R) {
         this.clock = 0;
         this.prog = R.shader(K.shader(index), "world-v3-" + index);
@@ -50,6 +50,10 @@
           uTime: this.clock,
           uDt: S.dt,
           uIntensity: e.intensity,
+          uNovelty: S.experience?.novelty ?? 0.7,
+          uDetail: e.detail,
+          uDensity: e.density,
+          uPulse: e.pulse,
           uFade: S.fade ?? 1,
           uMouse: [S.mouse?.x || 0, S.mouse?.y || 0],
           uRand: recipe.seed % 997,
