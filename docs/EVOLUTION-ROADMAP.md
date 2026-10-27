@@ -1,13 +1,22 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Next-stage learning and decoding
+
+[Delivered now](LEARNING-AND-DECODING.md): explicit-comparison personal ranking,
+real rendered feature evaluation, terminable MP3/FLAC/Vorbis worker decoders and
+optional licensed local Basic Pitch note estimates (first four seconds). These do
+not imply universal beauty, all-codec interruptibility or musical understanding.
+Exact source-kernel extraction/recombination remains open, with a concrete audited
+contract plan in those delivery notes. No exact solver shortcut/overlay is claimed.
+
 ## Working nursery and music tools
 
 [Delivery notes](NURSERY-AND-MUSIC-LAB.md) document the expanded implementation:
 2–32 weighted parent compositions, all-320 labelled habitat-v2 module adapters,
 twelve GPU fields coupled to a bounded colony, legacy eco-v1 compatibility,
 twins, local opt-in library, ancestry/provenance and numeric JSON; bounded automated
-diversity search with Stop; editable causal routes and local PCM/native-codec
-look-ahead with manual timing corrections. Native decode has explicit duration/
+diversity search with Stop; editable causal routes and local PCM/worker-codec
+look-ahead with explicitly consented native fallback with manual timing corrections. Native decode has explicit duration/
 encoded/output limits but cannot be interrupted or promise constant total memory.
 
 Arbitrary original-renderer code genetics, runtime checkpoints, overnight jobs,
@@ -162,6 +171,9 @@ limits, cancellation, progress and fallback to streaming analysis. Do not keep a
 whole long track decoded merely to compute a thumbnail.
 
 ### Phase C: optional on-device learned features
+
+**Initial delivery:** Basic Pitch note-activity estimates now run locally on a bounded
+four-second excerpt. No chord/mood/section claim; broader phases below remain goals.
 
 Only after evaluating permissively licensed models and realistic device budgets:
 optional source separation or music embeddings, explicit model/download consent,

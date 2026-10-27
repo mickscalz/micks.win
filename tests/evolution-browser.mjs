@@ -259,7 +259,7 @@ try {
   assert.match(await page.locator("#nurseryStatus").textContent(), /^stopped/);
   // Real codecs through file metadata -> native decode -> float PCM -> DSP worker.
   await page.locator("#musicLabPanel").evaluate((e) => (e.open = true));
-  for (const ext of ["mp3", "flac"]) {
+  for (const ext of ["mp3", "flac", "ogg"]) {
     await page
       .locator("#audioFile")
       .setInputFiles(path.join(root, "tests/fixtures/local-tone." + ext));
@@ -278,10 +278,8 @@ try {
   // In-flight native decoder can't be aborted, but Stop rejects its result and no
   // second native decode may allocate concurrently.
   const cancel = await page.evaluate(async () => {
-    const bytes = await fetch("tests/fixtures/local-tone.mp3").then((r) =>
-        r.arrayBuffer(),
-      ),
-      original = window.OfflineAudioContext;
+    document.querySelector("#nativeDecodeConsent").checked=true;
+    const bytes = new ArrayBuffer(64), original = window.OfflineAudioContext;
     let finish,
       calls = 0;
     window.OfflineAudioContext = class {
@@ -292,7 +290,7 @@ try {
         return new Promise((resolve) => (finish = resolve));
       }
     };
-    MusicLab.setFile(new File([bytes], "cancel.mp3"), { duration: 2.5 });
+    MusicLab.setFile(new File([bytes], "cancel.m4a"), { duration: 2.5 });
     const task = MusicLab.analyze();
     for (let i = 0; i < 20 && !finish; i++)
       await new Promise((r) => setTimeout(r, 10));
@@ -323,7 +321,7 @@ try {
   assert.deepEqual(glErrors, []);
   assert.deepEqual(uploads, []);
   console.log(
-    "Evolution browser PASS: 320 adapters + legacy, 12 distinct real GPU forms/nonblank thumbnails/evolution/freeze/disposal, 32-parent UI, bounded search + stop + complete saved ancestry, real MP3/FLAC worker analysis, native cancellation/concurrency, 320px layout, no uploads.",
+    "Evolution browser PASS: 320 adapters + legacy, 12 distinct real GPU forms/nonblank thumbnails/evolution/freeze/disposal, 32-parent UI, bounded search + stop + complete saved ancestry, real interruptible MP3/FLAC/Vorbis worker analysis, native cancellation/concurrency, 320px layout, no uploads.",
   );
 } finally {
   if (browser) await browser.close();

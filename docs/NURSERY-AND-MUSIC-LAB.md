@@ -4,6 +4,10 @@ This adds tools to the existing 320-world cabinet, not another numbered collecti
 Entry remains direct. No server, account, credential, audio upload or model download
 is required. All processing is in the browser.
 
+**Next-stage update:** [local preference learning, interruptible codecs and a real
+optional learned note model](LEARNING-AND-DECODING.md) now extend these tools. Exact
+source-solver recombination remains open; adapters are still labelled approximations.
+
 ## Breed a family
 
 1. Open **breed · nursery**. Choose **2–4 different parents** in the quick slots, or enable the advanced pool for **2–32** contributors and optional weights.
@@ -60,9 +64,10 @@ also requests stop. Final real thumbnail rendering is outside the search timer.
 Selection greedily combines 55% minimum genome distance to selected survivors,
 30% moderate growth/coupling/lifecycle/drift proxy and 15% similarity to an optional
 saved taste reference (neutral when absent). Genome distance compares all seventeen
-traits, with circular hue and whole-module differences. It is **not** rendered
-image-quality measurement, learned taste, proof of beauty or a photosensitivity
-screen. Your taste reference is used only for that run. Every retained survivor can
+traits, with circular hue and whole-module differences. By default this is not rendered image-quality measurement or learned taste.
+The separate optional personal ranker now learns explicit comparisons from genes
+and actual thumbnail measurements; see the update above. Neither path proves
+beauty or constitutes a photosensitivity screen. Your taste reference is used only for that run. Every retained survivor can
 be inspected, auditioned, named and saved manually. Saving also includes available
 unsaved ancestors from that run; a family that would exceed 100 saved records is
 rejected transactionally, not silently pruned. Replacing the run discards unsaved
@@ -123,24 +128,12 @@ is included in saved settings.
 
 Choose a playback file in the audio controls, then explicitly request analysis.
 The fast worker path supports uncompressed **PCM16 or float32 mono/stereo WAV**,
-8–192 kHz, limited to **32 MiB / 10 minutes**. Other files use browser-native
-`OfflineAudioContext.decodeAudioData` when available: MP3, AAC/M4A, FLAC, Ogg and
-WebM depend on the browser/OS codec and finite playback metadata. This path accepts
-**32 MiB encoded / 3 minutes**, requests 16 kHz decoding and rejects output beyond
-mono/stereo/three-minute limits. It interleaves bounded float PCM in yielding chunks
-and sends it to the same analysis worker, preserving separate stereo channels.
-
-**Native decoding is not abortable, streaming, constant-memory or hard-memory
-sandboxed.** Encoded size and metadata are checked before decode; actual output is
-checked afterward. The native implementation can allocate extra buffers before
-those checks, especially for malformed or misleading files. Only one native decode
-can be in flight; Stop/replacement immediately invalidate its result but the browser
-may finish the underlying work. Another analysis waits for it to finish. PCM worker
-analysis can be terminated. For unknown metadata, excessive duration, unsupported
-codec or decoder failure, real-time playback/tap tempo remain available if playable.
-No file/features are stored or uploaded; only compact timeline features remain on
-the main thread after analysis. These output budgets are not a universal guarantee
-against hostile decoder inputs or low-memory device failures.
+8–192 kHz, limited to **32 MiB / 10 minutes**. MP3, FLAC and Ogg Vorbis now use
+locally hosted **terminable worker codecs**, with 32 MiB encoded / 3 actual decoded
+minutes / 45 seconds and bounded 16 kHz mono/stereo output. Unsupported codecs can
+use native decoding only after separate consent. Native fallback remains
+non-abortable and metadata/resource-limited; supported worker paths never silently
+fall back to it. See [exact codec/worker/memory/cancellation details](LEARNING-AND-DECODING.md).
 
 Features:
 
@@ -169,9 +162,10 @@ corrections. File/analysis state is never persisted. Microphone analysis stays c
 and is never routed back to speakers. RMS combines channel power; spectra average per-channel magnitudes, avoiding
 anti-phase cancellation. Confidence and manual listening still matter.
 
-No trained model, harmonic/percussive source separation, chord/key/emotion/genre
-recognition, named verse/chorus segmentation, streaming account integration or
-measured latency compensation is claimed. Gold markers are **change candidates**,
+The ordinary DSP path is not a trained model. A separate opt-in now runs the real
+Basic Pitch pretrained note model on a four-second excerpt; it does not provide
+harmonic/percussive separation, chord/key/emotion/genre recognition, named
+verse/chorus segmentation, streaming account integration or measured latency compensation. Gold markers are **change candidates**,
 not musical truth. Chroma energy is not proof of a key or harmony.
 
 ## Verification and next steps
@@ -185,8 +179,8 @@ actual PCM analysis, look-ahead, cancellation, mobile layout and no uploads.
 
 The full `npm run test:browser` also runs `tests/evolution-browser.mjs`: all 320
 adapters, twelve distinct real GPU forms/nonblank thumbnails, freeze/disposal,
-32-parent controls, automated search/Stop/complete saved ancestry, actual MP3 and
-FLAC native decode through the worker, stale-native-result/concurrency handling,
+32-parent controls, automated search/Stop/complete saved ancestry, actual MP3, FLAC and
+Vorbis interruptible decoding through the worker, stale-native-result/concurrency handling,
 mobile layout and no uploads. Unit tests cover v1 identity compatibility, v2
 provenance/validation, deterministic search and all budgets, decode preflight and
 UTF-8 import limits. Synthetic codec fixtures are original generated tones.
@@ -194,8 +188,7 @@ Software-GPU regression tests are not hardware FPS or listening/beauty studies.
 
 Remaining: more expressive phenotypes and human visual/listening review, richer
 ancestry navigation/runtime checkpoints, streaming decode and stronger codec
-preflight, better onset/downbeat/variable-tempo tracking and uncertainty. Optional
-licensed on-device learned models/HPSS need device, download, privacy and licensing
-evaluation and are **not implemented**. There is no learned mood/chord/section or
+preflight, better onset/downbeat/variable-tempo tracking and uncertainty. The optional licensed on-device Basic Pitch note model is now delivered with
+explicit consent and budgets. HPSS and stronger musical understanding are not implemented. There is no learned mood/chord/section or
 universal aesthetic understanding. More than 32 parents and overnight jobs are not
 shipped; more contributors are not automatically better.

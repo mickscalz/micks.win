@@ -30,7 +30,7 @@
         4
     );
   }
-  function curate(items, limit, taste) {
+  function curate(items, limit, taste, learned = null) {
     const result = [],
       remaining = [...items];
     while (remaining.length && result.length < limit) {
@@ -43,7 +43,7 @@
             : 1,
           s =
             0.55 * novelty +
-            0.3 * quality(p) +
+            0.3 * (learned ? learned(p) : quality(p)) +
             0.15 * (taste ? 1 - distance(p, taste) : 0.5);
         if (s > score) {
           score = s;
@@ -64,6 +64,8 @@
     seconds = 15,
     archive = 12,
     taste = null,
+    evaluate = null,
+    learned = null,
     cancelled = () => false,
     progress = () => {},
     now = () => performance.now(),
@@ -114,9 +116,18 @@
           child.genome.shape +
           " " +
           (made.size + 1);
+        if (evaluate) await evaluate(child);
+        if (cancelled()) {
+          reason = "stopped";
+          break outer;
+        }
+        if (now() - start >= seconds * 1000) {
+          reason = "time budget";
+          break outer;
+        }
         made.set(child.id, child);
         children.push(child);
-        retained = curate([...retained, child], archive, taste);
+        retained = curate([...retained, child], archive, taste, learned);
         progress({
           count: made.size,
           generation: child.generation,
@@ -131,7 +142,7 @@
       }
       // Retain source diversity, while carrying actual descendants into the next generation.
       pool = [
-        ...curate(children, Math.min(4, children.length), taste),
+        ...curate(children, Math.min(4, children.length), taste, learned),
         ...initial,
       ];
       pool = [...new Map(pool.map((p) => [p.id, p])).values()].slice(0, 32);

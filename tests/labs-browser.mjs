@@ -290,7 +290,7 @@ try {
   await page.locator("[data-nursery-action=clear]").click();
   await wait(() => NurseryUI.getLibrary().length === 0);
   // No storage without consent, but route changes are immediate.
-  await page.locator("#musicLabPanel summary").click();
+  await page.locator("#musicLabPanel > summary").click();
   await page.locator("#musicRoutes select").first().selectOption("energy");
   await page
     .locator("#musicRoutes input[type=range]")
@@ -313,7 +313,7 @@ try {
   await page.locator("#experienceToggle").click();
   await page.locator("#rememberExperience").uncheck();
   assert.equal(await page.evaluate(() => localStorage.length), 0);
-  await page.locator("#musicLabPanel summary").click();
+  await page.locator("#musicLabPanel > summary").click();
   await page.locator("#musicScope").selectOption("world");
   await page.locator("#musicRoutes select").nth(1).selectOption("mutation");
   const worldProfile = await page.evaluate(() => ({

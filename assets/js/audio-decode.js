@@ -2,6 +2,79 @@
    decodeAudioData itself is not abortable: stale results are discarded. */
 (function (root) {
   "use strict";
+  const Core =
+    typeof module !== "undefined"
+      ? require("./audio-worker-core.js")
+      : root.AudioWorkerCore;
+  const workerURL =
+    typeof document !== "undefined"
+      ? new URL("audio-decode-worker.js?v=11", document.currentScript.src)
+      : "audio-decode-worker.js";
+  function startWorker(
+    buffer,
+    { WorkerClass = root.Worker, progress = () => {}, timeout = 45000 } = {},
+  ) {
+    let worker,
+      settled = false,
+      timer,
+      rejectJob,
+      resolveJob;
+    const promise = new Promise((resolve, reject) => {
+      resolveJob = resolve;
+      rejectJob = reject;
+    });
+    function finish(error, result) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      worker?.terminate();
+      worker = null;
+      if (error) rejectJob(error);
+      else resolveJob(result);
+    }
+    const job = {
+      promise,
+      cancel() {
+        finish(Error("Worker decode cancelled and terminated"));
+      },
+    };
+    try {
+      if (
+        !(buffer instanceof ArrayBuffer) ||
+        buffer.byteLength > Core.ENCODED ||
+        !Core.sniff(buffer)
+      )
+        throw Error("No bounded worker decoder for this file");
+      if (!WorkerClass) throw Error("Workers unavailable");
+      worker = new WorkerClass(workerURL);
+      timer = setTimeout(
+        () => finish(Error("Worker decode time budget exceeded; terminated")),
+        timeout,
+      );
+      worker.onerror = () =>
+        finish(
+          Error(
+            "Worker decoder unavailable or crashed; no native fallback was started",
+          ),
+        );
+      worker.onmessage = ({ data }) => {
+        if (settled) return;
+        if (data.error) finish(Error(data.error));
+        else if (data.buffer) {
+          if (
+            !(data.buffer instanceof ArrayBuffer) ||
+            data.buffer.byteLength > 44 + Core.RATE * Core.SECONDS * 8
+          )
+            finish(Error("Worker output budget exceeded"));
+          else finish(null, data.buffer);
+        } else if (data.progress) progress(data.progress);
+      };
+      worker.postMessage({ buffer }, [buffer]);
+    } catch (error) {
+      finish(error);
+    }
+    return job;
+  }
   const LIMITS = { encoded: 33554432, duration: 180, rate: 16000, channels: 2 };
   function directPCM(buffer) {
     if (buffer.byteLength < 44) return false;
@@ -113,7 +186,13 @@
     }
     return out;
   }
-  const api = { LIMITS, directPCM, decode };
+  const api = {
+    LIMITS,
+    directPCM,
+    decode,
+    startWorker,
+    workerCodec: Core.sniff,
+  };
   if (typeof module !== "undefined") module.exports = api;
   else root.AudioDecode = api;
 })(typeof window !== "undefined" ? window : globalThis);

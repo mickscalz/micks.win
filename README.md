@@ -3,7 +3,7 @@
 **A Cabinet of Infinite Rooms** — 320 live-rendered worlds across eight collections.
 Collection VIII, **The Unwritten Biosphere**, adds 64 worlds while preserving all 256 earlier ones.
 
-No entry gate, videos, application dependencies or build step. **182 single-pass
+No entry gate, videos, installed production packages or build step. **182 single-pass
 WebGL2 worlds, four stateful GPU systems and 134 Canvas worlds** share one stage.
 
 **Standing order:** newest collection first; highest editorial captivation score
@@ -32,7 +32,7 @@ recipes remain compatible. The authored catalogue itself is unchanged.
 
 An opt-in **bounded automatic nursery** searches up to 20 generations / 96 genomes /
 60 seconds and retains up to 24 diverse candidates, with Stop and transparent
-heuristic scores—not a learned beauty judge. Saves include available unsaved
+transparent scores, with optional locally learned personal ranking from your explicit comparisons—not a universal beauty judge. Saves include available unsaved
 ancestors within the 100-record library cap. Storage is session-only unless you
 explicitly enable IndexedDB; numeric JSON import/export is bounded to 2 MiB / 512
 records including source ancestry.
@@ -40,10 +40,17 @@ records including source ancestry.
 In **tune · audio → Music laboratory**, edit four bounded global/per-world routes.
 Optional local look-ahead adds spectral/chroma/energy timelines, change candidates
 and manual timing corrections. PCM16/float32 WAV uses a worker (32 MiB / 10 minutes).
-Browser-supported MP3/AAC/M4A/FLAC/Ogg/WebM can use native decode (32 MiB / 3 minutes,
-16 kHz mono/stereo output). Codec availability varies; native decode can allocate
-extra memory and cannot be aborted in flight—Stop discards stale results and another
-native decode cannot overlap. No uploads/model downloads/audio persistence.
+MP3, FLAC and Ogg Vorbis use pinned local codecs in a **terminable worker**
+(32 MiB / 3 decoded minutes / 45 seconds). Stop kills decoding, not just its result.
+Other codecs need separate consent for the browser's inherently non-abortable native
+fallback. No audio uploads or saved predictions.
+
+Optional **Spotify Basic Pitch** now supplies genuine pretrained note-activity
+estimates for the first four seconds: local, Apache-licensed, explicit opt-in,
+~2.7 MiB of lazily loaded assets, a terminable single-thread model worker and a
+60-second deadline. It does **not** infer mood/key/chords or musical meaning.
+
+[Learning, decoder/model limits, licensing and the remaining solver boundary](docs/LEARNING-AND-DECODING.md).
 
 See [usage, limits, storage semantics and verification](docs/NURSERY-AND-MUSIC-LAB.md).
 Arbitrary source-code genetics, runtime checkpoints, overnight jobs, streaming
@@ -244,7 +251,9 @@ on a held redraw. Software-rendered test FPS is not a hardware performance promi
   ecology engine; older files preserve Collections I–VII.
 - `assets/js/transitions.js`: 24 masked/warped passages and a safe dissolve fallback.
 - `assets/js/nursery*.js`, `habitat.js`: versioned recipes, GPU/Canvas phenotypes, bounded diversity search, library and ancestry.
-- `assets/js/music-lab.js`, `music-analysis.js`, `audio-decode.js`: route profiles, bounded browser-native decode and local PCM analysis worker.
+- `assets/js/music-lab.js`, `music-analysis.js`, `audio-decode.js`: route profiles, interruptible local codecs, optional native fallback and PCM analysis worker.
+- `assets/js/preference-model.js`: explicit-comparison personal ranker with opt-in storage.
+- `assets/js/music-model*.js`: consent-gated local Basic Pitch inference; pinned assets under `assets/vendor/`.
 - `assets/js/experience.js`: local conductor, consent, feedback, audio analysis,
   accessibility settings and performance state.
 - `assets/js/glsl-prelude.js`, `gl.js`: shared shader helpers, uniforms, cached
