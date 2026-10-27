@@ -131,6 +131,8 @@
   var childSlot = null, childBase = null, priorLinger = false;
   function restoreChild() {
     if (childSlot === null) return;
+    var audition=E.designs[childSlot];
+    if(audition.dispose)audition.dispose(R);
     E.designs[childSlot] = childBase;
     childSlot = null; childBase = null;
     E.lingering = priorLinger;

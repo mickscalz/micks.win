@@ -538,3 +538,7 @@ body.is-idle .experience-dock,body.is-immersive .experience-dock{opacity:0;visib
 #nurseryCandidates .nursery-item{align-content:start;border:1px solid #294153;padding:10px;border-radius:8px;}
 .nursery-thumbnail{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;}
 @media(max-width:560px){#nurseryCandidates{grid-template-columns:1fr;}}
+
+/* Native multi-select remains usable on small touch screens. */
+#nurseryPool { width:100%; max-width:100%; box-sizing:border-box; }
+#nurseryPoolWeights { width:100%; box-sizing:border-box; }

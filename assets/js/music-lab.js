@@ -35,6 +35,7 @@
     media = null,
     worker = null,
     epoch = 0,
+    decoding = false,
     analysis = null,
     markers = [],
     lookahead = false,
@@ -42,7 +43,7 @@
     manualTempo = null,
     taps = [],
     lastDraw = 0;
-  const workerURL = new URL("music-analysis.js?v=9", d.currentScript.src);
+  const workerURL = new URL("music-analysis.js?v=10", d.currentScript.src);
   const $ = (id) => d.getElementById(id),
     clamp = (n, a, b) => Math.max(a, Math.min(b, n));
   function validRoutes(rows) {
@@ -273,9 +274,14 @@
     media = m;
     if ($("analysisStatus"))
       $("analysisStatus").textContent =
-        "Optional WAV look-ahead is ready to request; playback analysis remains real-time.";
+        "Local look-ahead ready: PCM WAV, or browser-supported MP3/AAC/FLAC/Ogg/WebM within decode limits.";
   }
   async function analyze() {
+    if (decoding) {
+      $("analysisStatus").textContent =
+        "A native decode is still finishing. Stop discards its result; wait before another analysis.";
+      return;
+    }
     if (!file) {
       $("analysisStatus").textContent = "Choose a playback file first.";
       return;
@@ -290,7 +296,24 @@
     markers = [];
     const token = epoch;
     try {
-      const buffer = await file.arrayBuffer();
+      let buffer = await file.arrayBuffer();
+      if (token !== epoch) return;
+      const native = !w.AudioDecode.directPCM(buffer);
+      if (native) {
+        decoding = true;
+        try {
+          buffer = await w.AudioDecode.decode(buffer, {
+            duration: media?.duration,
+            Context: w.OfflineAudioContext || w.webkitOfflineAudioContext,
+            cancelled: () => token !== epoch,
+            progress: (text) => {
+              if (token === epoch) $("analysisStatus").textContent = text;
+            },
+          });
+        } finally {
+          decoding = false;
+        }
+      }
       if (token !== epoch) return;
       worker = new Worker(workerURL);
       worker.onerror = () => {

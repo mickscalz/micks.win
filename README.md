@@ -24,24 +24,31 @@ browser permission; local audio files do not require a microphone.
 
 ## New: lineage nursery & music laboratory
 
-Open **breed · nursery** to recombine **2–4 compatible parent genomes**, audition
-and name twins, save offspring, re-parent them and inspect ancestry/trait provenance.
-The separate library is session-only unless you explicitly load/enable IndexedDB
-persistence; JSON export/import is available. Authored founders are clearly labelled
-eco-v1 adapters, not exact clones or arbitrary blends of all 320 original renderers.
-The catalogue itself is unchanged.
+Open **breed · nursery** to recombine **2–32 parent genomes**, audition/name twins,
+inspect provenance and save offspring with ancestry. All 320 sources have labelled
+**habitat-v2 module adapters**, not exact clones of their original renderers. Twelve
+GPU geometry grammars couple to a finite colony; legacy eco-v1 IDs and Canvas
+recipes remain compatible. The authored catalogue itself is unchanged.
+
+An opt-in **bounded automatic nursery** searches up to 20 generations / 96 genomes /
+60 seconds and retains up to 24 diverse candidates, with Stop and transparent
+heuristic scores—not a learned beauty judge. Saves include available unsaved
+ancestors within the 100-record library cap. Storage is session-only unless you
+explicitly enable IndexedDB; numeric JSON import/export is bounded to 2 MiB / 512
+records including source ancestry.
 
 In **tune · audio → Music laboratory**, edit four bounded global/per-world routes.
-Optional, cancellable **local PCM-WAV analysis** adds a spectral/chroma/energy timeline,
-change candidates, look-ahead and manual tempo/marker corrections. No uploads or
-model downloads. Current limits are 32 MiB/10 minutes and PCM16/float32 WAV for
-look-ahead; other browser-playable formats keep real-time analysis. Ordinary route
-profiles persist only with settings consent; audio/features are never saved.
+Optional local look-ahead adds spectral/chroma/energy timelines, change candidates
+and manual timing corrections. PCM16/float32 WAV uses a worker (32 MiB / 10 minutes).
+Browser-supported MP3/AAC/M4A/FLAC/Ogg/WebM can use native decode (32 MiB / 3 minutes,
+16 kHz mono/stereo output). Codec availability varies; native decode can allocate
+extra memory and cannot be aborted in flight—Stop discards stale results and another
+native decode cannot overlap. No uploads/model downloads/audio persistence.
 
 See [usage, limits, storage semantics and verification](docs/NURSERY-AND-MUSIC-LAB.md).
-32-parent/unattended breeding, runtime checkpoints, broad codec look-ahead and learned
-musical understanding are **not** shipped. [The longer roadmap](docs/EVOLUTION-ROADMAP.md)
-now distinguishes these from the working first-stage tools.
+Arbitrary source-code genetics, runtime checkpoints, overnight jobs, streaming
+all-codec guarantees and learned musical understanding are **not** shipped.
+[The roadmap](docs/EVOLUTION-ROADMAP.md) distinguishes these from delivered tools.
 
 ## Collection VIII — The Unwritten Biosphere
 
@@ -120,15 +127,15 @@ white flashes; this is not a medical/photosensitivity guarantee.
 
 ### Breeding and deeper musical analysis
 
-The first working tools are described in [the nursery/music delivery notes](docs/NURSERY-AND-MUSIC-LAB.md):
-compatible 2–4-parent recipes, a separate local offspring library and ancestry,
-editable audio routes, and optional PCM-WAV look-ahead now work.
-[The longer roadmap](docs/EVOLUTION-ROADMAP.md) covers their design and next phases.
+The [delivery notes](docs/NURSERY-AND-MUSIC-LAB.md) cover typed 2–32-parent
+compositions, coupled GPU habitats, a local offspring library and ancestry, bounded
+automatic diversity search, editable audio routes and browser-codec look-ahead.
+[The roadmap](docs/EVOLUTION-ROADMAP.md) covers the remaining design programme.
 
-**Still future:** arbitrary cross-renderer genetics, runtime checkpoints,
-32-parent synthesis, autonomous overnight nursery jobs, broad-codec look-ahead,
-full musical structure and learned emotional understanding. The eco-v1 founders
-are explicit adapters, not exact recombinations of the original painters.
+**Still future:** arbitrary cross-renderer source genetics, runtime checkpoints,
+autonomous overnight jobs, constant-memory streaming decode, full musical structure
+and learned emotional understanding. Source adapters are not exact recombinations
+of original painters or solvers. Heuristic search cannot guarantee beauty.
 
 ## Collection VII — The Living Elsewhere
 
@@ -236,8 +243,8 @@ on a held redraw. Software-rendered test FPS is not a hardware performance promi
 - `assets/js/designs/collection-viii*.js`: the 64 new constructions and bounded
   ecology engine; older files preserve Collections I–VII.
 - `assets/js/transitions.js`: 24 masked/warped passages and a safe dissolve fallback.
-- `assets/js/nursery*.js`: typed recipes, bounded offspring renderer, local library and ancestry.
-- `assets/js/music-lab.js`, `music-analysis.js`: route profiles and optional local WAV worker.
+- `assets/js/nursery*.js`, `habitat.js`: versioned recipes, GPU/Canvas phenotypes, bounded diversity search, library and ancestry.
+- `assets/js/music-lab.js`, `music-analysis.js`, `audio-decode.js`: route profiles, bounded browser-native decode and local PCM analysis worker.
 - `assets/js/experience.js`: local conductor, consent, feedback, audio analysis,
   accessibility settings and performance state.
 - `assets/js/glsl-prelude.js`, `gl.js`: shared shader helpers, uniforms, cached

@@ -12,6 +12,30 @@
     "afterglow",
   ];
   const SHAPES = ["bloom", "shell", "ribbon", "branch"];
+  const FORMS = [
+    ...SHAPES,
+    "vault",
+    "sponge",
+    "membrane",
+    "lattice",
+    "orbit",
+    "terrain",
+    "coral",
+    "vortex",
+  ];
+  const MODULES = {
+    topology: ["colony", "orbit", "lattice", "flow"],
+    material: ["silk", "glass", "ink", "mineral"],
+    rhythm: ["tide", "pulse", "growth", "orbit"],
+  };
+  const traits = (v) => [
+    "shape",
+    "hue",
+    "lobes",
+    "force",
+    ...KEYS,
+    ...(v === 2 ? ["topology", "material", "rhythm", "depth", "relief"] : []),
+  ];
   const clamp = (n, a = 0, b = 1) => Math.max(a, Math.min(b, n));
   function hash(s) {
     let n = 2166136261;
@@ -37,9 +61,15 @@
   }
   const parentID = (s) =>
     typeof s === "string" &&
-    /^(?:child-[a-f0-9]{16}|founder:[a-z0-9-]{1,70})$/.test(s);
+    /^(?:child-[a-f0-9]{16}|(?:source|founder):[a-z0-9-]{1,70})$/.test(s);
   function identity(r) {
-    const s = JSON.stringify([1, r.seed, r.parents, r.generation, r.genome]);
+    const s = JSON.stringify([
+      r.version,
+      r.seed,
+      r.parents,
+      r.generation,
+      r.genome,
+    ]);
     return (
       "child-" +
       hash(s).toString(16).padStart(8, "0") +
@@ -51,16 +81,19 @@
   function validate(r) {
     if (
       !r ||
-      r.version !== 1 ||
-      r.solver !== "eco-v1" ||
+      ![1, 2].includes(r.version) ||
+      r.solver !== (r.version === 2 ? "habitat-v2" : "eco-v1") ||
       !Array.isArray(r.parents) ||
-      r.parents.length > 4 ||
+      r.parents.length > (r.version === 2 ? 32 : 4) ||
       !r.parents.every(parentID)
     )
       throw Error("Unsupported recipe or parent");
     if (
       !r.parents.length &&
-      (!r.id?.startsWith("founder:") || r.generation !== 0)
+      (!(r.version === 2
+        ? r.id?.startsWith("source:")
+        : r.id?.startsWith("founder:")) ||
+        r.generation !== 0)
     )
       throw Error("Invalid founding recipe");
     if (
@@ -72,12 +105,13 @@
     if (
       r.parents.length &&
       (!Array.isArray(r.provenance) ||
-        r.provenance.length !== 12 ||
-        new Set(r.provenance.map((p) => p?.trait)).size !== 12)
+        r.provenance.length !== traits(r.version).length ||
+        new Set(r.provenance.map((p) => p?.trait)).size !==
+          traits(r.version).length)
     )
       throw Error("Missing trait provenance");
     const g = r.genome;
-    if (!g || !SHAPES.includes(g.shape))
+    if (!g || !(r.version === 2 ? FORMS : SHAPES).includes(g.shape))
       throw Error("Unsupported geometry grammar");
     const genome = {
       shape: g.shape,
@@ -88,9 +122,16 @@
     if (!Number.isInteger(g.lobes) || !Number.isInteger(g.force))
       throw Error("Discrete genes must be integers");
     KEYS.forEach((k) => (genome[k] = finite(g[k], 0, 1)));
+    if (r.version === 2) {
+      for (const [k, allowed] of Object.entries(MODULES)) {
+        if (!allowed.includes(g[k])) throw Error("Unsupported habitat module");
+        genome[k] = g[k];
+      }
+      for (const k of ["depth", "relief"]) genome[k] = finite(g[k], 0, 1);
+    }
     const out = {
-      version: 1,
-      solver: "eco-v1",
+      version: r.version,
+      solver: r.solver,
       seed: finite(r.seed, 1, 4294967295),
       parents: r.parents.slice(),
       generation: finite(r.generation, 0, 10000),
@@ -105,10 +146,10 @@
       typeof r.name === "string" ? r.name.slice(0, 70) : "Unnamed organism";
     out.provenance = [];
     if (Array.isArray(r.provenance))
-      for (const p of r.provenance.slice(0, 12)) {
+      for (const p of r.provenance.slice(0, traits(r.version).length)) {
         if (
           !p ||
-          !["shape", "hue", "lobes", "force", ...KEYS].includes(p.trait) ||
+          !traits(r.version).includes(p.trait) ||
           !Array.isArray(p.weights) ||
           p.weights.length !== out.parents.length
         )
@@ -213,18 +254,100 @@
       name: d.name,
     });
   }
+  function upgrade(g) {
+    return {
+      ...g,
+      topology: g.topology || "colony",
+      material: g.material || "silk",
+      rhythm: g.rhythm || "growth",
+      depth: g.depth ?? 0.45,
+      relief: g.relief ?? 0.5,
+    };
+  }
+  function founderAny(d) {
+    if (
+      !d ||
+      !["gl", "glx", "2d"].includes(d.kind) ||
+      !/^[a-z0-9-]{1,70}$/.test(d.id)
+    )
+      throw Error("Invalid catalogue source");
+    const r = random(hash(d.id) || 1),
+      text = (d.name + " " + d.tag + " " + (d.family || "")).toLowerCase();
+    let shape = /fractal|menger|recursive|mandel|sponge/.test(text)
+      ? "sponge"
+      : /cathedral|arch|vault|temple|palace/.test(text)
+        ? "vault"
+        : /lattice|crystal|tessera|tesseract|grid/.test(text)
+          ? "lattice"
+          : /ocean|sea|wave|fluid|membrane|silk|drape/.test(text)
+            ? "membrane"
+            : /orbit|planet|celestial|star|galax|solar/.test(text)
+              ? "orbit"
+              : /mountain|terrain|dune|landscape/.test(text)
+                ? "terrain"
+                : /vortex|spiral|swirl|aurora/.test(text)
+                  ? "vortex"
+                  : /coral|branch|root|tree|mycel|rhizo/.test(text)
+                    ? "coral"
+                    : /flower|orchid|petal|bloom|pollen/.test(text)
+                      ? "bloom"
+                      : FORMS[Math.floor(r() * FORMS.length)];
+    const g = {
+      shape,
+      hue: r() * 360,
+      lobes: 3 + Math.floor(r() * 10),
+      force: Math.floor(r() * 8),
+    };
+    for (const k of KEYS) g[k] = 0.25 + r() * 0.5;
+    g.topology = /orbit|solar|planet/.test(text)
+      ? "orbit"
+      : /lattice|grid|crystal/.test(text)
+        ? "lattice"
+        : /fluid|flow|sea|river/.test(text)
+          ? "flow"
+          : "colony";
+    g.material = /glass|ice|crystal|lens/.test(text)
+      ? "glass"
+      : /ink|paper|negative/.test(text)
+        ? "ink"
+        : /stone|mineral|rock|geode/.test(text)
+          ? "mineral"
+          : "silk";
+    g.rhythm = /pulse|heart|beat/.test(text)
+      ? "pulse"
+      : /sea|ocean|tide/.test(text)
+        ? "tide"
+        : /orbit|solar/.test(text)
+          ? "orbit"
+          : "growth";
+    g.depth = d.kind === "2d" ? 0.3 + r() * 0.3 : 0.6 + r() * 0.3;
+    g.relief = 0.25 + r() * 0.5;
+    return validate({
+      id: "source:" + d.id,
+      version: 2,
+      solver: "habitat-v2",
+      seed: hash("habitat:" + d.id) || 1,
+      parents: [],
+      generation: 0,
+      genome: g,
+      name: d.name,
+    });
+  }
   function breed(parents, { seed = 1, mood = "balanced", weights } = {}) {
     if (!["balanced", "calm", "wild"].includes(mood))
       throw Error("Unsupported temperament");
     parents = parents.map(validate);
     if (
       parents.length < 2 ||
-      parents.length > 4 ||
+      parents.length > 32 ||
       new Set(parents.map((p) => p.id)).size !== parents.length
     )
-      throw Error("Choose 2–4 different compatible parents");
+      throw Error("Choose 2–32 different module-compatible parents");
     seed = finite(seed, 1, 4294967295);
     if (!Number.isInteger(seed)) throw Error("Invalid seed");
+    const version =
+      parents.length > 4 || parents.some((p) => p.version === 2) ? 2 : 1;
+    const genomes = parents.map((p) => upgrade(p.genome));
     const r = random(seed),
       W = weights || parents.map(() => 1 / parents.length);
     if (W.length !== parents.length) throw Error("Invalid weights");
@@ -243,10 +366,12 @@
     const g = {},
       provenance = [],
       variation = mood === "wild" ? 0.22 : mood === "calm" ? 0.035 : 0.09;
-    for (const k of ["shape", "hue", "lobes", "force", ...KEYS]) {
-      if (["shape", "lobes", "force", "hue"].includes(k)) {
+    for (const k of traits(version)) {
+      if (
+        ["shape", "lobes", "force", "hue", ...Object.keys(MODULES)].includes(k)
+      ) {
         const i = choose();
-        g[k] = parents[i].genome[k];
+        g[k] = genomes[i][k];
         provenance.push({
           trait: k,
           weights: w.map((_, j) => (j === i ? 1 : 0)),
@@ -255,7 +380,7 @@
         });
       } else {
         const mutation = (r() - 0.5) * variation,
-          base = parents.reduce((s, p, i) => s + p.genome[k] * w[i], 0),
+          base = parents.reduce((s, p, i) => s + genomes[i][k] * w[i], 0),
           value = base + mutation;
         g[k] = clamp(value);
         provenance.push({
@@ -276,8 +401,8 @@
         p.clamped = p.clamped || g[k] !== before;
       }
     const child = {
-      version: 1,
-      solver: "eco-v1",
+      version,
+      solver: version === 2 ? "habitat-v2" : "eco-v1",
       seed,
       parents: parents.map((p) => p.id),
       generation: 1 + Math.max(...parents.map((p) => p.generation)),
@@ -296,25 +421,28 @@
     return validate(c);
   }
   function importRecipes(text) {
-    if (typeof text !== "string" || text.length > 524288)
-      throw Error("Import limit: 512 KiB");
+    if (
+      typeof text !== "string" ||
+      new TextEncoder().encode(text).byteLength > 2097152
+    )
+      throw Error("Import limit: 2 MiB");
     const obj = JSON.parse(text);
     if (
       !obj ||
       typeof obj !== "object" ||
       obj.version !== 1 ||
       !Array.isArray(obj.recipes) ||
-      obj.recipes.length > 132
+      obj.recipes.length > 512
     )
       throw Error(
-        "Import limit: 132 versioned records (100 saved recipes plus founders)",
+        "Import limit: 512 versioned records including source ancestry",
       );
     const items = obj.recipes.map(validate);
     validateAncestry(items);
     return items;
   }
   function validateAncestry(input) {
-    if (!Array.isArray(input) || input.length > 256)
+    if (!Array.isArray(input) || input.length > 512)
       throw Error("Ancestry budget exceeded");
     const items = input.map(validate),
       map = new Map();
@@ -343,8 +471,13 @@
   }
 
   function renderer(input) {
-    const recipe = validate(input),
-      g = recipe.genome;
+    const recipe = validate(input);
+    if (recipe.version === 2) {
+      if (!root.HabitatRenderer)
+        throw Error("GPU habitat renderer unavailable");
+      return root.HabitatRenderer.create(recipe);
+    }
+    const g = recipe.genome;
     return {
       id: recipe.id,
       name: recipe.name,
@@ -553,6 +686,11 @@
   const api = {
     KEYS,
     SHAPES,
+    FORMS,
+    MODULES,
+    traits,
+    founderAny,
+    upgrade,
     hash,
     random,
     validate,
