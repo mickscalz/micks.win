@@ -31,7 +31,7 @@
         " / " +
         g.weather,
       blurb:
-        "Whole-world inheritance. IX / X / XI GPU sources reuse their exact environment kernels; other sources use explicit environment adapters.",
+        "Whole-world inheritance. IX / X / XI / XII GPU sources reuse their exact environment kernels; other sources use explicit environment adapters.",
       init(R) {
         this.clock = 0;
         this.motion = w.OffspringMotion.profile(recipe);

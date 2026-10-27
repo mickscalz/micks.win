@@ -1,8 +1,15 @@
 # A living cabinet, not an ever-longer slideshow
 
+## Collection XII follow-up (376 worlds)
+
+Sixteen new environments and world-matched musical fingerprints bring exact GPU
+nursery reuse to 52. Scores derive harmony from palette, texture from material,
+tempo and space from movement and depth, on one bounded opt-in graph. See
+[Resonant Infinities](RESONANT-INFINITIES.md).
+
 ## Collection XI follow-up (360 worlds)
 
-Sixteen new environment bodies extend exact GPU nursery reuse to 36. Real live
+Sixteen new environment bodies extended exact GPU nursery reuse to 36 at the time; Real live
 firstborn rendering, deterministic startup motion for all three offspring
 versions and explicit audition-from-Hold fix the frozen-birth experience. Safety
 settings and later Hold still freeze motion. See
