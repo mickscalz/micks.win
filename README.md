@@ -1,18 +1,29 @@
 # micks.win
 
-**A Cabinet of Infinite Rooms** — 376 live-rendered worlds across twelve collections.
+**A Cabinet of Infinite Rooms** — 408 live-rendered worlds across thirteen collections.
+
+**Collection XIII — Luminous Meridians:** thirty-two new authored environments
+on one shared, upgraded shading pass: soft self-shadows, heightfield ambient
+occlusion, key plus sky-fill lighting, rippled water, height haze and a muted
+filmic grade. Eight each of architecture, atmosphere, terrain and optical
+constructions — basalt colonnades, slab towers, a thousand-step stair, tidal
+rings, monolith corridors, cloud banks, glass shards, ash seas, glacier ridges,
+a hedge labyrinth, canyon walls, radial blades and a portal corridor. Every
+world is a bounded heightfield with its own camera and light direction, so
+scale reads and nothing repeats as a palette swap. **84 exact GPU nursery
+kernels** now cover IX / X / XI / XII / XIII. [What is verified](docs/LUMINOUS-MERIDIANS.md).
 
 **Collection XII — Resonant Infinities:** sixteen new authored environments —
 inverted pearl seas, a stellar stairwell, mirror-rain basilicas, tesseract
 estuaries, obsidian lace and mercury blossoms — each with its own reproducible
 **world-matched musical fingerprint**. Harmony follows palette, phrasing and
-space follow motion and depth, and texture follows material. **52 exact GPU
+space follow motion and depth, and texture follows material. **84 exact GPU
 nursery kernels** now reproduce IX / X / XI / XII fields verbatim.
 [Constructions, scoring and limits](docs/RESONANT-INFINITIES.md).
 
 **Collection XI — Impossible Shores:** sixteen otherworldly worldscapes, from
 suspended ocean shelves and liquid-opal caverns to pearlescent nebulae and
-translucent folded worldsheets. **16 of the 52 exact GPU nursery kernels**, a real live
+translucent folded worldsheets. **32 of the 84 exact GPU nursery kernels**, a real live
 firstborn viewport, and offspring that start in motion. Audition resumes Hold;
 later Hold, Motion = 0 and reduced-motion controls remain respected.
 [Worlds, birth fix and verification](docs/IMPOSSIBLE-SHORES.md).
@@ -63,7 +74,7 @@ browser permission; local audio files do not require a microphone.
 ## New: lineage nursery & music laboratory
 
 Open **breed · nursery** to recombine **2–32 parent genomes**, audition/name twins,
-inspect provenance and save offspring with ancestry. All 376 sources have labelled
+inspect provenance and save offspring with ancestry. All 408 sources have labelled
 **habitat-v2 module adapters**, not exact clones of their original renderers. Twelve
 GPU geometry grammars couple to a finite colony; legacy eco-v1 IDs and Canvas
 recipes remain compatible. Whole-world scope is now the default; choose the legacy scope to use these habitats.
@@ -272,7 +283,7 @@ on a held redraw. Software-rendered test FPS is not a hardware performance promi
 
 - Pointer movement, touch or keyboard wake the interface; it fades after **3500ms**
   of inactivity. There is no mandatory welcome screen.
-- Arrow keys travel; **G** opens the gallery. Type a rank (1–376) or use its jump box.
+- Arrow keys travel; **G** opens the gallery. Type a rank (1–408) or use its jump box.
 - **Space** freezes the scene. **L / ∞ Linger** keeps this world moving past the
   travel timer; leaving Linger starts a full dwell without rewinding the artwork.
 - **H** enters immersion, with a keyboard/touch return control; Escape exits.
@@ -319,7 +330,7 @@ sources, consent/sanitization/reset, selection, accessibility, quality bounds,
 synthetic band/onset/tempo/stereo analysis, audio-clock independence, permission
 denial and cancellation of pending streams.
 
-The browser suite compiles and draws **all 376 worlds using real WebGL2**. It
+The browser suite compiles and draws **all 408 worlds using real WebGL2**. It
 checks nonblank Collection V–XII frames, temporal change in all 248 VI–XII worlds,
 held-state stability in their 90 Canvas constructions, nonblank deferred quality
 resizes, navigation, filters,
@@ -344,7 +355,7 @@ Playwright Chromium. Deterministic animation tests are not FPS benchmarks.
 
 The birth-and-shores suite also checks a genuinely live firstborn, audition from
 Hold, zero-motion safety, first-two-second structural/light change for v1/v2
-and all 52 world-v3 bodies, and exact held-pixel reproduction. See
+and all 84 world-v3 bodies, and exact held-pixel reproduction. See
 [Impossible Shores](docs/IMPOSSIBLE-SHORES.md).
 
 The sound-score suite opens real Web Audio only after a gesture, then checks a
@@ -364,6 +375,38 @@ can specify `previewFrames` for warm-up. The full-screen scene remains live.
 
 | Rank | Collection | World | Construction |
 | ---: | ---: | --- | --- |
+| 1 | 13 | Colonnade of Nine Suns | basalt columns standing in a tidal mirror under a low sun |
+| 2 | 13 | Obsidian Library | slab towers around sunken lanes, lit from inside |
+| 3 | 13 | Suspended River Palace | a river channel with terraces climbing away from it on both sides |
+| 4 | 13 | Thousand Year Stair | one stair cut through a monolith, climbing away from the viewer |
+| 5 | 13 | Tideclock Basilica | concentric tidal rings around a spire, water rising through them |
+| 6 | 13 | Brass Orrery Mausoleum | three concentric ring walls with tombs on the outermost orbit |
+| 7 | 13 | Falling Light Colonnade | a forest of pale monoliths, light arriving in shafts between them |
+| 8 | 13 | Salt Throne Citadel | white ramparts ring a throne mesa; a causeway crosses the flats |
+| 9 | 13 | Whale Nebula | long cloud banks seen from above, a swell running through them |
+| 10 | 13 | Glass Monsoon | a field of glass shards standing in shallow rain water |
+| 11 | 13 | Ember Stratosphere | a stratified mesa: stacked bands, every ledge catching the sun |
+| 12 | 13 | Cloudfall Abyss | a plateau ending in a cliff: the ground simply stops |
+| 13 | 13 | Aurora Necropolis | blocks with lit lids under a green-violet sky |
+| 14 | 13 | Luminous Ash Sea | ash dunes over a bed of molten cracks |
+| 15 | 13 | Dark Star Maelstrom | a spiral reef inside a whirlpool, arms turning slowly |
+| 16 | 13 | Weeping Atmosphere | thin dark rods standing in a flooded basin while it rains |
+| 17 | 13 | Valley of First Light | ridged ranges on both sides; light reaches the valley floor last |
+| 18 | 13 | Saffron Salt Basin | a polygon crust of salt plates cracking into the distance |
+| 19 | 13 | Glacier of Inner Fire | sharp ice ridges with fire showing through the fissures |
+| 20 | 13 | Verdant Labyrinth | a hedge maze on a slope, walls taller than the paths are wide |
+| 21 | 13 | Dunes of the Quiet Bell | long dunes with blades of light on the windward faces |
+| 22 | 13 | Midnight Terraces | flooded terraces stepping up a dark hillside |
+| 23 | 13 | Cinnabar Canyon Sea | high red canyon walls with a river running between them |
+| 24 | 13 | Meadow Above the Storm | a grass plateau that ends over a sea of cloud |
+| 25 | 13 | Kaleidoscope Iron Rain | eight-fold radial blades mirrored around a single axis |
+| 26 | 13 | Moire Sanctum | two interference patterns laid over each other as terrain |
+| 27 | 13 | Crystalline Interference | faceted crystal shelves, every face a different refraction |
+| 28 | 13 | Prism Cataract | water falling in stepped sheets, spectrum caught on every lip |
+| 29 | 13 | Silk of Solar Wind | long parallel silk ripples, back-lit, running to the horizon |
+| 30 | 13 | Lace of Falling Numbers | a pierced screen of columns; light falls through the holes |
+| 31 | 13 | Caustic Cathedral | a ribbed basin filled with water, caustics across the vault floor |
+| 32 | 13 | Meridian of Infinite Doors | portal frames receding down a corridor of light |
 | 1 | 12 | The Inverted Pearl Sea | Vaulted ocean worlds · luminous nacre · suspended tides |
 | 2 | 12 | The Luminous Mycelium Cosmos | Deep branching light filaments · interconnected stellar gardens |
 | 3 | 12 | Stairwell to Andromeda | Helical celestial stairwells · suspended landings · stellar depth |
@@ -739,7 +782,7 @@ can specify `previewFrames` for warm-up. The full-screen scene remains live.
 | 373 | 1 | Firefly Deep | bokeh depth of field · warm dusk |
 | 374 | 1 | Digital Rain | glyph cascade · depth & bleed |
 | 375 | 1 | Particle Morph | shape interpolation · your name in points |
-| 376 | 1 | Silk Drape | layered gradient cloth · specular sheen |
+| 408 | 1 | Silk Drape | layered gradient cloth · specular sheen |
 
 ## Publishing and the custom domain
 

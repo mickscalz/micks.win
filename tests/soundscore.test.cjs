@@ -23,8 +23,8 @@ const design = (i) => ({
 });
 test("musical fingerprints are deterministic, unique per world and derived from visuals", () => {
   const all = K.exactSourceIDs.map((_, i) => S.profile(design(i)));
-  assert.equal(all.length, 52);
-  assert.equal(new Set(all.map((p) => p.fingerprint)).size, 52);
+  assert.equal(all.length, 84);
+  assert.equal(new Set(all.map((p) => p.fingerprint)).size, 84);
   assert.deepEqual(S.profile(design(36)), S.profile(design(36)));
   // Sound follows the scene intent, not an unrelated hash of the title.
   assert.equal(all[36].biome, "water");

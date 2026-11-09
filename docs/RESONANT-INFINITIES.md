@@ -1,7 +1,7 @@
 # Collection XII — Resonant Infinities
 
-Sixteen new authored environments bring the cabinet to **376 worlds across twelve
-collections** and extend whole-world nursery reuse to **52 exact GPU kernels**
+Sixteen new authored environments bring the cabinet to **408 worlds across twelve
+collections** and extend whole-world nursery reuse to **84 exact GPU kernels**
 (8 + 12 + 16 + 16). They occupy ranks 1–16, newest first.
 
 ## The sixteen constructions
@@ -84,7 +84,7 @@ cinematic or combined; a button restarts the current phrase from its first beat.
 
 ## Verification
 
-`npm test` covers 52 distinct fingerprints, deterministic replay, palette-driven
+`npm test` covers 84 distinct fingerprints, deterministic replay, palette-driven
 register, material-driven cutoff, in-scale pitches, rest counts and chord
 membership. `tests/soundscore-browser.mjs` runs real Web Audio under gesture
 policy: default silence with no audio context, a bounded graph, distinct

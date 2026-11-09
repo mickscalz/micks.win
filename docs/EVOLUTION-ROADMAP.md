@@ -1,9 +1,9 @@
 # A living cabinet, not an ever-longer slideshow
 
-## Collection XII follow-up (376 worlds)
+## Collection XII follow-up (408 worlds)
 
 Sixteen new environments and world-matched musical fingerprints bring exact GPU
-nursery reuse to 52. Scores derive harmony from palette, texture from material,
+nursery reuse to 84. Scores derive harmony from palette, texture from material,
 tempo and space from movement and depth, on one bounded opt-in graph. See
 [Resonant Infinities](RESONANT-INFINITIES.md).
 

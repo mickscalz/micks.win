@@ -82,7 +82,7 @@ or a claim of autonomous intelligence.
   compiled all 360 worlds at this release. The birth suite exercises the live viewport,
   explicit audition from Hold, later Hold, Motion = 0, and actual first-two-second
   render differences for v1/v2 plus every world-v3 environment body (36 at this
-  release, 52 after Collection XII).
+  release, 84 after Collection XIII).
 - Motion verification also averages **5×5 pixel blocks**, requiring both a mean
   difference and at least 20 substantially changed spatial blocks, so ordinary
   per-pixel shader grain cannot stand in for structural/light motion. Repainting

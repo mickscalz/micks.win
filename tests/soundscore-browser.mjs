@@ -193,7 +193,7 @@ try {
   await page.evaluate(() => {
     Cabinet.idleDelay = 600000;
     Cabinet.show(
-      Cabinet.designs.findIndex((d) => d.id === "inverted-pearl-sea"),
+      Cabinet.designs.findIndex((d) => d.id === "colonnade-of-nine-suns"),
       { snapshot: false },
     );
   });
