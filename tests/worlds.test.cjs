@@ -120,6 +120,7 @@ test("soundscape is opt-in and reports unsupported browsers without requests or 
     };
   const w = { addEventListener() {} },
     d = { readyState: "loading", getElementById: get, addEventListener() {} };
+  vm.runInNewContext(fs.readFileSync("assets/js/soundscape-score.js", "utf8"), {window:w});
   vm.runInNewContext(fs.readFileSync("assets/js/soundscape.js", "utf8"), {
     window: w,
     document: d,

@@ -8,6 +8,14 @@
     typeof module !== "undefined"
       ? require("./worldscapes-xi.js")
       : root.WorldscapesXI;
+  const XII =
+    typeof module !== "undefined"
+      ? require("./resonant-xii.js")
+      : root.ResonantXII;
+  const XIII =
+    typeof module !== "undefined"
+      ? require("./luminous-xiii.js")
+      : root.LuminousXIII;
   const MODULES = {
     landform: [
       "tidal-arches",
@@ -20,6 +28,8 @@
       "salt-mirrors",
       ...HX.specs.map((s) => s[2]),
       ...XI.specs.map((s) => s[2]),
+      ...XII.specs.map((s) => s[2]),
+      ...XIII.specs.map((s) => s.id),
     ],
     sky: ["dawn", "aurora", "storm", "night"],
     water: ["tide", "mirror", "river", "dry"],
@@ -117,6 +127,8 @@
     ],
   ];
   function defaults(i) {
+    if (i >= 52) return XIII.defaults(i - 52);
+    if (i >= 36) return XII.defaults(i - 36);
     if (i >= 20) return XI.defaults(i - 20);
     if (i >= 8) return HX.defaults(i - 8);
     const s = specs[i];
@@ -232,6 +244,8 @@ void main(){vec2 uv=screenUV();float turn=sin(uTime*.018)*.12*uDrift;vec3 ro=vec
  if(uClimate.z>1.5&&uClimate.z<2.5){float dust=pow(.5+.5*sin(uv.x*80.+sin(uv.y*43.+uTime*.07)),35.)*pow(.5+.5*sin(uv.y*95.-uTime*.13),30.);color+=worldTint(.1)*dust*.16;}
  fragColor=vec4(finish(max(vec3(0),color)*(.45+.75*uIntensity)*uFade,uv,.12),1.);}`;
   function shader(index) {
+    if (index >= 52) return XIII.shader(index - 52);
+    if (index >= 36) return XII.shader(index - 36);
     if (index >= 20) return XI.shader(index - 20);
     if (index >= 8) return HX.shader(index - 8);
     return "const int WORLDINDEX=" + index + ";\n" + fields[index] + common;
@@ -283,7 +297,7 @@ void main(){vec2 uv=screenUV();float turn=sin(uTime*.018)*.12*uDrift;vec3 ro=vec
     }
     return source;
   }
-  const exactSourceIDs = [...specs, ...HX.specs, ...XI.specs].map((s) => s[0]);
+  const exactSourceIDs = [...specs, ...HX.specs, ...XI.specs, ...XII.specs, ...XIII.specs].map((s) => (Array.isArray(s) ? s[0] : s.id));
   const api = {
     MODULES,
     specs,

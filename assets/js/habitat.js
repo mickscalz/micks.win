@@ -102,6 +102,7 @@ void main(){vec2 uv=screenUV();float phase=uTime*.025*uDrift;vec3 ro=vec3(3.5*si
       id: recipe.id,
       name: recipe.name,
       nursery: true,
+      genome: g,
       recipeSolver: "habitat-v2",
       genome: g,
       kind: "glx",

@@ -573,6 +573,7 @@
       name: recipe.name,
       kind: "2d",
       nursery: true,
+      genome: g,
       edition: 8,
       rank: 0,
       collectionRank: 0,
